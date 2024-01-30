@@ -1,17 +1,17 @@
 <?php 
 include('_header.php');
-include('_navbar.php');
-include('_sidebar_menu.php');
+//include('_navbar.php');
+//include('_sidebar_menu.php');
 include('_fn.php');
 
 ?>
 
-<div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+<div class="content">
+    <!-- Content Header (Page header)  -->
     <section class="content-header">
-      <div class="container-fluid">
+      <!--<div class="container-fluid">
         <div class="row mb-2">
-          <div class="col-sm-6">
+          <div class="col-6 mx-auto">
             <h1>ข้อมูลลูกค้า</h1>
           </div>
           <div class="col-sm-6">
@@ -21,14 +21,14 @@ include('_fn.php');
             </ol>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div> /.container-fluid -->
     </section>
 
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-6">
+                <div class="col-6 mx-auto">
                     <div class="card card-primary">
                       <div class="card-header">
                         <h3 class="card-title">เพิ่มข้อมูลลูกค้า</h3>
@@ -68,7 +68,8 @@ include('_fn.php');
 
                       <!-- บันทึก -->
                       <div class="card-footer">
-                        <button type="submit" class="btn btn-primary">บันทึก</button>
+                        <button type="submit" class="btn btn-danger">บันทึก</button>
+                        <a href="cust.php" class="btn btn-secondary">กลับ</a>
                       </div>
                     </form>
                   </div>
