@@ -4,7 +4,7 @@
 //connected  database
 include ('../_conf/conn.inc.php');
 
-//====================================================================
+//====TB-js_user ================================================================
 //ดึงข้อมูล user จาก js_user
 function fetch_user(){
     global $conn;
@@ -97,7 +97,7 @@ function user_delete($u_id)
 
 }
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++TB-cust ++++++++++++++++++++++++++++++++++++++++++++++++
 //ดึงข้อมูล 
 function fetch_cust(){
     global $conn;
@@ -189,4 +189,24 @@ function cust_edit($c_id,$c_name,$c_add,$c_tel,$c_abb)
       echo "Error : " . mysqli_error($conn) . "<br>" . $sql ;
    }
 
+}
+
+
+//****TB- product *********************************************************** */
+
+
+//ดึงข้อมูลจาก table product
+function  fetch_prod(){
+    global $conn;
+
+    $sql=" SELECT * 
+            FROM product";
+
+            //exit($sql);
+
+    $result = mysqli_query($conn,$sql);
+    //exit($result);
+    
+
+    return $result;
 }
