@@ -43,34 +43,31 @@ include('_fn.php');
                             <label for="name">ชื่อสินค้า:</label>
                             <input type="text" name="prod_name" class="form-control"  id="pd" placeholder="ชื่อสินค้า">
                           </div>
-                          <div class="form-group">
-                            <label for="price">ราคาสินค้า:</label>
-                            <input type="number" name="price" min="1" max="1000" step="0.01" class="form-control"  id="pi" placeholder="ราคาสินค้า">
-                          </div>
+                          
                         </div>
                         <div class="col-md-6">  
                         <div class="form-group">
                             <label for="unit">หน่วยนับสินค้า:</label>
                             <select class="form-control select2" style="width: 100%;">
-                              <option selected="selected">กิโลกรัม</option>
-                              <option>ขีด</option>
-                              <option>ลูก</option>
-                              <option>แพ็ค</option>
-                              <option>ซอง</option>
-                              <option>ถุง</option>
-                              <option>ขวด</option>
-                              <option>กรัม</option>
-                              <option>มัด</option>
-                              <option>กระปุก</option>
-                              <option>แผ่น</option>
-                              <option>หลอด</option>
-                              <option>ฟอง</option>
-                              <option>ตัว</option>
-                              <option>แผง</option>
-                              <option>แท่ง</option>
-                              <option>กล่อง</option>
-                              <option>พับ</option>
-                              <option>แกลอน</option>
+                              <option selected="selected" value="1">กิโลกรัม</option>
+                              <option value="3">ขีด</option>
+                              <option value="8">ลูก</option>
+                              <option value="4">แพ็ค</option>
+                              <option value="5">ซอง</option>
+                              <option value="6">ถุง</option>
+                              <option value="7">ขวด</option>
+                              <option value="2">กรัม</option>
+                              <option value="9">มัด</option>
+                              <option value="10">กระปุก</option>
+                              <option value="11">แผ่น</option>
+                              <option value="12">หลอด</option>
+                              <option value="13">ฟอง</option>
+                              <option value="14">ตัว</option>
+                              <option value="15">แผง</option>
+                              <option value="16">แท่ง</option>
+                              <option value="17">กล่อง</option>
+                              <option value="18">พับ</option>
+                              <option value="19">แกลอน</option>
                             </select>
                         </div>
                         <!-- /.form-group -->
@@ -86,16 +83,7 @@ include('_fn.php');
                           </select>
 
                         </div>
-                        <div class="form-group">
-                          <label for="type">ลูกค้า:</label>
-                          <select class="form-control select2" style="width: 100%;" >
-                            <option selected="selected">ตูลู่</option>
-                              <option>แกรน</option>
-                              <option>วีรันดา</option>
-
-                          </select>
-
-                        </div>
+                       
                         </div>
                         </div>
                       </div> <!-- /.card-body -->

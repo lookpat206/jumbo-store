@@ -43,7 +43,8 @@ include('_fn.php');
                             <thead>
                                 <tr>
                                     <th style="width: 10%;">ลำดับ</th>
-                                    <th style="width: 70%;">ชื่อสินค้า</th>
+                                    <th style="width: 60%;">ชื่อสินค้า</th>
+                                    <th style="width: 10%">เพิ่มราคา</th>
                                     <th style="width: 10%;">แก้ไข</th>
                                     <th style="width: 10%;">ลบ</th>
                                 </tr>
@@ -61,17 +62,21 @@ include('_fn.php');
                                     echo "<td>" . $i . "</td>";
                                     echo "<td>" . $row['prod_name'] . "</td>";
                                     
+                                    echo "<td>";
+                                    echo '<a  class="btn btn-default btn-sm" style="color: green" href="price_add.php?prod_id='.$row['prod_id'].'">';
+                                    echo '<i class="far fa-plus-square" ></i>';
+                                    echo "</td>";
+                                    echo "<td>";
+                                    echo '<a  class="btn btn-default btn-sm" style="color: orange" href="prod_edit.php?prod_id='.$row['prod_id'].'">';
+                                    echo '<i class="far fa-edit" ></i>';
+                                    echo '</a>';
+                                    echo "</td>";
                                     
                                     echo "<td>";
-                                echo '<a  class="btn btn-default btn-sm" style="color: orange" href="prod_edit.php?c_id='.$row['prod_id'].'">';
-                                echo '<i class="far fa-edit" ></i>';
-                                echo '</a>';
-                                echo "</td>";
-                                echo "<td>";
-                                echo '<a onClick="return confirm(\'Are you sure you want to delete?\')" class="btn btn-default btn-sm" href="prod_delete.php?c_id='.$row['prod_id'].'">';
-                                echo '<i class="far fa-trash-alt" style="color: red"></i>';
-                                echo '</a>';
-                                echo "</td>";
+                                    echo '<a onClick="return confirm(\'Are you sure you want to delete?\')" class="btn btn-default btn-sm" href="prod_delete.php?c_id='.$row['prod_id'].'">';
+                                    echo '<i class="far fa-trash-alt" style="color: red"></i>';
+                                    echo '</a>';
+                                    echo "</td>";
                                     
                                     
 
