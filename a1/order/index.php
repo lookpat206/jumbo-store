@@ -9,14 +9,15 @@
 </head>
 <body>
 
-  <div id="calendar"></div>
+<div id="calendar"></div>
+
 
   <!-- FullCalendar JavaScript -->
   <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha512-KJ3eVLpQYbLiYGBjNVrj4YxzyPQwF6q9z9T8FVXVfI9qL0qJ/ScpDqSYzoT+EY86iWrwgv9m2B+DScJuvQHVlQ==" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-yUz8votyFP2RfN+Cjj6EJlu0vKrP7DO7sFm3Tckl2qfMBdx+nEqKHC+kOkcNcpF+0sMMnbX+Xp5j/UHaSlaM2oQ==" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js" integrity="sha512-ZU+86hTu6j2GzEXzmKfDE8iB5WlkgIEx5X9+8qdbbXiq6W/pGJxX8Y94Z3KGYiO7JC0HeE16JWOCpEUBDsCjAw==" crossorigin="anonymous"></script>
 
-<script>
+  <script>
   $(document).ready(function() {
     // Initialize FullCalendar
     $('#calendar').fullCalendar({
@@ -41,3 +42,5 @@
   });
 </script>
 
+</body>
+</html>

@@ -21,7 +21,7 @@
    <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- fullCalendar -->
-  <link rel="stylesheet" href="../plugins/fullcalendar/main.css">
+  <link rel="stylesheet" href="plugins/fullcalendar/main.css">
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
