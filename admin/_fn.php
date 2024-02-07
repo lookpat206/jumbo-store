@@ -13,29 +13,55 @@ function fetch_user(){
                 * 
             FROM 
                 js_user";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+    // ปิดคำสั่ง
+    mysqli_stmt_close($stmt);
+    
     //exit($sql);
 
-    $result = mysqli_query($conn,$sql);
+    
     //exit($result);
     return $result;
 }
+
 
 //===================================================================
 //ดึงข้อมูล id ของ user
 function fetch_user_by_uid($u_id){
     global $conn;
     
-    $sql = "SELECT 
-                * 
-            FROM 
-                js_user 
-            WHERE 
-                u_id = $u_id";
-    //exit($sql);
+   $sql = "SELECT * 
+            FROM js_user 
+            WHERE u_id = ?";
 
-    $result = mysqli_query($conn,$sql);
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $u_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+   // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
+    // ปิดคำสั่ง
+    mysqli_stmt_close($stmt);
+    
     return $result;
 }
+
+
 
 //=====================================================================
 //แก้ไขข้อมูล user
@@ -45,36 +71,57 @@ function user_edit($u_id,$u_name)
 
    $sql = "UPDATE js_user 
                SET 
-                u_name = '$u_name'
+                u_name = ?
                 where 
-                u_id = $u_id";
+                u_id = ?";
+    $stmt = mysqli_prepare($conn,$sql);
+
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt,"si",$u_name,$u_id);
    
-   if(mysqli_query($conn,$sql)){
-      //echo "บันทึกการแก้ไขเรียบร้อย";
-      header("Location:user.php");
-   }else {
-      echo "Error : " . mysqli_error($conn) . "<br>" . $sql ;
-   }
+   // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:user.php");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    // ปิดคำสั่ง
+    //mysqli_stmt_close($stmt);
 
 }
+
+
 
 //=====================================================================
 //บันทึกข้อมูล user จากการเพิ่มข้อมูล
 function user_add_save($username,$u_name,$u_status){
     global $conn;
 
-    $sql = "INSERT INTO js_user(u_user, u_name, u_pass, u_status) 
-                  VALUES
-                  ('$username','$u_name','1234','$u_status')";
+    // Using prepared statements to prevent SQL injection
+    $sql = "INSERT INTO 
+                js_user(u_user, u_name, u_pass, u_status) 
+            VALUES (?, ?, '1234', ?)";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Bind parameters
+    mysqli_stmt_bind_param($stmt, "sss", $username, $u_name, $u_status);
     
-    if(mysqli_query($conn,$sql)){
-      //echo "บันทึกข้อมูลผู้ใช้";
-      header("Location:user.php");
-   }else{
-      echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ : " . $sql . "<br>" . mysqli_error($conn);
-   }
+    // Execute the statement
+    if(mysqli_stmt_execute($stmt)){
+        //echo "บันทึกข้อมูลผู้ใช้";
+         header("Location:user.php");
+    } else {
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+    }
+
+//     // Close the statement
+//     mysqli_stmt_close($stmt);
 
 }
+
 
 //========================================================================
 //ลบข้อมูล user จาก datadase
@@ -85,17 +132,22 @@ function user_delete($u_id)
    $sql = "DELETE FROM 
                      js_user 
                   WHERE 
-                     u_id = $u_id";
-   // exit($sql);
+                     u_id = ?";
+    $stmt = mysqli_prepare($conn,$sql);
 
-   if(mysqli_query($conn,$sql)){
-     // echo "ต้องการลบข้อมูลผู้ใช้งาน";
-      header("Location:user.php");
-   }else{
-      echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_error($conn) . $sql;
-   }
+   // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $u_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "ต้องการลบข้อมูลผู้ใช้งาน";
+        header("Location:user.php");
+    } else {
+        echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
+    }
 
 }
+
 
 //+++++TB-cust ++++++++++++++++++++++++++++++++++++++++++++++++
 //ดึงข้อมูล 
@@ -210,4 +262,5 @@ function  fetch_prod(){
 
     return $result;
 }
+
 
