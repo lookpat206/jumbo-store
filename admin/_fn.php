@@ -24,7 +24,7 @@ function fetch_user(){
     $result = mysqli_stmt_get_result($stmt);
 
     // ปิดคำสั่ง
-    mysqli_stmt_close($stmt);
+    //mysqli_stmt_close($stmt);
     
     //exit($sql);
 
@@ -55,8 +55,6 @@ function fetch_user_by_uid($u_id){
    // รับผลลัพธ์
     $result = mysqli_stmt_get_result($stmt);
     
-    // ปิดคำสั่ง
-    mysqli_stmt_close($stmt);
     
     return $result;
 }
@@ -160,12 +158,20 @@ function fetch_cust(){
                 cust";
     //exit($sql);
 
-    $result = mysqli_query($conn,$sql);
-    //exit($result);
-    
+     // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
 
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
     return $result;
 }
+
+
+
 
 //+++++++++++++++++++++++++++++++++++++++++++++++
 //บันทึกข้อมูล cust จากการเพิ่มข้อมูล
@@ -174,17 +180,21 @@ function cust_add_save($c_name,$c_add,$c_tel,$c_abb){
     global $conn;
 
     $sql = "INSERT INTO cust(c_name, c_add, c_tel, c_abb)
-                    VALUES ('$c_name','$c_add','$c_tel','$c_abb')";
+                    VALUES (?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "ssss", $c_name, $c_add, $c_tel, $c_abb);
 
-    if(mysqli_query($conn,$sql)){
+    //เงื่อนไขการทำงาน
+
+    if(mysqli_stmt_execute($stmt)) {
         header("Location:cust.php");
     }else{
-      echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ : " . $sql . "<br>" . mysqli_error($conn);
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
    }
 
 }
-
-
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //ลบข้อมูลลูกค้า
 function cust_delete($c_id){
@@ -193,12 +203,15 @@ function cust_delete($c_id){
     $sql ="DELETE FROM
                     cust
                 WHERE
-                    c_id = $c_id";
+                    c_id = (?)";
+    $stmt = mysqli_prepare($conn, $sql);
 
-    if(mysqli_query($conn,$sql)){
+    mysqli_stmt_bind_param($stmt, "i", $c_id);
+
+    if(mysqli_stmt_execute($stmt)) {
         header("Location:cust.php");
     }else{
-      echo "ลบข้อมูลผู้ใช้ไม่สำเร็จ : " . $sql . "<br>" . mysqli_error($conn);
+      echo "ลบข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
    }                
 }
 
@@ -212,10 +225,20 @@ function fetch_cust_by_cid($c_id){
             FROM 
                 cust 
             WHERE 
-                c_id = $c_id";
-    //exit($sql);
+                c_id = (?)";
 
-    $result = mysqli_query($conn,$sql);
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $c_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+    
     return $result;
 }
 
@@ -227,18 +250,21 @@ function cust_edit($c_id,$c_name,$c_add,$c_tel,$c_abb)
 
    $sql = "UPDATE cust 
                SET 
-                c_name = '$c_name',
-                c_add = '$c_add',
-                c_tel = '$c_tel',
-                c_abb = '$c_abb'
+                c_name = ?,
+                c_add = ?,
+                c_tel = ?,
+                c_abb = ?'
                 where 
-                c_id = $c_id";
+                c_id = ?";
+$stmt = mysqli_prepare($conn, $sql);
+
+mysqli_stmt_bind_param($stmt, "ssssi", $c_name,$c_add,$c_tel,$c_abb,$c_id);
    
-   if(mysqli_query($conn,$sql)){
+   if(mysqli_stmt_execute($stmt)){
       //echo "บันทึกการแก้ไขเรียบร้อย";
       header("Location:cust.php");
    }else {
-      echo "Error : " . mysqli_error($conn) . "<br>" . $sql ;
+      echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql ;
    }
 
 }
@@ -253,14 +279,38 @@ function  fetch_prod(){
 
     $sql=" SELECT * 
             FROM product";
+    $stmt = mysqli_prepare($conn, $sql);
 
-            //exit($sql);
+    
+    mysqli_stmt_execute($stmt);
 
-    $result = mysqli_query($conn,$sql);
-    //exit($result);
+//รับค่าตัวแปร
+    $result = mysqli_stmt_get_result($stmt);
     
 
     return $result;
+}
+
+//***************************************** */
+//บันทึกข้อมูล product 
+function prod_add_save($prod_n,$prod_q,$prod_f,$prod_i){
+    global $conn;
+
+    $sql = "INSERT INTO product(prod_n,prod_q,prod_f,prod_i)
+                    VALUES (?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "ssss", $prod_n,$prod_q,$prod_f,$prod_i);
+
+    //เงื่อนไขการทำงาน
+
+    if(mysqli_stmt_execute($stmt)) {
+        header("Location:prod.php");
+    }else{
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+   }
+
 }
 
 

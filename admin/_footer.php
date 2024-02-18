@@ -47,14 +47,35 @@
 <script src="plugins/select2/js/select2.full.min.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
+<!-- bs-custom-file-input -->
+<script src="plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+
+<!-- <script>
+    document.getElementById('inputImage').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const fileSize = file.size; // ขนาดของไฟล์
+        const fileType = file.type; // ประเภทของไฟล์
+
+        // เช็คประเภทของไฟล์ (ในที่นี้ใช้ regex)
+        if (/^image\/(jpeg|png)$/.test(fileType)) {
+            alert('Please select an image file.');
+            event.target.value = ''; // ล้างค่าใน input file
+            return;
+        }
+</script> -->
 
 <!-- Page specific script -->
 <script>
+  $(function () {
+  bsCustomFileInput.init();
+});
   $(function () {
     $("#example1").DataTable({
       //"lengthChange": true กำหนดจำนวนหน้า,
       //"autoWidth": false ความกว้างของคอลัม
       "responsive": true, "lengthChange": true , "autoWidth": false,
+      "aaSorting":[[0,"desc"]],
       // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({

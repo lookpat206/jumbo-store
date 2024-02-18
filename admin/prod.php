@@ -60,7 +60,7 @@ include('_fn.php');
                                     $i++;
                                     echo "<tr>";
                                     echo "<td>" . $i . "</td>";
-                                    echo "<td>" . $row['prod_name'] . "</td>";
+                                    echo "<td>" . $row['prod_n'] . "</td>";
                                     
                                     echo "<td>";
                                     echo '<a  class="btn btn-default btn-sm" style="color: green" href="price_add.php?prod_id='.$row['prod_id'].'">';
