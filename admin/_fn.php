@@ -388,7 +388,7 @@ function fetch_unit(){
 }
 // *******************************************************************
 // ดึงข้อมูลจาก TB-p_type
-function fetch_typr(){
+function fetch_type(){
     global $conn;
     
    $sql = "SELECT * 

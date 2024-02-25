@@ -4,6 +4,10 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
+//ดึงข้อมูลประเภทจาก TB-p_type
+$result = fetch_type();
+
+
 ?>
 
 <div class="content">
@@ -45,9 +49,10 @@ include('_fn.php');
                          <div class="form-group">
                           <label for="type">ประเภทสินค้า:</label>
                           <select class="form-control select2" style="width: 100%;" >
-                            <option selected="selected" value="">ผัก</option>
-                              <option>ผลไม้</option>
-                              <option></option>
+                            <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                              <?php foreach($result as $row){ ?>
+                              <option value="<?=$row['pt_id']?>" > <?= $row['pt_name']?> </option>
+                              <?php } ?>
 
                           </select>
 
