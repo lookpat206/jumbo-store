@@ -43,7 +43,9 @@ include('_fn.php');
                             <thead>
                                 <tr>
                                     <th style="width: 10%;">ลำดับ</th>
-                                    <th style="width: 60%;">ชื่อสินค้า</th>
+                                    <th style="width: 50%;">ชื่อสินค้า</th>
+                                    <th style="width: 10%;">จำนวน</th>
+                                    
                                     <th style="width: 10%">เพิ่มราคา</th>
                                     <th style="width: 10%;">แก้ไข</th>
                                     <th style="width: 10%;">ลบ</th>
@@ -61,7 +63,7 @@ include('_fn.php');
                                     echo "<tr>";
                                     echo "<td>" . $i . "</td>";
                                     echo "<td>" . $row['prod_n'] . "</td>";
-                                    
+                                    echo "<td>" . $row['prod_q'] . "</td>";
                                     echo "<td>";
                                     echo '<a  class="btn btn-default btn-sm" style="color: green" href="price_add.php?prod_id='.$row['prod_id'].'">';
                                     echo '<i class="far fa-plus-square" ></i>';

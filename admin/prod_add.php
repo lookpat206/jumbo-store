@@ -41,10 +41,22 @@ include('_fn.php');
                             <label for="name">ชื่อสินค้า:</label>
                             <input type="text" name="prod_n" class="form-control"  id="pd" placeholder="ชื่อสินค้า">
                           </div>
+                        <!-- ประเภทสินค้า -->
+                         <div class="form-group">
+                          <label for="type">ประเภทสินค้า:</label>
+                          <select class="form-control select2" style="width: 100%;" >
+                            <option selected="selected" value="">ผัก</option>
+                              <option>ผลไม้</option>
+                              <option></option>
+
+                          </select>
+
+                        </div>
+
                           <!-- จำนวนสินค้า -->
                           <div class="form-group">
                               <label for="prod-quantity">จำนวนสินค้า</label>
-                              <input type="number" name="prod_q" class="form-control" value="0" step="0.01" min="0" max="100" placeholder="ปริมาณสินค้าคงเหลือ">
+                              <input type="number" name="prod_q" class="form-control" value="0" step="0.01" min="0" max="999" placeholder="ปริมาณสินค้าคงเหลือ">
                           </div>
                           
                           <!-- รายละเอียดสินค้า -->

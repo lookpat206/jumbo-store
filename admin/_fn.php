@@ -313,4 +313,97 @@ function prod_add_save($prod_n,$prod_q,$prod_f,$prod_i){
 
 }
 
+//************************************************** */
+//บันทึกข้อมูล ราคาสินค้า
+
+function price_add_save($prod_id, $pu_id, $price, $c_id){
+    global $conn;
+
+    $sql = "INSERT INTO pri_detail(prod_id, pu_id, price, c_id) VALUES (?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "iiii", $prod_id, $pu_id, $price, $c_id);
+
+    // ดำเนินการคำสั่ง SQL
+    if(mysqli_stmt_execute($stmt)) {
+        header("Location:prod.php");
+        exit();
+    } else {
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+
+// *******************************************************************
+// ดึงข้อมูล id จาก TB-product
+function fetch_product_by_prodid($prod_id){
+    global $conn;
+    
+   $sql = "SELECT * 
+            FROM product 
+            WHERE prod_id = ?";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $prod_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+   // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
+    
+    return $result;
+}
+
+// *******************************************************************
+// ดึงข้อมูลจาก TB-unit
+function fetch_unit(){
+    global $conn;
+    
+   $sql = "SELECT * 
+            FROM p_unit";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+   // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
+    
+    return $result;
+}
+// *******************************************************************
+// ดึงข้อมูลจาก TB-p_type
+function fetch_typr(){
+    global $conn;
+    
+   $sql = "SELECT * 
+            FROM p_type";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+   // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
+    
+    return $result;
+}
 
