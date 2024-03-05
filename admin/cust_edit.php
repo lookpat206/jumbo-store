@@ -4,8 +4,10 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
+// GET c_id by cust.php
  $c_id=$_GET['c_id'];
 
+ // เรียกใช้ function 
     $result = fetch_cust_by_cid($c_id);
     $row = mysqli_fetch_assoc($result);
     $c_name = $row['c_name'];

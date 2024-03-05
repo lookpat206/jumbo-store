@@ -4,10 +4,8 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
-//ดึงข้อมูลประเภทจาก TB-p_type
-$result = fetch_type();
-
-
+$result1 = fetch_type() ;
+$result2 = fetch_mark();
 ?>
 
 <div class="content">
@@ -35,58 +33,62 @@ $result = fetch_type();
                 <div class="col-6 mx-auto">
                     <div class="card card-primary">
                       <div class="card-header">
-                        <h3 class="card-title">เพิ่มข้อมูลสินค้า</h3>
+                        <h3 class="card-title">เพิ่มข้อมูลร้านค้า</h3>
                       </div>
-                      <form action="prod_add_save.php" method="post" enctype="multipart/form-data">
+                      <form action="supp_add_save.php" method="post">
                       <div class="card-body">
-                        
-                        <!-- product name -->
+                        <!--name cust -->
                           <div class="form-group">
-                            <label for="name">ชื่อสินค้า:</label>
-                            <input type="text" name="prod_n" class="form-control"  id="pd" placeholder="ชื่อสินค้า">
+                            <label for="name">ชื่อร้นค้า:</label>
+                            <input type="text" name="sp_name" class="form-control"  id="name" placeholder="ชื่อร้านค้า">
                           </div>
-                        <!-- ประเภทสินค้า -->
+                      
+                          <!-- ประเภทสินค้า -->
                          <div class="form-group">
                           <label for="type">ประเภทสินค้า:</label>
-                          <select class="form-control select2" style="width: 100%;" >
+                          <select class="form-control select2" name="pt_id" style="width: 100%;" >
                             <option selected="selected" value="">-- เลือกข้อมูล --</option>
-                              <?php foreach($result as $row){ ?>
+                              <?php foreach($result1 as $row){ ?>
                               <option value="<?=$row['pt_id']?>" > <?= $row['pt_name']?> </option>
                               <?php } ?>
 
                           </select>
 
                         </div>
+                        
+                        <!-- ที่อยู่ร้านค้า -->
+                         <div class="form-group">
+                          <label for="type">สถานที่ซื้อสินค้า:</label>
+                          <select class="form-control select2" name="mk_id" style="width: 100%;" >
+                            <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                              <?php foreach($result2 as $row){ ?>
+                              <option value="<?=$row['mk_id']?>" > <?= $row['mk_name']?> </option>
+                              <?php } ?>
 
-                          <!-- จำนวนสินค้า -->
+                          </select>
+
+                        </div><!-- /.form group -->
+
+                        <!-- phone mask -->
                           <div class="form-group">
-                              <label for="prod-quantity">จำนวนสินค้า</label>
-                              <input type="number" name="prod_q" class="form-control" value="0" step="0.01" min="0" max="999" placeholder="ปริมาณสินค้าคงเหลือ">
-                          </div>
-                          
-                          <!-- รายละเอียดสินค้า -->
-                          <div class="form-group">
-                            <label for="prod-fuature">รายละเอียดสินค้า</label>
-                            <textarea class="form-control" name="prod_f" id="prod-fuature" rows="3" placeholder="รายละเอียดสินค้า" ></textarea>
-                          </div>
-                          <!-- รูปสินค้า -->
-                          <div class="form-group">
-                            <label >ภาพสินค้า</label>
+                            <label>เบอร์โทรศัพท์:</label>
+
                             <div class="input-group">
-                              <div class="custom-file">
-                                <input type="file" class="custom-file-input" name="prod_i" required accept="image/*" >
-                                <label class="custom-file-label">เลือกไฟล์ภาพ</label>
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
                               </div>
-                              
-                            </div>
-                          </div
+                                <input type="text" name="sp_tel" class="form-control" data-inputmask="'mask': '999-999-9999'" data-mask=" " type="text">
+                            </div><!-- /.input group -->
+                            
+                            </div><!-- /.form group -->
+                            
                         
                       </div> <!-- /.card-body -->
 
                       <!-- บันทึก -->
                       <div class="card-footer">
                         <button type="submit" class="btn btn-danger">บันทึก</button>
-                        <a href="prod.php" class="btn btn-secondary">กลับ</a>
+                        <a href="supplier.php" class="btn btn-secondary">กลับ</a>
                       </div>
                     </form>
                   </div>
@@ -102,6 +104,7 @@ $result = fetch_type();
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+
 
 
 
