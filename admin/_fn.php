@@ -253,12 +253,13 @@ function cust_edit($c_id,$c_name,$c_add,$c_tel,$c_abb)
                 c_name = ?,
                 c_add = ?,
                 c_tel = ?,
-                c_abb = ?'
+                c_abb = ?
                 where 
                 c_id = ?";
+
 $stmt = mysqli_prepare($conn, $sql);
 
-mysqli_stmt_bind_param($stmt, "ssssi", $c_name,$c_add,$c_tel,$c_abb,$c_id);
+mysqli_stmt_bind_param($stmt, "ssssi",$c_name,$c_add,$c_tel,$c_abb,$c_id);
    
    if(mysqli_stmt_execute($stmt)){
       //echo "บันทึกการแก้ไขเรียบร้อย";

@@ -9,6 +9,7 @@ $result2 = fetch_mark();
 
 //รับ id-supplied by supplier.php
 $sp_id = $_GET['sp_id'];
+
 //ส่ง ค่าid-supplied  ไปดึงข้อมูล supplier
 $result3 = fetch_supp_by_spid($sp_id);
 $row = mysqli_fetch_assoc($result1);
@@ -45,12 +46,12 @@ $sp_tel = $row['sp_tel'];
                         <h3 class="card-title">แก้ไขข้อมูลร้านค้า</h3>
                       </div>
                       <form action="supp_add_save.php" method="post">
-                         <input type="hidden" name="sp_id" value="<?=$sp_id?>">
+                         <input type="text" name="sp_id" value="<?=$sp_id?>">
                       <div class="card-body">
                         <!--name cust -->
                           <div class="form-group">
-                            <label for="name">ชื่อร้นค้า:</label>
-                            <input type="text" name="sp_name" class="form-control"  id="name" placeholder="ชื่อร้านค้า">
+                            <label for="name">ชื่อร้านค้า:</label>
+                            <input value="<?=$sp_name?>" type="text" name="sp_name" class="form-control"  id="name" placeholder="ชื่อร้านค้า">
                           </div>
                       
                           <!-- ประเภทสินค้า -->
@@ -87,7 +88,7 @@ $sp_tel = $row['sp_tel'];
                               <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="fas fa-phone"></i></span>
                               </div>
-                                <input type="text" name="sp_tel" class="form-control" data-inputmask="'mask': '999-999-9999'" data-mask=" " type="text">
+                                <input value="<?=$sp_tel?>" type="text" name="sp_tel" class="form-control" data-inputmask="'mask': '999-999-9999'" data-mask=" " type="text">
                             </div><!-- /.input group -->
                             
                             </div><!-- /.form group -->

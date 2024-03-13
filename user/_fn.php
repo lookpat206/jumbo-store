@@ -511,3 +511,26 @@ function fetch_supp_by_spid($sp_id){
 
 
 }
+
+// 333333333333333333333333333333333333333333333333333333333333333
+//TB-orders
+//บันทึกข้อมูล orders 
+function order_add_save($c_id,$od_day,$dv_day,$od_note){
+    global $conn;
+
+    $sql = "INSERT INTO orders(c_id,od_day,dv_day,od_note)
+                    VALUES (?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "isss", $c_id,$od_day,$dv_day,$od_note);
+
+    //เงื่อนไขการทำงาน
+
+    if(mysqli_stmt_execute($stmt)) {
+        header("Location:orders_detail.php");
+    }else{
+        echo "สร้างใบสั่งซื่อไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+   }
+
+}

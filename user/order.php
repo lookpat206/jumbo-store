@@ -1,4 +1,135 @@
- <footer class="main-footer">
+<?php 
+
+include("_fn.php");
+//ดึงข้อมูลลูกค้า จาก TB-cust
+$result2 = fetch_cust() ;
+?>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ใบสั่งซื้อสินค้า</title>
+
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- daterange picker -->
+  <link rel="stylesheet" href="plugins/daterangepicker/daterangepicker.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper Content">
+  <div class="Content">
+    <div class="content-header">
+
+    </div>
+  </div>
+
+
+ 
+
+  <!-- Content Wrapper. Contains page content 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) 
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Advanced Form</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Advanced Form</li>
+            </ol>
+          </div>
+        </div>
+      </div> 
+    </section>/.container-fluid -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+       <div class="row">
+          <div class="col-md-6 mx-auto">
+
+            <div class="card card-danger">
+              <div class="card-header">
+                <h3 class="card-title">สร้างใบสั่งซื้อ</h3>
+              </div>
+              <form action="orders_save.php" method="post">
+              <div class="card-body">
+
+              <!-- customer -->
+                <div class="form-group">
+                    <label for="cust">Customer:</label>
+                      <select class="form-control select2" name="c_id" style="width: 100%;">
+                        <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                          <?php foreach($result2 as $row){ ?>
+                            <option value="<?=$row['c_id']?>" > <?= $row['c_name']?> </option>
+                          <?php } ?>
+
+                      </select>
+                         
+                </div>
+                        
+                <!-- Date dd/mm/yyyy -->
+                <div class="form-group">
+                  <label>Order days:</label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                    <input type="text" name="od_day" class="form-control" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                  </div>
+                  <!-- /.input group -->
+                </div>
+                <!-- /.form group -->
+
+                <!-- Date -->
+                <div class="form-group">
+                  <label>Delivery days:</label>
+                  <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                    <input type="text" name="dv_day" class="form-control datetimepicker-input" data-target="#reservationdate" />
+                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                  </div>
+                </div>
+               <div class="form-group">
+                  <label for="name">Depatment:</label>
+                      <input type="text" name="od_note" class="form-control"  id="name" placeholder="แผนก/ครัว">
+                </div>
+               
+                <div>
+                  <button type="submit" class="btn btn-danger">save</button>
+                  <a href="index.php" class="btn btn-secondary">กลับ</a>
+                </div>
+
+              </div>
+              <!-- /.card-body -->
+              </form>
+              <!--/.form -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col (left) -->
+      </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
     <div class="float-right d-none d-sm-block">
       <b>Version</b> 3.2.0
     </div>
@@ -15,27 +146,19 @@
 
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
 <!-- Select2 -->
 <script src="plugins/select2/js/select2.full.min.js"></script>
-
 <!-- InputMask -->
 <script src="plugins/moment/moment.min.js"></script>
 <script src="plugins/inputmask/jquery.inputmask.min.js"></script>
-<!-- date-range-picker -->
-<script src="plugins/daterangepicker/daterangepicker.js"></script>
-<!-- bootstrap color picker -->
-<script src="plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 <!-- Bootstrap Switch -->
 <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-
-<!-- dropzonejs -->
-<script src="plugins/dropzone/min/dropzone.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
+
 <!-- Page specific script -->
 <script>
   $(function () {
@@ -170,8 +293,6 @@
     myDropzone.removeAllFiles(true)
   }
   // DropzoneJS Demo Code End
-
- 
 </script>
 </body>
 </html>

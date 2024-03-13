@@ -1,45 +1,91 @@
 <?php 
-session_start();
-
-// if($_SESSION['u_status'] <> "Admin"){
-//     header("Location:../login/logout.php");
-// }
-
-if(isset($_SESSION['u_name'])){
-    $u_name = $_SESSION['u_name'];
-}else {
-    $u_name = "";
-}
-
-echo "<h1>Administrator</h1>";
-//echo "Hello! " . $u_name;
-
-
+include('_header.php');
+include('_navbar.php');
+include('_sidebar_menu.php');
+include('_fn.php');
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <link rel="stylesheet" href="../_asset/css/style.css">
-
-</head>
-<body>
-    <div class="admin-page">
-        <div class="form">
-            <a href="#" class="button">จัดการข้อมูล</a> <br>
-            <a href="../a1/order/index.php" class="button">ใบส่งสินค้า</a> <br>
-            <a href="#" class="button">แยกแหล่งซื้อสินค้า</a> <br>
-            <a href="#" class="button">สินค้าคงเหลือ</a> <br>
-            <a href="#" class="button">รายงานการซื้อ</a>
-
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1></h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="../admin/index.php">Home</a></li>
+              
+            </ol>
+          </div>
         </div>
+      </div><!-- /.container-fluid -->
+    </section>
+        <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) จำนวนลูกค้า -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <!-- จำนวนลูกค้า -->
+            <div class="small-box bg-orange">
+              <div class="inner">
+                <h3>รอข้อมูล</h3>
+
+                <p>จำนวนลูกค้า</p>
+              </div>
+              <!-- <div class="icon">
+                <i class="ion-android-person"></i>
+              </div> -->
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+        <!-- ./col -->
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+          <div class="col-lg-3 col-6">
+            <!-- small box จำนวนรายการสั่งซื้อ-->
+            <div class="small-box bg-green">
+              <div class="inner">
+                <h3>รอข้อมูล<!--<sup style="font-size: 20px">%</sup> --></h3>
+
+                <p>รายการสั่งซื้อ</p>
+              </div>
+              <!-- <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div> -->
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->          
+          <div class="col-lg-3 col-6">
+            <!-- small box จำนวน -->
+            <div class="small-box bg-teal">
+              <div class="inner">
+                <h3>รอข้อมูล</h3>
+
+                <p>ผู้ใช้งานระบบ</p>
+              </div>
+              <!-- <div class="icon">
+                <i class="ion ion-person-add"></i>
+              </div>  -->
+              <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->          
+           
+        </div>
+        <!-- /.row -->
+        
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
 </div>
-</body>
-</html>
-<br><br>
-<a href="../login/logout.php">Logout</a>
+
+    <?php 
+include('_footer.php');
+?>

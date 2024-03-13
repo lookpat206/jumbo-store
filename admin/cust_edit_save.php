@@ -1,6 +1,7 @@
 <?php 
 
 include('_fn.php');
+
 $c_id = $_POST['c_id'];
 $c_name = $_POST['c_name'];
 $c_add = $_POST['c_add'];
