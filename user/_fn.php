@@ -515,15 +515,15 @@ function fetch_supp_by_spid($sp_id){
 // 333333333333333333333333333333333333333333333333333333333333333
 //TB-orders
 //บันทึกข้อมูล orders 
-function order_add_save($c_id,$od_day,$dv_day,$od_note){
+function order_add_save($c_id,$od_day,$dv_day,$dv_time, $od_note){
     global $conn;
 
-    $sql = "INSERT INTO orders(c_id,od_day,dv_day,od_note)
-                    VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO orders(c_id,od_day,dv_day, dv_time, od_note)
+                    VALUES (?, ?, ?, ? ,?)";
     $stmt = mysqli_prepare($conn, $sql);
     
     //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "isss", $c_id,$od_day,$dv_day,$od_note);
+    mysqli_stmt_bind_param($stmt, "issss", $c_id,$od_day,$dv_day, $dv_time, $od_note);
 
     //เงื่อนไขการทำงาน
 

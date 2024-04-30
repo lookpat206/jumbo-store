@@ -63,7 +63,7 @@ $result2 = fetch_cust() ;
 
             <div class="card card-danger">
               <div class="card-header">
-                <h3 class="card-title">สร้างใบสั่งซื้อ</h3>
+                <h3 class="card-title">Purchase order</h3>
               </div>
               <form action="orders_save.php" method="post">
               <div class="card-body">
@@ -72,7 +72,7 @@ $result2 = fetch_cust() ;
                 <div class="form-group">
                     <label for="cust">Customer:</label>
                       <select class="form-control select2" name="c_id" style="width: 100%;">
-                        <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                        <option selected="selected" value="">-- เลือกชื่อลูกค้า --</option>
                           <?php foreach($result2 as $row){ ?>
                             <option value="<?=$row['c_id']?>" > <?= $row['c_name']?> </option>
                           <?php } ?>
@@ -81,7 +81,7 @@ $result2 = fetch_cust() ;
                          
                 </div>
                         
-                <!-- Date dd/mm/yyyy -->
+                <!-- Order days: Date dd/mm/yyyy -->
                 <div class="form-group">
                   <label>Order days:</label>
 
@@ -95,7 +95,38 @@ $result2 = fetch_cust() ;
                 </div>
                 <!-- /.form group -->
 
-                <!-- Date -->
+                <!-- Delivery days:Date dd/mm/yyyy -->
+                <div class="form-group">
+                  <label>Delivery days:</label>
+
+                  <div class="input-group date" >
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                    <input type="text" name="dv_day" class="form-control" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                  </div>
+                  <!-- /.input group -->
+                </div>
+                <!-- /.form group -->
+
+
+                <!-- Delivery time -->
+                <div class="bootstrap-timepicker">
+                  <div class="form-group">
+                    <label>Delivery time:</label>
+
+                    <div class="input-group date" id="timepicker" data-target-input="nearest">
+                      <input type="text" name="dv_time" class="form-control datetimepicker-input" data-target="#timepicker"/>
+                      <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="far fa-clock"></i></div>
+                      </div>
+                      </div>
+                    <!-- /.input group -->
+                  </div>
+                  <!-- /.form group -->
+                </div>
+                
+                <!-- Date
                 <div class="form-group">
                   <label>Delivery days:</label>
                   <div class="input-group date" id="reservationdate" data-target-input="nearest">
@@ -104,16 +135,34 @@ $result2 = fetch_cust() ;
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
                   </div>
-                </div>
+                </div> -->
                <div class="form-group">
                   <label for="name">Depatment:</label>
                       <input type="text" name="od_note" class="form-control"  id="name" placeholder="แผนก/ครัว">
                 </div>
                
+
                 <div>
+    <?php
+        if ($c_id == null || $od_day == null || $dv_day == null || $dv_time == null){
+            echo '<button type="submit" class="btn btn-danger" onclick="return confirm(\'ข้อมูลไม่ครบ คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ?\')">บันทึก</button>';
+        } else {
+    ?>
+           
+                
+                <button type="submit" class="btn btn-danger">บันทึก</button>
+            
+    <?php
+        }
+    ?>
+    <a href="index.php" class="btn btn-secondary">ย้อนกลับ</a>
+</div>
+
+                <!-- <div>
+                  
                   <button type="submit" class="btn btn-danger">save</button>
-                  <a href="index.php" class="btn btn-secondary">กลับ</a>
-                </div>
+                  <a href="index.php" class="btn btn-secondary">back</a>
+                </div> -->
 
               </div>
               <!-- /.card-body -->
@@ -146,7 +195,8 @@ $result2 = fetch_cust() ;
 
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
-
+<!-- date-range-picker -->
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
 <!-- Select2 -->
 <script src="plugins/select2/js/select2.full.min.js"></script>
 <!-- InputMask -->

@@ -23,23 +23,152 @@ echo "<h1>Administrator</h1>";
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ตารางคอรัม</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-    <link rel="stylesheet" href="../_asset/css/style.css">
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
 
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-    <div class="admin-page">
-        <div class="form">
-            <a href="#" class="button">จัดการข้อมูล</a> <br>
-            <a href="../a1/order/index.php" class="button">ใบส่งสินค้า</a> <br>
-            <a href="#" class="button">แยกแหล่งซื้อสินค้า</a> <br>
-            <a href="#" class="button">สินค้าคงเหลือ</a> <br>
-            <a href="#" class="button">รายงานการซื้อ</a>
 
-        </div>
-</div>
+<h2>ตารางคอรัม</h2>
+
+<form id="form1">
+  <label for="quantity">จำนวนคอรัม:</label>
+  <input type="number" id="quantity" name="quantity" min="1" max="10">
+  <input type="button" value="สร้างตาราง" onclick="createTable()">
+</form>
+
+<table id="myTable">
+    <thead>
+        <tr>
+            <th>ลำดับ</th>
+            <th>สินค้า</th>
+            <th>จำนวน</th>
+            <th>หน่วยนับ</th>
+            <th>ราคาหน่วยละ</th>
+            <th>จำนวนเงิน</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- ข้อมูลจะถูกเพิ่มที่นี่โดยใช้ JavaScript -->
+    </tbody>
+</table>
+
+<script>
+
+     var products = ["สินค้าที่ 1", "สินค้าที่ 2", "สินค้าที่ 3", "สินค้าที่ 4"];
+     var unit = ["กิโลกรัม","ขีด","ชิ้น","ก้อน"];
+   
+    function createTable() {
+        var quantity = document.getElementById("quantity").value;
+        var tableBody = document.querySelector("#myTable tbody");
+
+        // เคลียร์ข้อมูลเก่าในตาราง
+        tableBody.innerHTML = "";
+
+       // สร้างแถวใหม่ในตารางตามจำนวนคอรัมที่ระบุ
+for (var i = 1; i <= quantity; i++) {
+    var row = tableBody.insertRow();
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    var cell6 = row.insertCell(5);
+    cell1.textContent = i;
+    
+    // เพิ่มเลือกข้อมูลสินค้าในคอรัมแต่ละตัว
+    var select = document.createElement("select");
+    select.name = "product" + i; // กำหนดชื่อของ select
+    // เพิ่มตัวเลือกสำหรับแต่ละสินค้า
+    products.forEach(function(product) {
+        var option = document.createElement("option");
+        option.value = product;
+        option.textContent = product;
+        select.appendChild(option);
+    });
+    cell2.appendChild(select); // เพิ่ม select ลงใน cell
+
+    // เพิ่มเซลล์ของจำนวนสินค้า
+    var inputQuantity = document.createElement("input");
+    inputQuantity.type = "number";
+    inputQuantity.name = "quantity" + i;
+    inputQuantity.classList.add("form-control");
+    inputQuantity.addEventListener("input", calculateTotal); // เพิ่ม event listener
+    cell3.appendChild(inputQuantity);
+
+    // เพิ่มเซลล์ของหน่วยนับ
+    var select2 = document.createElement("select");
+    select2.name = "unit" + i; // กำหนดชื่อของ select
+    // เพิ่มตัวเลือกสำหรับแต่ละหน่วยนับ
+    unit.forEach(function(unit) {
+        var option = document.createElement("option");
+        option.value = unit;
+        option.textContent = unit;
+        select2.appendChild(option);
+    });
+    cell4.appendChild(select2); // เพิ่ม select ลงใน cell
+
+    // เพิ่มเซลล์ของราคาหน่วยละ
+    var inputPrice = document.createElement("input");
+    inputPrice.type = "number";
+    inputPrice.name = "price" + i;
+    inputPrice.classList.add("form-control");
+    inputPrice.addEventListener("input", calculateTotal); // เพิ่ม event listener
+    cell5.appendChild(inputPrice);
+
+    // เพิ่มเซลล์ของจำนวนเงิน (คำนวณจาก ราคา x จำนวน)
+    var inputTotal = document.createElement("input");
+    inputTotal.type = "text";
+    inputTotal.name = "total" + i;
+    inputTotal.classList.add("form-control");
+    cell6.appendChild(inputTotal);
+}
+    }
+
+function calculateTotal() {
+    var row = this.parentNode.parentNode; // หาแถวที่เป็นพารามิเตอร์ของ input ที่ถูกเปลี่ยนแปลง
+    var quantity = parseFloat(row.querySelector('input[name^="quantity"]').value);
+    var price = parseFloat(row.querySelector('input[name^="price"]').value);
+    var total = isNaN(quantity) || isNaN(price) ? 0 : quantity * price;
+    row.querySelector('input[name^="total"]').value = total.toFixed(2); // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
+}
+
+    
+
+
+
+    function saveData() {
+        var quantity = document.getElementById("quantity").value;
+        var data = {};
+
+        // เก็บข้อมูลที่ผู้ใช้เลือกในแต่ละคอรัม
+        for (var i = 1; i <= quantity; i++) {
+            var select = document.querySelector('select[name="product' + i + '"]');
+            var selectedProduct = select.options[select.selectedIndex].value;
+            data['product' + i] = selectedProduct;
+        }
+
+        // ส่งข้อมูลไปยังเซิร์ฟเวอร์ เพื่อบันทึกลงในฐานข้อมูล หรือทำอย่างอื่นต่อไป
+        console.log(data); // นี่คือตัวอย่างการแสดงข้อมูลใน console
+    }
+   
+    
+    
+</script>
+
 </body>
 </html>
-<br><br>
-<a href="../login/logout.php">Logout</a>

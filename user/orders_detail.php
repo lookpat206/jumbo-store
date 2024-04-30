@@ -1,5 +1,5 @@
 <?php 
-echo"รายการสั่งซื้อ";
+
 
 ?>
 
@@ -16,6 +16,10 @@ echo"รายการสั่งซื้อ";
   <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
+   <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper Content">
@@ -41,96 +45,48 @@ echo"รายการสั่งซื้อ";
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <i class="fas fa-globe"></i> AdminLTE, Inc.
-                    <small class="float-right">Date: 2/10/2014</small>
+                     ใบสั่งสินค้าชั่วคราว 
                   </h4>
                 </div>
                 <!-- /.col -->
               </div>
-              <!-- info row -->
+              <!--  ชื่อร้าน -->
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
-                  From
+                  <strong>จัมโบ้อาหารสด</strong>  <br>
+                  โทร.081-5304703, 0897000922
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                  นามผู้ซื้อ
                   <address>
-                    <strong>Admin, Inc.</strong><br>
-                    795 Folsom Ave, Suite 600<br>
-                    San Francisco, CA 94107<br>
-                    Phone: (804) 123-5432<br>
-                    Email: info@almasaeedstudio.com
+                    
                   </address>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
-                  To
-                  <address>
-                    <strong>John Doe</strong><br>
-                    795 Folsom Ave, Suite 600<br>
-                    San Francisco, CA 94107<br>
-                    Phone: (555) 539-1037<br>
-                    Email: john.doe@example.com
-                  </address>
-                </div>
-                <!-- /.col -->
-                <div class="col-sm-4 invoice-col">
-                  <b>Invoice #007612</b><br>
+                  <b>เลขที่ใบสั่ง #007612</b><br>
                   <br>
-                  <b>Order ID:</b> 4F3S8J<br>
-                  <b>Payment Due:</b> 2/22/2014<br>
-                  <b>Account:</b> 968-34567
+                  <b>Order days:</b> 4F3S8J<br>
+                  <b>Delivery days:</b> 2/22/2014<br>
+                  <b>Depatment:</b> 968-34567
+                  <!-- Form รับข้อมูลจำนวนคอรัม -->
+  <form id="form1">
+    <div class="form-group">
+      <label for="quantity">จำนวนรายการสินค้า:</label>
+      <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="createTable()">สร้างใบสั่งสินค้า</button>
+  </form>
+
                 </div>
                 <!-- /.col -->
               </div>
               <!-- /.row -->
 
-              <!-- Table row -->
-              <div class="row">
-                <div class="col-12 table-responsive">
-                  <table class="table table-striped">
-                    <thead>
-                    <tr>
-                      <th>Qty</th>
-                      <th>Product</th>
-                      <th>Serial #</th>
-                      <th>Description</th>
-                      <th>Subtotal</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Call of Duty</td>
-                      <td>455-981-221</td>
-                      <td>El snort testosterone trophy driving gloves handsome</td>
-                      <td>$64.50</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Need for Speed IV</td>
-                      <td>247-925-726</td>
-                      <td>Wes Anderson umami biodiesel</td>
-                      <td>$50.00</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Monsters DVD</td>
-                      <td>735-845-642</td>
-                      <td>Terry Richardson helvetica tousled street art master</td>
-                      <td>$10.70</td>
-                    </tr>
-                    <tr>
-                      <td>1</td>
-                      <td>Grown Ups Blue Ray</td>
-                      <td>422-568-642</td>
-                      <td>Tousled lomo letterpress</td>
-                      <td>$25.99</td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
-
+              <!-- ตารางใบสั่งสินค้า -->
+  <div id="invoiceTable"></div>
+</div>
              
 
               <!-- this row will not appear when printing -->
@@ -175,7 +131,33 @@ echo"รายการสั่งซื้อ";
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="dist/js/adminlte.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="dist/js/demo.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  function createTable() {
+    var quantity = parseInt(document.getElementById("quantity").value);
+    var table = '<table class="table table-striped"><thead><tr><th>ลำดับ</th><th>รายการสินค้า</th><th>จำนวน</th><th>หน่วยนับ</th><th>ราคาต่อหน่วย</th><th>จำนวนเงิน</th></tr></thead><tbody>';
+    
+    // เพิ่มแถวในตารางตามจำนวนคอรัมที่ระบุ
+    for (var i = 1; i <= quantity; i++) {
+      table += '<tr>';
+      table += '<td>' + i + '</td>';
+      table += '<td><input type="text" class="form-control" name="product[]" placeholder="รายการสินค้า"></td>';
+      table += '<td><input type="text" class="form-control" name= "num[]"></td>';
+      table += '<td><input type="text" class="form-control" name="unit[]" placeholder="หน่วยละ"></td>';
+      table += '<td><input type="text" class="form-control" name="unit_price[]"></td>';
+      table += '<td><input type="text" class="form-control" name="total[]"></td>';
+      table += '</tr>';
+    }
+    
+    table += '</tbody></table>';
+    
+    // แทรกตารางใบสั่งสินค้าลงใน div
+    document.getElementById("invoiceTable").innerHTML = table;
+  }
+</script>
+
+
 </body>
 </html>
