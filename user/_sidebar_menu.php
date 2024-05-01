@@ -27,7 +27,7 @@
                with font-awesome or any other icon font library -->
         <li class="nav-item">
              <!-- สั่งสินค้า -->
-            <a href="order.php" class="nav-link">
+            <a href="orders.php" class="nav-link">
               <i class="nav-icon fas fa-cart-plus"></i>
               <p>
                 สั่งสินค้า

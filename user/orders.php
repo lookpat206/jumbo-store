@@ -65,7 +65,7 @@ $result2 = fetch_cust() ;
               <div class="card-header">
                 <h3 class="card-title">Purchase order</h3>
               </div>
-              <form action="orders_save.php" method="post">
+              <form action="orders_save.php" method="post" onsubmit="return validateForm()" name="myForm">
               <div class="card-body">
 
               <!-- customer -->
@@ -89,9 +89,10 @@ $result2 = fetch_cust() ;
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                     </div>
-                    <input type="text" name="od_day" class="form-control" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                    <input type="text" name="od_day" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ. " data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
                   </div>
                   <!-- /.input group -->
+                  <small class="form-text text-danger" >กรุณากรอกปีเป็น พุทธศักราช (เช่น 2567)</small>
                 </div>
                 <!-- /.form group -->
 
@@ -103,9 +104,10 @@ $result2 = fetch_cust() ;
                     <div class="input-group-prepend">
                       <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                     </div>
-                    <input type="text" name="dv_day" class="form-control" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                    <input type="text" name="dv_day" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ." data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
                   </div>
                   <!-- /.input group -->
+                  <small class="form-text text-danger" >กรุณากรอกปีเป็น พุทธศักราช (เช่น 2567)</small>
                 </div>
                 <!-- /.form group -->
 
@@ -126,43 +128,17 @@ $result2 = fetch_cust() ;
                   <!-- /.form group -->
                 </div>
                 
-                <!-- Date
-                <div class="form-group">
-                  <label>Delivery days:</label>
-                  <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                    <input type="text" name="dv_day" class="form-control datetimepicker-input" data-target="#reservationdate" />
-                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
-                      <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                    </div>
-                  </div>
-                </div> -->
+              <!-- Depatment แผนก/ครัว -->
                <div class="form-group">
                   <label for="name">Depatment:</label>
                       <input type="text" name="od_note" class="form-control"  id="name" placeholder="แผนก/ครัว">
                 </div>
-               
-
-                <div>
-    <?php
-        if ($c_id == null || $od_day == null || $dv_day == null || $dv_time == null){
-            echo '<button type="submit" class="btn btn-danger" onclick="return confirm(\'ข้อมูลไม่ครบ คุณแน่ใจหรือไม่ว่าต้องการดำเนินการต่อ?\')">บันทึก</button>';
-        } else {
-    ?>
-           
-                
-                <button type="submit" class="btn btn-danger">บันทึก</button>
-            
-    <?php
-        }
-    ?>
-    <a href="index.php" class="btn btn-secondary">ย้อนกลับ</a>
-</div>
-
-                <!-- <div>
+                <!-- submit   -->
+               <div>
                   
                   <button type="submit" class="btn btn-danger">save</button>
                   <a href="index.php" class="btn btn-secondary">back</a>
-                </div> -->
+                </div>
 
               </div>
               <!-- /.card-body -->
@@ -211,6 +187,24 @@ $result2 = fetch_cust() ;
 
 <!-- Page specific script -->
 <script>
+
+  // ตรวจสอบค่า " " ของ c_id ,od_day ,dv_day ,dv_time 
+function validateForm() {
+    var c_id = document.forms["myForm"]["c_id"].value;
+    var od_day = document.forms["myForm"]["od_day"].value;
+    var dv_day = document.forms["myForm"]["dv_day"].value;
+    var dv_time = document.forms["myForm"]["dv_time"].value;
+
+    if (c_id === "" || od_day === "" || dv_day === "" || dv_time === "") {
+        alert("กรุณากรอกข้อมูลให้ครบทุกช่อง");
+        return false;
+    }
+
+    // ตรวจสอบเพิ่มเติมหากต้องการ
+    return true; // ถ้าข้อมูลครบถ้วนและถูกต้อง
+}
+
+
   $(function () {
     //Initialize Select2 Elements
     $('.select2').select2()
