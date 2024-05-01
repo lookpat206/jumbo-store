@@ -1,18 +1,20 @@
-<?php 
-session_start();
+<?php
 
-// if($_SESSION['u_status'] <> "Admin"){
-//     header("Location:../login/logout.php");
+include ("_fn.php");
+// session_start();
+
+// // if($_SESSION['u_status'] <> "Admin"){
+// //     header("Location:../login/logout.php");
+// // }
+
+// if(isset($_SESSION['u_name'])){
+//     $u_name = $_SESSION['u_name'];
+// }else {
+//     $u_name = "";
 // }
 
-if(isset($_SESSION['u_name'])){
-    $u_name = $_SESSION['u_name'];
-}else {
-    $u_name = "";
-}
-
-echo "<h1>Administrator</h1>";
-//echo "Hello! " . $u_name;
+// echo "<h1>Administrator</h1>";
+// //echo "Hello! " . $u_name;
 
 
 
@@ -69,7 +71,7 @@ echo "<h1>Administrator</h1>";
 
 <script>
 
-     var products = ["สินค้าที่ 1", "สินค้าที่ 2", "สินค้าที่ 3", "สินค้าที่ 4"];
+     var products = ["ไก่", "มาม่า", "ผักกาด", "ปลากระป๋อง"];
      var unit = ["กิโลกรัม","ขีด","ชิ้น","ก้อน"];
    
     function createTable() {
@@ -90,17 +92,21 @@ for (var i = 1; i <= quantity; i++) {
     var cell6 = row.insertCell(5);
     cell1.textContent = i;
     
-    // เพิ่มเลือกข้อมูลสินค้าในคอรัมแต่ละตัว
-    var select = document.createElement("select");
-    select.name = "product" + i; // กำหนดชื่อของ select
-    // เพิ่มตัวเลือกสำหรับแต่ละสินค้า
-    products.forEach(function(product) {
-        var option = document.createElement("option");
-        option.value = product;
-        option.textContent = product;
-        select.appendChild(option);
-    });
-    cell2.appendChild(select); // เพิ่ม select ลงใน cell
+    // สร้าง input และ datalist สำหรับสินค้า
+        var inputProduct = document.createElement("input");
+        inputProduct.setAttribute("list", "productList" + i);
+        inputProduct.name = "product" + i;
+        inputProduct.classList.add("form-control");
+        cell2.appendChild(inputProduct);
+
+        var datalist = document.createElement("datalist");
+        datalist.id = "productList" + i;
+        products.forEach(function(product) {
+            var option = document.createElement("option");
+            option.value = product;
+            datalist.appendChild(option);
+        });
+        cell2.appendChild(datalist)
 
     // เพิ่มเซลล์ของจำนวนสินค้า
     var inputQuantity = document.createElement("input");

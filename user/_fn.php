@@ -344,18 +344,18 @@ function price_add_save($prod_id, $pu_id, $price, $c_id){
 
 // *******************************************************************
 // ดึงข้อมูล id จาก TB-product
-function fetch_product_by_prodid($prod_id){
+function fetch_product_by_prodid($pd_id){
     global $conn;
     
    $sql = "SELECT * 
             FROM product 
-            WHERE prod_id = ?";
+            WHERE pd_id = ?";
 
     // เตรียมคำสั่ง SQL
     $stmt = mysqli_prepare($conn, $sql);
 
     // ผูกพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "i", $prod_id);
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
 
     // ดำเนินการคำสั่ง
     mysqli_stmt_execute($stmt);
@@ -528,9 +528,55 @@ function order_add_save($c_id,$od_day,$dv_day,$dv_time, $od_note){
     //เงื่อนไขการทำงาน
 
     if(mysqli_stmt_execute($stmt)) {
-        header("Location:orders_detail.php");
+        //รับค่า od_id 
+        $od_id = mysqli_insert_id($conn);
+        header("Location:orders_detail.php?od_id=$od_id");
     }else{
         echo "สร้างใบสั่งซื่อไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
    }
 
 }
+
+//ดึงข้อมูล orders
+function fetch_orders(){
+    global $conn; //ประกาศตัวแปร conn
+
+    //ดึงข้อมูล 
+    $sql = "SELECT * 
+            FROM orders ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+ // ผูกพารามิเตอร์
+    mysqli_stmt_execute($stmt);
+//เงื่อนไขการทำงาน
+    $result = mysqli_stmt_get_result($stmt);
+//ส่งค่ากลับ
+    return $result;
+
+}
+
+//ดึงข้อมูลรายระเอียด จาก od_id 
+
+function fetch_orders_by_id($od_id){
+    global $conn;
+
+    $sql = " SELECT  o.od_id, c.c_name ,o.od_day ,o.dv_day ,o.dv_time ,o.od_note ,c.c_add
+            FROM orders AS o
+            INNER JOIN cust AS c ON o.c_id = c.c_id
+            WHERE o.od_id = ? ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param($stmt,'i',$od_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+   // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
+    
+    return $result;
+}
+
+

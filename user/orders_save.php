@@ -10,11 +10,7 @@ $od_note = $_POST["od_note"]; //depatment
 
 //exit($c_id . $od_day . $dv_day . $od_note);
 
-if ($c_id == null || $od_day == null || $dv_day == null || $dv_time == null){
-    echo "ข้อมูลไม่ครบ";
-    //header("Location: order.php");
-} else {
-    order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note);
-}
+order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note);
+
 
 ?>

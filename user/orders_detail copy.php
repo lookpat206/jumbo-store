@@ -27,7 +27,7 @@ $c_add = $row['c_add'];
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ใบสั่งสินค้าชั่วคราว </title>
+  <title>AdminLTE 3 | Invoice</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -105,35 +105,21 @@ $c_add = $row['c_add'];
               <!-- /.row -->
 
 
-               <!-- Table row -->
-              <div class="row">
-                <div class="col-12 table-responsive">
-                  <table class="table table-striped">
-                    <thead>
-                    <tr>
-                      <th>ลำดับ</th>
-                      <th>รายการสินค้า</th>
-                      <th>จำนวน</th>
-                      <th>หน่วยนับ</th>
-                      <th>ราคาต่อหน่วย</th>
-                      <th>จำนวนเงิน</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                      <td><input type="checkbox" name="chk1"></td>
-                      <td>Grown Ups Blue Ray</td>
-                      <td>422-568-642</td>
-                      <td>Tousled lomo letterpress</td>
-                      <td>$25.99</td>
-                    </tr>
-                    </tbody>
-                  </table>
+                <div>
+<form id="form1">
+    <div class="form-group">
+      <label for="quantity">จำนวนรายการสินค้า:</label>
+      <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="10">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="createTable()">สร้างใบสั่งสินค้า</button>
+  </form>
                 </div>
-                <!-- /.col -->
-              </div>
-              <!-- /.row -->
+              
 
+              <!-- ตารางใบสั่งสินค้า -->
+  <div id="invoiceTable"></div>
+</div>
+             
 
               <!-- this row will not appear when printing -->
               <div class="row no-print">

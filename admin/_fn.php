@@ -243,7 +243,7 @@ function fetch_cust_by_cid($c_id){
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//แก้ไขข้อมูล user
+//แก้ไขข้อมูล cust
 function cust_edit($c_id,$c_name,$c_add,$c_tel,$c_abb)
 {
    global $conn;
@@ -271,7 +271,7 @@ mysqli_stmt_bind_param($stmt, "ssssi",$c_name,$c_add,$c_tel,$c_abb,$c_id);
 }
 
 
-//****TB- product *********************************************************** */
+//****TB-product *********************************************************** */
 
 
 //ดึงข้อมูลจาก table product
