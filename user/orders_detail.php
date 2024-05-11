@@ -122,10 +122,11 @@ $c_add = $row['c_add'];
                     <tbody>
                     <tr>
                       <td><input type="checkbox" name="chk1"></td>
-                      <td>Grown Ups Blue Ray</td>
-                      <td>422-568-642</td>
-                      <td>Tousled lomo letterpress</td>
-                      <td>$25.99</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
                     </tr>
                     </tbody>
                   </table>

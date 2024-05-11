@@ -270,6 +270,75 @@ mysqli_stmt_bind_param($stmt, "ssssi",$c_name,$c_add,$c_tel,$c_abb,$c_id);
 
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//tb-department  
+// บันทึกข้อมูลแผนงและครัว
+
+function depart_add_save($c_id,$dp_name)
+{
+    global $conn;
+
+    $sql = " INSERT INTO  c_depart(c_id,dp_name)
+                VALUES (?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "is", $c_id,$dp_name);
+
+    //เงื่อนไขการทำงาน
+
+    if(mysqli_stmt_execute($stmt)) {
+        header("Location:department.php?c_id=$c_id");
+    }else{
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++
+//ดึงข้อมูลdepartment
+
+function fetch_depart_by_id($c_id){
+    global $conn;
+
+    $sql = " SELECT c.c_name,cd.dp_name,cd.dp_id,cd.c_id 
+                FROM c_depart as cd 
+                INNER JOIN cust as c ON cd.c_id = c.c_id 
+                WHERE cd.c_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $c_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+   // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    
+    
+    return $result;
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++
+function depart_delete($dp_id,$c_id){
+    global $conn;
+
+    $sql ="DELETE FROM
+                    c_depart
+                WHERE
+                    dp_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "i", $dp_id);
+
+    if(mysqli_stmt_execute($stmt)) {
+            header("Location:department.php?c_id=$c_id");
+        }else{
+      echo "ลบข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+   }                
+}
 
 //****TB-product *********************************************************** */
 

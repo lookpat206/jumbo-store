@@ -243,7 +243,7 @@ function fetch_cust_by_cid($c_id){
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//แก้ไขข้อมูล user
+//แก้ไขข้อมูลลูกค้า
 function cust_edit($c_id,$c_name,$c_add,$c_tel,$c_abb)
 {
    global $conn;
@@ -268,6 +268,30 @@ mysqli_stmt_bind_param($stmt, "ssssi", $c_name,$c_add,$c_tel,$c_abb,$c_id);
    }
 
 }
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//tb-department  >> บันทึกข้อมูลแผนงและครัว
+
+function depart_add_save($c_id,$dp_name)
+{
+    global $conn;
+
+    $sql = " INSERT INTO  c_depart(c_id,dp_name)
+                VALUES (?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "is", $c_id,$dp_name);
+
+    //เงื่อนไขการทำงาน
+
+    if(mysqli_stmt_execute($stmt)) {
+        header("Location:department.php");
+    }else{
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+}
+
 
 
 //****TB- product *********************************************************** */
@@ -316,30 +340,6 @@ function prod_add_save($prod_n,$prod_q,$prod_f,$prod_i){
 //************************************************** */
 //บันทึกข้อมูล ราคาสินค้า
 
-function price_add_save($prod_id, $pu_id, $price, $c_id){
-    global $conn;
-
-    $sql = "INSERT INTO pri_detail(prod_id, pu_id, price, c_id) VALUES (?, ?, ?, ?)";
-    $stmt = mysqli_prepare($conn, $sql);
-    
-    if (!$stmt) {
-        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
-        exit();
-    }
-
-    // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "iiii", $prod_id, $pu_id, $price, $c_id);
-
-    // ดำเนินการคำสั่ง SQL
-    if(mysqli_stmt_execute($stmt)) {
-        header("Location:prod.php");
-        exit();
-    } else {
-        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
-    }
-
-    mysqli_stmt_close($stmt);
-}
 
 
 // *******************************************************************
@@ -407,28 +407,14 @@ function fetch_type(){
     return $result;
 }
 
-// *******************************************************
-// แก้ไขข้อมูล สินค้า
-// function edit_product(){
-//     global $conn;
-//     $sql = " UPDATE ";
-
-// UPDATE table1
-// JOIN table2 ON table1.column = table2.column
-// SET table1.column1 = value1, table1.column2 = value2, ...
-// WHERE condition;
-
-
-
-
-//###############################################################
+//#################### TB-mk_sup ###########################################
 // ดึงข้อมูล supplier
 
 function fetch_supp()
 {
     global $conn;
     $sql = "SELECT s.sp_id, s.sp_name, pt.pt_name, m.mk_name, s.sp_tel,pt.pt_id 
-            FROM supplier AS s 
+            FROM mk_sup AS s 
             INNER JOIN p_type as pt ON s.pt_id = pt.pt_id 
             INNER JOIN market as m ON s.mk_id = m.mk_id 
             ORDER BY pt.pt_id  DESC ";
@@ -462,7 +448,7 @@ function fetch_mark(){
 function supp_add_save($sp_name, $pt_id,$mk_id, $sp_tel){
     global $conn;
 
-    $sql = "INSERT INTO supplier(sp_name, pt_id, mk_id, sp_tel) 
+    $sql = "INSERT INTO mk_sup(sp_name, pt_id, mk_id, sp_tel) 
             VALUES (?, ?, ?, ?)";
 // แปลง $sql เป็น $stmt            
     $stmt = mysqli_prepare($conn, $sql);
@@ -492,7 +478,7 @@ function supp_add_save($sp_name, $pt_id,$mk_id, $sp_tel){
 function fetch_supp_by_spid($sp_id){
     global $conn;
     $sql = "SELECT *
-            FROM supplier
+            FROM mk_sup
             WHERE sp_id = ? ";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -518,7 +504,7 @@ function fetch_supp_by_spid($sp_id){
 function order_add_save($c_id,$od_day,$dv_day,$dv_time, $od_note){
     global $conn;
 
-    $sql = "INSERT INTO orders(c_id,od_day,dv_day, dv_time, od_note)
+    $sql = "INSERT INTO orders(c_id,od_day,dv_day, dv_time,od_note)
                     VALUES (?, ?, ?, ? ,?)";
     $stmt = mysqli_prepare($conn, $sql);
     

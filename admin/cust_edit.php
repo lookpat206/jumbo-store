@@ -44,7 +44,7 @@ include('_fn.php');
                       <div class="card-header">
                         <h3 class="card-title">แก้ไขข้อมูลลูกค้า</h3>
                       </div>
-                      <form action="cust_edit_save.php" method="POSt">
+                      <form action="cust_edit_save.php" method="POST">
                         <input type="hidden" name="c_id" value="<?=$c_id?>">
                       <div class="card-body">
                         <!--name cust -->
