@@ -14,7 +14,7 @@
           <img src="dist/img/avatar2.png" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="../admin/index.php" class="d-block">Admin</a>
+          <a href="" class="d-block">Admin</a>
         </div>
       </div>
 
@@ -25,6 +25,9 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+
+
+               <!-- จัดการข้อมูล -->
         <li class="nav-item">
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-edit"></i>
@@ -60,9 +63,9 @@
               </li>
             </ul>
           </li>
-
+            <!-- สั่งสินค้า -->
           <li class="nav-item">
-             <!-- สั่งสินค้า -->
+             
             <a href="od.php" class="nav-link">
               <i class="nav-icon fas fa-cart-plus"></i>
               <p>

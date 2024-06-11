@@ -70,7 +70,7 @@ include('_fn.php');
                             <a type="button" class="btn btn-block btn-primary" href="department.php?c_id=<?= $row['c_id'] ?>">เพิ่ม</a>
                         </td>
                         <td>
-                            <a class="btn btn-block btn-secondary" href="price_add.php?c_id=<?= $row['c_id'] ?>">แก้ไขราคา</a>
+                            <a class="btn btn-block btn-secondary" href="price.php?c_id=<?= $row['c_id'] ?>">แก้ไขราคา</a>
                         </td>
                         <td>
                             <a class="btn btn-warning btn-sm" href="cust_edit.php?c_id=<?= $row['c_id'] ?>">

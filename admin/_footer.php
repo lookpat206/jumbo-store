@@ -20,9 +20,7 @@
 <!-- jQuery UI 1.11.4 -->
 <script src="plugins/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-<script>
-  $.widget.bridge('uibutton', $.ui.button)
-</script>
+
 <!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- DataTables  & Plugins ห้ามตัดทิ้ง-->
@@ -76,7 +74,7 @@
       //"lengthChange": true กำหนดจำนวนหน้า,
       //"autoWidth": false ความกว้างของคอลัม
       "responsive": true, "lengthChange": true , "autoWidth": false,
-      "aaSorting":[[0,"desc"]],
+      //"aaSorting":[[0,"desc"]],
       // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({

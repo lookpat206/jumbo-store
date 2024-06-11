@@ -384,12 +384,12 @@ function prod_add_save($prod_n,$prod_q,$prod_f,$prod_i){
 }
 
 //************************************************** */
-//บันทึกข้อมูล ราคาสินค้า
+//บันทึกข้อมูล ราคาสินค้า price
 
-function price_add_save($prod_id, $pu_id, $price, $c_id){
+function price_save($c_id, $pd_id, $pu_id, $pri_sell){
     global $conn;
 
-    $sql = "INSERT INTO pri_detail(prod_id, pu_id, price, c_id) VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO pri_detail(c_id, pd_id, pu_id, pri_sell) VALUES (?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
     
     if (!$stmt) {
@@ -398,11 +398,11 @@ function price_add_save($prod_id, $pu_id, $price, $c_id){
     }
 
     // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "iiii", $prod_id, $pu_id, $price, $c_id);
+    mysqli_stmt_bind_param($stmt, "iiid", $c_id, $pd_id, $pu_id, $pri_sell);
 
     // ดำเนินการคำสั่ง SQL
     if(mysqli_stmt_execute($stmt)) {
-        header("Location:prod.php");
+        header("Location:price_save.php");
         exit();
     } else {
         echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
@@ -411,6 +411,33 @@ function price_add_save($prod_id, $pu_id, $price, $c_id){
     mysqli_stmt_close($stmt);
 }
 
+
+
+//**************************************************************** */
+
+// ลบข้อมูลจากตาราง
+
+function price_delete($pd_id){
+    global $conn;
+
+    $sql = "UPDATE products 
+            SET deleted_at = NOW()
+             WHERE pd_id = ? ";
+    
+     $stmt = mysqli_prepare($conn,$sql);
+
+   // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "ต้องการลบข้อมูลผู้ใช้งาน";
+        header("Location:price.php");
+    } else {
+        echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
+    }
+
+}
 
 // *******************************************************************
 // ดึงข้อมูล id จาก TB-product
@@ -443,7 +470,8 @@ function fetch_unit(){
     global $conn;
     
    $sql = "SELECT * 
-            FROM p_unit";
+            FROM p_unit
+            ORDER BY `pu_id` ASC";
 
     // เตรียมคำสั่ง SQL
     $stmt = mysqli_prepare($conn, $sql);
@@ -478,15 +506,7 @@ function fetch_type(){
 }
 
 // *******************************************************
-// แก้ไขข้อมูล สินค้า
-// function edit_product(){
-//     global $conn;
-//     $sql = " UPDATE ";
 
-// UPDATE table1
-// JOIN table2 ON table1.column = table2.column
-// SET table1.column1 = value1, table1.column2 = value2, ...
-// WHERE condition;
 
 
 

@@ -1,30 +1,65 @@
-<?php 
+<?php
+if (isset($_GET['c_id']) && isset($_GET['pd_id'])) {
+    $c_id = intval($_GET['c_id']);
+    $pd_id = intval($_GET['pd_id']);
+
+    // ตรวจสอบค่าพารามิเตอร์ที่ได้รับ
+    if ($c_id > 0 && $pd_id > 0) {
+        // ดำเนินการตามค่าที่ได้รับ เช่น การเพิ่มข้อมูลในฐานข้อมูล
+    } else {
+        echo "ค่าพารามิเตอร์ไม่ถูกต้อง";
+    }
+} else {
+    echo "ไม่ได้รับค่าพารามิเตอร์";
+}
+?>
+
+<?php
+
 include('_header.php');
 //include('_navbar.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
-$prod_id=$_GET['prod_id'];//รับ id จาก prod.php
 
-//ดึงข้อมูล id จาก TB-product
-$result = fetch_product_by_prodid($prod_id);
-    $row = mysqli_fetch_assoc($result);
-    $prod_n = $row['prod_n'];
 
-//ดึงข้อมูล จาก TB-unit    
-$result1 = fetch_unit();
-//ดึงข้อมูลลูกค้า จาก TB-cust
-$result2 = fetch_cust() ;
-   
+// GET c_id by cust.php
+$c_id = $_GET[''];
+
+
+
+// เรียกใช้ function 
+$result = fetch_cust_by_cid($c_id);
+$row = mysqli_fetch_assoc($result);
+$c_name = $row['c_name'];
+
+//echo $c_id;
 
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>จัดการข้อมูลแผนก/ครัว</title>
 
-<div class="content">
-    <!-- Content Header (Page header)  -->
-    <section class="content-header">
-      <!--<div class="container-fluid">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
+
+<body class="">
+    <div class="content">
+        <!-- Content Header (Page header)  -->
+        <section class="content-header">
+            <!--<div class="container-fluid">
         <div class="row mb-2">
           <div class="col-6 mx-auto">
             <h1>ข้อมูลลูกค้า</h1>
@@ -37,94 +72,118 @@ $result2 = fetch_cust() ;
           </div>
         </div>
       </div> /.container-fluid -->
-    </section>
+        </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-6 mx-auto">
-                    <div class="card card-primary">
-                      <div class="card-header">
-                        <h3 class="card-title">เพิ่มราคาสินค้า</h3>
-                      </div>
-                      <form action="price_add_save.php" method="post">
-                        <input type="hidden" name="prod_id" value="<?=$prod_id?>">
-                      <div class="card-body">
-                       
-                          <!-- product name -->
-                          <div class="form-group">
-                            <label for=" ">ชื่อสินค้า</label>
-                            <input disabled value="<?=$prod_n?>" type="text" class="form-control" name="username" id="exampleInputname" >
-                          </div>
-                      
-                        <!-- unit -->
-                        <div class="form-group">
-                            <label for="unit">หน่วยนับสินค้า:</label>
-                            <select class="form-control select2" name="pu_id" style="width: 100%;">
-                              <option selected="selected" value="">-- เลือกข้อมูล --</option>
-                              <?php foreach($result1 as $row){ ?>
-                              <option value="<?=$row['pu_id']?>" > <?= $row['pu_name']?> </option>
-                              <?php } ?>
-
-                             </select>
-                        </div>
-                <!-- /.form-group -->
-                        <!-- price -->
-                         <div class="form-group">
-                            <label for="price">ราคาสินค้า</label>
-                            <div class="input-group">
-                              <input type="number" name="price" class="form-control" value="0" step="0.01" min="0" max="999" placeholder="ราคาสินค้า">
-                              <div class="input-group-append">
-                                <span class="input-group-text">บาท</span>
-                              </div>
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-6 mx-auto">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">เพิ่มข้อมูลแผนก/ครัว</h3>
                             </div>
+                            <form action="depart_add_save.php" method="post">
+                                <input type="hidden" name="c_id" value="<?= $c_id ?>">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <!-- ชื่อลูกค้า -->
+                                            <div class="form-group">
+                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+
+                                                <input name="dp_name" type="text" class="form-control" placeholder="แผนก/ครัว">
+                                            </div>
+                                        </div>
+                                    </div><!--  /.row -->
+                                </div> <!-- /.card-body -->
+                                <!-- บันทึก -->
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-danger">บันทึก</button>
+
+                                </div>
+                            </form>
                         </div>
-
-                       
-
-                      <!-- customer -->
-                        <div class="form-group">
-                            <label for="cust">ลูกค้า:</label>
-                            <select class="form-control select2" name="c_id" style="width: 100%;">
-                              <option selected="selected" value="">-- เลือกข้อมูล --</option>
-                              <?php foreach($result2 as $row){ ?>
-                              <option value="<?=$row['c_id']?>" > <?= $row['c_abb']?> </option>
-                              <?php } ?>
-
-                             </select>
-                         
-                        </div>
-                        
-                       
-                       
-                        
-                       
-                      </div> <!-- /.card-body -->
-
-                      <!-- บันทึก -->
-                      <div class="card-footer">
-                        <button type="submit" class="btn btn-danger">บันทึก</button>
-                        <a href="prod.php" class="btn btn-secondary">กลับ</a>
-                      </div>
-                    </form>
-                  </div>
-            <!-- /.card -->
-                    <!-- /.card -->
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
                 </div>
-                <!-- /.col -->
+                <!-- /.row -->
             </div>
-            <!-- /.row -->
-        </div>
-      <!-- /.container-fluid -->
+            <!-- /.container-fluid -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-6 mx-auto">
+                        <div class="card card-secondary">
+                            <div class="card-header">
+                                <h3 class="card-title">ข้อมูลแผนกและครัว</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="table-info">
+                                            <th width="10%">ลำดับ</th>
+                                            <th width="40%">ลูกค้า</th>
+                                            <th width="40%">แผนก/ครัว</th>
+                                            <th width="10%">ลบข้อมูล</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $result1 = fetch_depart_by_id($c_id);
+                                        if (mysqli_num_rows($result1) > 0) {
+                                            $i = 0;
+                                            foreach ($result1 as $row) {
+                                                $i++;
+                                        ?>
+                                                <tr>
+                                                    <td><?= $i ?></td>
+                                                    <td><?= $row['c_name'] ?></td>
+                                                    <td><?= $row['dp_name'] ?></td>
+                                                    <td>
+                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="depart_delete.php?dp_id=<?= $row['dp_id'] ?>&c_id=<?= $row['c_id'] ?>">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
+                                        } else {
+                                            echo '<tr><td colspan="4">ไม่พบข้อมูล</td></tr>';
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
+                            </div><!-- /.card-body -->
+                            <div class="card-footer">
+                                <a href="cust.php" class="btn btn-secondary">กลับ</a>
+                            </div>
+                        </div><!-- /.card -->
+
+                    </div> <!-- /.col -->
+
+                </div><!-- /.row -->
+            </div>
+    </div> <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+    </div> <!-- /.content -->
 
 
 
 
-<?php 
-include('_footer.php');
-?>
+
+
+
+    <!-- jQuery -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
