@@ -1,4 +1,4 @@
-<?php 
+<?php
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
@@ -7,109 +7,106 @@ include('_fn.php');
 ?>
 
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>ข้อมูลสินค้า</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>ข้อมูลสินค้า</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
               <li class="breadcrumb-item active">DataTables</li> -->
-            </ol>
-          </div>
+          </ol>
         </div>
-      </div><!-- /.container-fluid -->
-    </section>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">ตารางข้อมูลสินค้า</h3>
-                            <div class="card-tools">
-                                <a href="prod_add.php" class="btn btn-primary" >เพิ่มข้อมูลสินค้า</a>
-                            </div>
-                        </div>
-                        <!-- /.card-header -->
-                        <div class="card-body">
-                        <table id="example1" class="table table-bordered table-striped">
-                    
-                            <thead>
-                                <tr>
-                                    <th style="width: 10%;">ลำดับ</th>
-                                    <th style="width: 50%;">ชื่อสินค้า</th>
-                                    <th style="width: 10%;">ประเภท</th>
-                                    <th style="width: 10%;">จำนวน</th>
-                                    
-                                    <th style="width: 10%">เพิ่มราคา</th>
-                                    <th style="width: 10%;">แก้ไข</th>
-                                    <th style="width: 10%;">ลบ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                
-                                $i=0;
-                                $result = fetch_prod();
-                                if (mysqli_num_rows($result) >0) {
-
-                                  while($row = mysqli_fetch_assoc($result)){
-                                    $i++;
-                                    echo "<tr>";
-                                    echo "<td>" . $i . "</td>";
-                                    echo "<td>" . $row['pd_n'] . "</td>";
-                                    echo "<td>" . $row['pt_id'] . "</td>";
-                                    echo "<td>" . $row['prod_q'] . "</td>";
-                                    echo "<td>";
-                                    echo '<a  class="btn btn-default btn-sm" style="color: green" href="price_add.php?prod_id='.$row['prod_id'].'">';
-                                    echo '<i class="far fa-plus-square" ></i>';
-                                    echo "</td>";
-                                    echo "<td>";
-                                    echo '<a  class="btn btn-default btn-sm" style="color: orange" href="prod_edit.php?prod_id='.$row['prod_id'].'">';
-                                    echo '<i class="far fa-edit" ></i>';
-                                    echo '</a>';
-                                    echo "</td>";
-                                    
-                                    echo "<td>";
-                                    echo '<a onClick="return confirm(\'Are you sure you want to delete?\')" class="btn btn-default btn-sm" href="prod_delete.php?c_id='.$row['prod_id'].'">';
-                                    echo '<i class="far fa-trash-alt" style="color: red"></i>';
-                                    echo '</a>';
-                                    echo "</td>";
-                                    
-                                    
-
-                                    echo "</tr>";
-                                  }
-                                }
-                                
-                                ?>
-                            </tbody>
-                  
-                        </table>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                </div>
-                <!-- /.col -->
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">ตารางข้อมูลสินค้า</h3>
+              <div class="card-tools">
+                <a href="prod_add.php" class="btn btn-primary">เพิ่มข้อมูลสินค้า</a>
+              </div>
             </div>
-            <!-- /.row -->
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="example1" class="table table-bordered table-striped">
+
+                <thead>
+                  <tr>
+                    <th style="width: 10%;">ลำดับ</th>
+                    <th style="width: 50%;">ชื่อสินค้า</th>
+                    <th style="width: 20%">เพิ่มราคา</th>
+                    <th style="width: 10%;">แก้ไข</th>
+                    <th style="width: 10%;">ลบ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php
+
+                  $result = fetch_prod();
+                  if (mysqli_num_rows($result) > 0) {
+                    $i = 0;
+                    foreach ($result as $row) {
+                      $i++;
+                  ?>
+                      <tr>
+                        <td><?= $i ?></td>
+                        <td><?= $row['pd_n'] ?></td>
+                        <td>
+                          <a class="btn btn-block btn-secondary" href="price.php?pd_id=<?= $row['pd_id'] ?>">เพิ่มราคา</a>
+                        </td>
+                        <td>
+                          <a class="btn btn-warning btn-sm" href="prod_edit.php?pd_id=<?= $row['pd_id'] ?>">
+                            <i class="far fa-edit"></i>
+                          </a>
+                        </td>
+                        <td>
+                          <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="prod_delete.php?pd_id=<?= $row['pd_id'] ?>">
+                            <i class="far fa-trash-alt"></i>
+                          </a>
+                        </td>
+                      </tr>
+                  <?php
+                    }
+                  } else {
+                    echo '<tr><td colspan="5">ไม่พบข้อมูล</td></tr>';
+                  }
+
+
+
+
+
+                  ?>
+                </tbody>
+
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
         </div>
-      <!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
 
 
 
 
-<?php 
+<?php
 include('_footer.php');
 ?>

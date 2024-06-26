@@ -6,17 +6,16 @@ include('_header.php');
 include('_fn.php');
 
 // GET c_id by cust.php
-$c_id = $_GET['c_id'];
+$pd_id = $_GET['pd_id'];
 
 
-//ดึงข้อมูล หน่วยนับ 
-$result2 = fetch_unit();
 
-// เรียกใช้ function 
-$result = fetch_cust_by_cid($c_id);
-$row = mysqli_fetch_assoc($result);
-$c_name = $row['c_name'];
-$c_abb = $row['c_abb'];
+
+// // เรียกใช้ function 
+// $result = fetch_cust_by_cid($c_id);
+// $row = mysqli_fetch_assoc($result);
+// $c_name = $row['c_name'];
+// $c_abb = $row['c_abb'];
 
 //echo $c_id . $c_abb;
 
@@ -48,7 +47,7 @@ $c_abb = $row['c_abb'];
                     <div class="col-8 mx-auto">
                         <div class="card card-secondary">
                             <div class="card-header">
-                                <h3 class="card-title">ข้อมูลราคาขายสินค้า <?= $c_name ?> </h3>
+                                <h3 class="card-title">ข้อมูลราคาขายสินค้า</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -57,7 +56,7 @@ $c_abb = $row['c_abb'];
                                         <thead>
                                             <tr class="table-info">
                                                 <th width="10%">ลำดับ</th>
-                                                <th width="50%">สินค้า</th>
+                                                <th width="50%">ลูกค้า</th>
 
                                                 <th width="20%">เพิ่มราคาสินค้า</th>
                                                 <th width="20%">แก้ไขราคาสินค้า</th>
@@ -66,7 +65,7 @@ $c_abb = $row['c_abb'];
                                         </thead>
                                         <tbody>
                                             <?php
-                                            $result1 = fetch_prod();
+                                            $result1 = fetch_cust();
                                             if (mysqli_num_rows($result1) > 0) {
                                                 $i = 0;
                                                 foreach ($result1 as $row) {
@@ -75,11 +74,11 @@ $c_abb = $row['c_abb'];
                                                     <tr>
                                                         <td><?= $i ?></td>
 
-                                                        <td><?= $row['pd_n'] ?></td>
-                                                        <input type="hidden" name="pd_id" value="<?= $row['pd_id'] ?>">
+                                                        <td><?= $row['c_name'] ?></td>
+                                                        <input type="hidden" name="c_id" value="<?= $row['c_id'] ?>">
 
                                                         <td>
-                                                            <a type="button" class="btn btn-block btn-primary" href="price_add.php?c_id=<?= htmlspecialchars($c_id) ?>&pd_id=<?= htmlspecialchars($row['pd_id']) ?>">เพิ่ม</a>
+                                                            <a type="button" class="btn btn-block btn-primary" href="price_add.php?pd_id=<?= htmlspecialchars($pd_id) ?>&c_id=<?= htmlspecialchars($row['c_id']) ?>">เพิ่ม</a>
                                                         </td>
 
                                                         <td>

@@ -1,4 +1,6 @@
 <?php
+
+//ตรวจสอบค่าพารามิเตอร์ที่ได้รับจาก URL
 if (isset($_GET['c_id']) && isset($_GET['pd_id'])) {
     $c_id = intval($_GET['c_id']);
     $pd_id = intval($_GET['pd_id']);
@@ -12,6 +14,11 @@ if (isset($_GET['c_id']) && isset($_GET['pd_id'])) {
 } else {
     echo "ไม่ได้รับค่าพารามิเตอร์";
 }
+
+echo $c_id . $pd_id;
+
+
+
 ?>
 
 <?php
@@ -21,19 +28,16 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
+$result1 = fetch_prod();
+$row = mysqli_fetch_assoc($result1);
+$pd_n = $row['pd_n'];
+//ดึงข้อมูล หน่วยนับ 
+$result2 = fetch_unit();
 
-
-// GET c_id by cust.php
-$c_id = $_GET[''];
-
-
-
-// เรียกใช้ function 
-$result = fetch_cust_by_cid($c_id);
-$row = mysqli_fetch_assoc($result);
+//ดึงข้อมูลลูกค้า
+$result4 = fetch_cust();
+$row = mysqli_fetch_assoc($result4);
 $c_name = $row['c_name'];
-
-//echo $c_id;
 
 ?>
 
@@ -81,22 +85,40 @@ $c_name = $row['c_name'];
                     <div class="col-6 mx-auto">
                         <div class="card card-primary">
                             <div class="card-header">
-                                <h3 class="card-title">เพิ่มข้อมูลแผนก/ครัว</h3>
+                                <h3 class="card-title">เพิ่มข้อมูลราคาสินค้า</h3>
                             </div>
-                            <form action="depart_add_save.php" method="post">
+                            <form action="price_save.php" method="post">
                                 <input type="hidden" name="c_id" value="<?= $c_id ?>">
+                                <input type="hidden" name="pd_id" value="<?= $pd_id ?>">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <!-- ชื่อลูกค้า -->
+                                            <!-- ชื่อสินค้า -->
                                             <div class="form-group">
-                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control" disabled>
+                                                <input value="<?= $pd_n ?>" type="text" name="pd_n" class="form-control" disabled>
+
+
                                             </div>
+                                            <div class="form-group">
+
+                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control" disabled>
+
+                                            </div>
+
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
-
-                                                <input name="dp_name" type="text" class="form-control" placeholder="แผนก/ครัว">
+                                                <div class="mb-3">
+                                                    <select class=" form-control select2" name="pu_id">
+                                                        <?php foreach ($result2 as $unit) { ?>
+                                                            <option value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <input type=" number" class="form-control" name="pri_sell" step="0.01" min="0" placeholder="ราคาสินค้า">
+                                                    <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
+                                                </div>
                                             </div>
                                         </div>
                                     </div><!--  /.row -->
@@ -115,12 +137,13 @@ $c_name = $row['c_name'];
                 <!-- /.row -->
             </div>
             <!-- /.container-fluid -->
+
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-6 mx-auto">
                         <div class="card card-secondary">
                             <div class="card-header">
-                                <h3 class="card-title">ข้อมูลแผนกและครัว</h3>
+                                <h3 class="card-title">ข้อมูลราคาสินค้า</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -128,25 +151,27 @@ $c_name = $row['c_name'];
                                     <thead>
                                         <tr class="table-info">
                                             <th width="10%">ลำดับ</th>
-                                            <th width="40%">ลูกค้า</th>
-                                            <th width="40%">แผนก/ครัว</th>
+                                            <th width="40%">สินค้า</th>
+                                            <th width="20%">หน่วยนับ</th>
+                                            <th width="20">ราคาขาย</th>
                                             <th width="10%">ลบข้อมูล</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $result1 = fetch_depart_by_id($c_id);
-                                        if (mysqli_num_rows($result1) > 0) {
+                                        $result3 = fetch_pri_detail_dy_pdid($pd_id);
+                                        if (mysqli_num_rows($result3) > 0) {
                                             $i = 0;
-                                            foreach ($result1 as $row) {
+                                            foreach ($result3 as $row) {
                                                 $i++;
                                         ?>
                                                 <tr>
                                                     <td><?= $i ?></td>
-                                                    <td><?= $row['c_name'] ?></td>
-                                                    <td><?= $row['dp_name'] ?></td>
+                                                    <td><?= $row['pd_n'] ?></td>
+                                                    <td><?= $row['pu_name'] ?></td>
+                                                    <td><?= $row['pri_sell'] ?></td>
                                                     <td>
-                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="depart_delete.php?dp_id=<?= $row['dp_id'] ?>&c_id=<?= $row['c_id'] ?>">
+                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="depart_delete.php?pri_id=<?= $row['pri_id'] ?>">
                                                             <i class="far fa-trash-alt"></i>
                                                         </a>
                                                     </td>
@@ -154,7 +179,7 @@ $c_name = $row['c_name'];
                                         <?php
                                             }
                                         } else {
-                                            echo '<tr><td colspan="4">ไม่พบข้อมูล</td></tr>';
+                                            echo '<tr><td colspan="5">ไม่พบข้อมูล</td></tr>';
                                         }
                                         ?>
                                     </tbody>
@@ -163,13 +188,16 @@ $c_name = $row['c_name'];
                             <div class="card-footer">
                                 <a href="cust.php" class="btn btn-secondary">กลับ</a>
                             </div>
+
                         </div><!-- /.card -->
 
                     </div> <!-- /.col -->
 
                 </div><!-- /.row -->
             </div>
-    </div> <!-- /.container-fluid -->
+    </div>
+    <!-- /.container-fluid -->
+
     </section>
     </div> <!-- /.content -->
 
