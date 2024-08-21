@@ -299,7 +299,7 @@ function depart_add_save($c_id, $dp_name)
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++
-//ดึงข้อมูลdepartment
+//ดึงข้อมูลdepartment by ID
 
 function fetch_depart_by_id($c_id)
 {
@@ -325,7 +325,9 @@ function fetch_depart_by_id($c_id)
     return $result;
 }
 
-//++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++
+
+// ลบข้อมูล department
 function depart_delete($dp_id, $c_id)
 {
     global $conn;
@@ -344,6 +346,33 @@ function depart_delete($dp_id, $c_id)
         echo "ลบข้อมูลผู้ใช้ไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
     }
 }
+
+
+//++++++++++++++++++++++++++++++++++++++++++
+//ดึงข้อมูลdepartment 
+
+function fetch_depart()
+{
+    global $conn;
+
+    $sql = "SELECT *
+            FROM c_depart ";
+
+    //exit($sql);
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+    return $result;
+}
+
+
 
 //****TB-product *********************************************************** */
 
