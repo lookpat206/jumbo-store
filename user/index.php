@@ -1,140 +1,110 @@
-<?php
-include('_header.php');
-include('_navbar.php');
-include('_sidebar_menu.php');
-include('_fn.php');
+<!DOCTYPE html>
+<html lang="en">
 
-?>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AdminLTE 3 | Log in (v2)</title>
 
-<div class="content-wrapper">
-  <!-- Content Header (Page header) -->
-  <section class="content-header">
-    <div class="container-fluid">
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1></h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="../admin/index.php">Home</a></li>
-          </ol>
-        </div>
-      </div>
-    </div><!-- /.container-fluid -->
-  </section>
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
 
-  <!-- Main content -->
-  <section class="content">
-    <div class="container-fluid">
-      <!-- Small boxes (Stat box) จำนวนลูกค้า -->
+<body class="register-page">
+
+  <section class="contet">
+    <div class="conrainer-fluid">
       <div class="row">
-        <!-- กล่องที่ 1: จำนวนออเดอร์ -->
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-orange">
-            <div class="inner">
-              <h3>รอข้อมูล</h3>
-              <p>จำนวนออเดอร์</p>
+        <div class="col-md-12">
+          <!-- Widget: user widget style 2 -->
+          <div class="card card-widget widget-user-2 shadow-sm">
+            <!-- Add the bg color to the header using any of the bg-* classes -->
+            <div class="widget-user-header bg-warning">
+              <div class="widget-user-image">
+                <img class="img-circle elevation-2" src="dist/img/avatar2.png" alt="User Avatar">
+              </div>
+              <!-- /.widget-user-image -->
+              <h3 class="widget-user-username">ชื่อลูกค้า</h3>
+
             </div>
+            <div class="card-footer p-0">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    Projects <span class="float-right badge bg-primary">31</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    Tasks <span class="float-right badge bg-info">5</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="../login/logout.php" class="nav-link">
+                    logout<span class="float-right badge bg-info"><i class="fas fa-sign-out-alt"></i>
+                    </span>
+
+                  </a>
+                </li>
+
+              </ul>
+            </div>
+
 
           </div>
         </div>
-        <!-- ./col -->
 
-        <!-- กล่องที่ 2: วันที่ปัจจุบัน -->
-        <div class="col-lg-6 col-6">
-          <div class="small-box bg-green">
+
+        <div class="col-6">
+          <!-- small card -->
+          <div class="small-box bg-success">
             <div class="inner">
-              <h4>วันที่</h4>
-              <h1><?php echo date('Y-m-d'); ?></h>
+              <h3>150</h3>
+
+              <p>Purchase</p>
             </div>
+            <div class="icon">
+              <i class="fas fa-plus-square"></i>
+            </div>
+            <a href="purchase.php" class="small-box-footer">
+              More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
-
         </div>
-        <!-- ./col -->
-
-        <!-- กล่องที่ 3: Icon รถเข็น และลิงก์ไปที่ orders.php -->
-        <div class="col-lg-3 col-6">
-          <div class="small-box bg-danger">
+        <div class="col-6">
+          <!-- small card -->
+          <div class="small-box bg-info">
             <div class="inner">
-              <h><i class="fas fa-shopping-cart"></i></hภ>
-                <p>ออเดอร์</p>
+              <h3>150</h3>
+              <p>New Orders</p>
             </div>
-            <a href="orders.php" class="small-box-footer">สั่งสินค้า <i class="fas fa-arrow-circle-right"></i></a>
+            <div class="icon">
+              <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a href="orders.php" class="small-box-footer">
+              More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
           </div>
         </div>
         <!-- ./col -->
       </div>
-      <!-- /.row -->
-
-    </div><!-- /.container-fluid -->
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header">
-              <h1 class="card-title">ข้อมูลใบสั่งสินค้า</hๅ>
-
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              <table id="example1" class="table table-bordered table-striped">
-                <thead>
-                  <tr class="table-info">
-                    <th width="10%">ลำดับ</th>
-                    <th width="30%">เลขที่ใบสั่งซื้อ</th>
-                    <th width="20%">วันที่สั่ง</th>
-                    <th width="20%">วันที่ส่ง</th>
-                    <th width="10%">สถานะ</th>
-                    <th width="10">รายละเอียด</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  $result = " ";
-                  if (mysqli_num_rows() > 0) {
-                    $i = 0;
-                    foreach ($result as $row) {
-                      $i++;
-                  ?>
-                      <tr>
-                        <td><?= $i ?></td>
-                        <td> </td>
-                        <td></td>
-                        <td> </td>
-                        <td> </td>
-                        <td>
-                          <a type="button" class="btn btn-block btn-primary" href="department.php?c_id=<?= $row['c_id'] ?>">เพิ่ม</a>
-                        </td>
-
-
-                      </tr>
-                  <?php
-                    }
-                  } else {
-                    echo '<tr><td colspan="6">ไม่พบข้อมูล</td></tr>';
-                  }
-                  ?>
-                </tbody>
-              </table>
-            </div>
-
-
-            <!-- /.card-body -->
-          </div>
-          <!-- /.card -->
-        </div>
-        <!-- /.col -->
-      </div>
-      <!-- /.row -->
+      <!-- ./row -->
     </div>
-    <!-- /.container-fluid -->
+    </div>
+
+
   </section>
-  <!-- /.content -->
+  <!-- jQuery -->
+  <script src="plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-</div>
+</body>
 
-
-<?php
-include('_footer.php');
-?>
+</html>

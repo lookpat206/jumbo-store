@@ -3,7 +3,24 @@
 include("_fn.php");
 include('../admin/_fn.php');
 //ดึงข้อมูลลูกค้า จาก TB-cust
-$result2 = fetch_cust();
+
+//GET od_id จาก orders.php
+
+$od_id = $_GET['od_id'];
+
+//ดึงข้อมูล orders
+$result1 = fetch_orders_by_id($od_id);
+
+$row = mysqli_fetch_assoc($result1);
+$c_name = $row['c_name'];
+$od_day = $row['od_day'];
+$dv_day = $row['dv_day'];
+$dv_time = $row['dv_time'];
+$c_id = $row['c_id'];
+echo $od_id . $c_name . $od_day . $dv_day . $dv_time . $c_id;
+
+$result2 = fetch_depart_by_id($c_id);
+
 ?>
 
 
@@ -68,33 +85,21 @@ $result2 = fetch_cust();
               <div class="card-header">
                 <h3 class="card-title">Purchase order</h3>
               </div>
-              <form action="orders_save.php" method="post" onsubmit="return validateForm()" name="myForm">
+              <form action="orders_update.php" method="post">
                 <div class="card-body">
+                  <input type="hidden" name="od_id" value="<?= $od_id ?>">
 
                   <!-- customer -->
                   <div class="form-group">
                     <label for="cust">Customer:</label>
-                    <select class="form-control select2" name="c_id" id="" mySelect" style="width: 100%;">
-                      <option selected="selected" value="">-- เลือกชื่อลูกค้า --</option>
-                      <?php foreach ($result2 as $row) { ?>
-                        <option value="<?= $row['c_id'] ?>"> <?= $row['c_name'] ?> </option>
-                      <?php } ?>
-
-                    </select>
-
+                    <input type="text" class="form-control" placeholder="<?= $c_name ?>" disabled>
                   </div>
 
                   <!-- Order days: Date dd/mm/yyyy -->
                   <div class="form-group">
                     <label>Order days:</label>
+                    <input type="text" class="form-control" placeholder="<?= $od_day ?>" disabled>
 
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                      </div>
-                      <input type="text" name="od_day" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ. " data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
-                    </div>
-                    <!-- /.input group -->
                     <small class="form-text text-danger">กรุณากรอกปีเป็น พุทธศักราช (เช่น 2567)</small>
                   </div>
                   <!-- /.form group -->
@@ -102,36 +107,39 @@ $result2 = fetch_cust();
                   <!-- Delivery days:Date dd/mm/yyyy -->
                   <div class="form-group">
                     <label>Delivery days:</label>
+                    <input type="text" class="form-control" placeholder="<?= $dv_day ?>" disabled>
 
-                    <div class="input-group date">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                      </div>
-                      <input type="text" name="dv_day" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ." data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
-                    </div>
-                    <!-- /.input group -->
                     <small class="form-text text-danger">กรุณากรอกปีเป็น พุทธศักราช (เช่น 2567)</small>
                   </div>
                   <!-- /.form group -->
 
 
                   <!-- Delivery time -->
-                  <div class="bootstrap-timepicker">
-                    <div class="form-group">
-                      <label>Delivery time:</label>
 
-                      <div class="input-group date" id="timepicker" data-target-input="nearest">
-                        <input type="text" name="dv_time" class="form-control datetimepicker-input" data-target="#timepicker" />
-                        <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
-                          <div class="input-group-text"><i class="far fa-clock"></i></div>
-                        </div>
-                      </div>
-                      <!-- /.input group -->
-                      <input type="hidden" name="od_note" value=" ">
-                    </div>
-                    <!-- /.form group -->
+                  <div class="form-group">
+                    <label>Delivery time:</label>
+                    <input type="text" class="form-control" placeholder="<?= $dv_time ?>" disabled>
+
+                  </div>
+                  <!-- /.form group -->
+
+
+                  <!-- Depatment แผนก/ครัว -->
+                  <div class="form-group">
+                    <label for="cust">Depatment:</label>
+                    <select class="form-control select2" name="od_note" style="width: 100%;">
+                      <option selected="selected" value="">-- เลือกแผนก/ครัว --</option>
+                      <?php
+                      foreach ($result2 as $row) { ?>
+                        <option value="<?= $row['c_id'] ?>"> <?= $row['dp_name'] ?> </option>
+                      <?php } ?>
+
+                    </select>
+
                   </div>
 
+
+                  <!-- /.form group -->
                   <!-- submit   -->
                   <div>
 
@@ -147,6 +155,7 @@ $result2 = fetch_cust();
             <!-- /.card -->
           </div>
           <!-- /.col (left) -->
+
         </div>
         <!-- /.container-fluid -->
     </section>

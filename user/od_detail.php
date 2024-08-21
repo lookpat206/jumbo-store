@@ -4,6 +4,7 @@ include('_header.php');
 //include('_navbar.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
+include('../admin/_fn.php');
 
 //GET od_id by fn-save
 $od_id = $_GET["od_id"];
