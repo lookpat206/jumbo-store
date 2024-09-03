@@ -78,7 +78,7 @@ $pd_id = $_GET['pd_id'];
                                                         <input type="hidden" name="c_id" value="<?= $row['c_id'] ?>">
 
                                                         <td>
-                                                            <a type="button" class="btn btn-block btn-primary" href="price_add.php?pd_id=<?= htmlspecialchars($pd_id) ?>&c_id=<?= htmlspecialchars($row['c_id']) ?>">เพิ่ม</a>
+                                                            <a type="button" class="btn btn-block btn-primary" href="price_add.php?pd_id=<?= $pd_id ?>&c_id=<?= $row['c_id'] ?>">เพิ่ม</a>
                                                         </td>
 
                                                         <td>
@@ -96,7 +96,7 @@ $pd_id = $_GET['pd_id'];
                                 </form>
                             </div><!-- /.card-body -->
                             <div class="card-footer">
-                                <a href="cust.php" class="btn btn-secondary">กลับ</a>
+                                <a href="prod.php" class="btn btn-secondary">กลับ</a>
                             </div>
                         </div><!-- /.card -->
                     </div> <!-- /.col -->

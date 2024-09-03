@@ -421,6 +421,8 @@ function prod_add_save($prod_n, $prod_q, $prod_f, $prod_i)
 //************************************************** */
 //บันทึกข้อมูล ราคาสินค้า price
 
+
+
 function price_save($c_id, $pd_id, $pu_id, $pri_sell)
 {
     global $conn;
@@ -453,18 +455,18 @@ function price_save($c_id, $pd_id, $pu_id, $pri_sell)
 
 // ลบข้อมูลจากตาราง
 
-function price_delete($pd_id)
+function price_delete($pri_id)
 {
     global $conn;
 
     $sql = "UPDATE products 
             SET deleted_at = NOW()
-             WHERE pd_id = ? ";
+             WHERE pri_id = ? ";
 
     $stmt = mysqli_prepare($conn, $sql);
 
     // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+    mysqli_stmt_bind_param($stmt, "i", $pri_id);
 
     // ดำเนินการคำสั่ง
     if (mysqli_stmt_execute($stmt)) {
@@ -474,6 +476,12 @@ function price_delete($pd_id)
         echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
     }
 }
+
+//***************************************** */
+
+// ดึงข้อมูลจากตาราง pri_detail
+
+
 
 // *******************************************************************
 // ดึงข้อมูล id จาก TB-product

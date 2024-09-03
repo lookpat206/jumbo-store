@@ -1,19 +1,7 @@
 <?php
 
-//ตรวจสอบค่าพารามิเตอร์ที่ได้รับจาก URL
-if (isset($_GET['c_id']) && isset($_GET['pd_id'])) {
-    $c_id = intval($_GET['c_id']);
-    $pd_id = intval($_GET['pd_id']);
-
-    // ตรวจสอบค่าพารามิเตอร์ที่ได้รับ
-    if ($c_id > 0 && $pd_id > 0) {
-        // ดำเนินการตามค่าที่ได้รับ เช่น การเพิ่มข้อมูลในฐานข้อมูล
-    } else {
-        echo "ค่าพารามิเตอร์ไม่ถูกต้อง";
-    }
-} else {
-    echo "ไม่ได้รับค่าพารามิเตอร์";
-}
+$c_id = $_GET['c_id'];
+$pd_id = $_GET['pd_id'];
 
 echo $c_id . $pd_id;
 
@@ -171,7 +159,7 @@ $c_name = $row['c_name'];
                                                     <td><?= $row['pu_name'] ?></td>
                                                     <td><?= $row['pri_sell'] ?></td>
                                                     <td>
-                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="depart_delete.php?pri_id=<?= $row['pri_id'] ?>">
+                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>">
                                                             <i class="far fa-trash-alt"></i>
                                                         </a>
                                                     </td>
@@ -186,7 +174,7 @@ $c_name = $row['c_name'];
                                 </table>
                             </div><!-- /.card-body -->
                             <div class="card-footer">
-                                <a href="cust.php" class="btn btn-secondary">กลับ</a>
+                                <a href="prod.php" class="btn btn-secondary">กลับ</a>
                             </div>
 
                         </div><!-- /.card -->

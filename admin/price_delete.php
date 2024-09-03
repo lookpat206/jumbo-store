@@ -1,4 +1,5 @@
-//  $pu_id_delete = $_GET['pd_id_delete'];
+<?php
+$pri_id = $_GET['pri_id'];
 
-//  exit ($pu_id_delete);
-//  //price_delete($pu_id_delete);
+//exit($pri_id);
+price_delete($pri_id);
