@@ -92,7 +92,7 @@ function update_orders($od_id, $od_note)
     // ดำเนินการคำสั่ง
     if (mysqli_stmt_execute($stmt)) {
         //echo "บันทึกการแก้ไขเรียบร้อย";
-        header("Location:od_detail.php");
+        header("Location:od_detail.php?od_id=$od_id");
     } else {
         echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
     }

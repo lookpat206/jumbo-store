@@ -8,17 +8,9 @@ include('../admin/_fn.php');
 
 //GET od_id by fn-save
 $od_id = $_GET["od_id"];
-// GET c_id by cust.php
-$c_id = $_GET['c_id'];
 
+$list = fetch_prod();
 
-
-// เรียกใช้ function 
-$result = fetch_cust_by_cid($c_id);
-$row = mysqli_fetch_assoc($result);
-$c_name = $row['c_name'];
-
-//echo $c_id;
 
 ?>
 
@@ -34,6 +26,9 @@ $c_name = $row['c_name'];
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Theme style -->
@@ -69,18 +64,18 @@ $c_name = $row['c_name'];
                                 <h3 class="card-title">เพิ่มรายการสั่งซื้อ</h3>
                             </div>
                             <form id="orderForm" action="od_add_save.php" method="post">
-                                <input type="hidden" name="c_id" value="<?= $c_id ?>">
+                                <input type="hidden" name="od_id" value="<?= $od_id ?>">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <!-- ชื่อลูกค้า -->
                                             <div class="form-group">
-                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control" disabled>
+                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control">
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
-                                                <input name="dp_name" type="text" class="form-control" placeholder="แผนก/ครัว">
+                                                <input name="dp_name" type="text" class="form-control" placeholder="">
                                             </div>
                                         </div>
                                     </div><!--  /.row -->
@@ -171,8 +166,17 @@ $c_name = $row['c_name'];
 
     <!-- jQuery -->
     <script src="plugins/jquery/jquery.min.js"></script>
-    <!-- Bootstrap 4 -->
-    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- date-range-picker -->
+    <script src="plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Select2 -->
+    <script src="plugins/select2/js/select2.full.min.js"></script>
+    <!-- InputMask -->
+    <script src="plugins/moment/moment.min.js"></script>
+    <script src="plugins/inputmask/jquery.inputmask.min.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap Switch -->
+    <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {

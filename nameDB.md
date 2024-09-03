@@ -44,7 +44,7 @@
     	price_s	ราคาขาย
     8. product
     	pd_id	รหัสสินค้า
-    	pd_name	ชื่อสินค้า
+    	pd_n	ชื่อสินค้า
     	pt_id	รหัสประเภท
     	pu_id	รหัสหน่วยนับ
     9. prod_stock
