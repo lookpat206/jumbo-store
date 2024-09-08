@@ -16,14 +16,14 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
-$result1 = fetch_prod();
+$result1 = fetch_product_by_prodid($pd_id);
 $row = mysqli_fetch_assoc($result1);
 $pd_n = $row['pd_n'];
 //ดึงข้อมูล หน่วยนับ 
 $result2 = fetch_unit();
 
 //ดึงข้อมูลลูกค้า
-$result4 = fetch_cust();
+$result4 = fetch_cust_by_cid($c_id);
 $row = mysqli_fetch_assoc($result4);
 $c_name = $row['c_name'];
 
@@ -35,7 +35,7 @@ $c_name = $row['c_name'];
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>จัดการข้อมูลแผนก/ครัว</title>
+    <title>จัดการข้อมูลราคาสินค้า</title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -43,6 +43,9 @@ $c_name = $row['c_name'];
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
 </head>
@@ -84,25 +87,20 @@ $c_name = $row['c_name'];
                                             <!-- ชื่อสินค้า -->
                                             <div class="form-group">
                                                 <input value="<?= $pd_n ?>" type="text" name="pd_n" class="form-control" disabled>
-
-
-                                            </div>
-                                            <div class="form-group">
-
-                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control" disabled>
-
                                             </div>
 
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
+                                                <!-- เลือกหน่วยนับ -->
                                                 <div class="mb-3">
                                                     <select class=" form-control select2" name="pu_id">
                                                         <?php foreach ($result2 as $unit) { ?>
-                                                            <option value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
+                                                            <option selected="selected" value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
+                                                <!-- ราคาขาย -->
                                                 <div class="mb-3">
                                                     <input type=" number" class="form-control" name="pri_sell" step="0.01" min="0" placeholder="ราคาสินค้า">
                                                     <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
@@ -140,14 +138,14 @@ $c_name = $row['c_name'];
                                         <tr class="table-info">
                                             <th width="10%">ลำดับ</th>
                                             <th width="40%">สินค้า</th>
-                                            <th width="20%">หน่วยนับ</th>
-                                            <th width="20">ราคาขาย</th>
-                                            <th width="10%">ลบข้อมูล</th>
+                                            <th width="25%">หน่วยนับ</th>
+                                            <th width="25%">ราคาขาย</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $result3 = fetch_pri_detail_dy_pdid($pd_id);
+                                        $result3 = fetch_pri_detail_dy_pdid($c_id);
                                         if (mysqli_num_rows($result3) > 0) {
                                             $i = 0;
                                             foreach ($result3 as $row) {
@@ -158,11 +156,7 @@ $c_name = $row['c_name'];
                                                     <td><?= $row['pd_n'] ?></td>
                                                     <td><?= $row['pu_name'] ?></td>
                                                     <td><?= $row['pri_sell'] ?></td>
-                                                    <td>
-                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>">
-                                                            <i class="far fa-trash-alt"></i>
-                                                        </a>
-                                                    </td>
+
                                                 </tr>
                                         <?php
                                             }
@@ -174,7 +168,7 @@ $c_name = $row['c_name'];
                                 </table>
                             </div><!-- /.card-body -->
                             <div class="card-footer">
-                                <a href="prod.php" class="btn btn-secondary">กลับ</a>
+                                <a href="price.php" class="btn btn-secondary">กลับ</a>
                             </div>
 
                         </div><!-- /.card -->
@@ -199,6 +193,18 @@ $c_name = $row['c_name'];
     <script src="plugins/jquery/jquery.min.js"></script>
     <!-- Bootstrap 4 -->
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- date-range-picker -->
+    <script src="plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Select2 -->
+    <script src="plugins/select2/js/select2.full.min.js"></script>
+    <!-- InputMask -->
+    <script src="plugins/moment/moment.min.js"></script>
+    <script src="plugins/inputmask/jquery.inputmask.min.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap Switch -->
+    <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+
 
 </body>
 

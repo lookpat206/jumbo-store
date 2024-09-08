@@ -6,16 +6,16 @@ include('_header.php');
 include('_fn.php');
 
 // GET c_id by cust.php
-$pd_id = $_GET['pd_id'];
+$c_id = $_GET['c_id'];
 
 
 
 
-// // เรียกใช้ function 
-// $result = fetch_cust_by_cid($c_id);
-// $row = mysqli_fetch_assoc($result);
-// $c_name = $row['c_name'];
-// $c_abb = $row['c_abb'];
+// เรียกใช้ function 
+$result = fetch_cust_by_cid($c_id);
+$row = mysqli_fetch_assoc($result);
+$c_name = $row['c_name'];
+$c_abb = $row['c_abb'];
 
 //echo $c_id . $c_abb;
 
@@ -47,56 +47,64 @@ $pd_id = $_GET['pd_id'];
                     <div class="col-8 mx-auto">
                         <div class="card card-secondary">
                             <div class="card-header">
-                                <h3 class="card-title">ข้อมูลราคาขายสินค้า</h3>
+                                <h3 class="card-title">รายการเสนอราคาของ <?= $c_name ?> </h3>
+                                <div class="card-tools">
+                                    <a href="price_add.php" class="btn btn-primary">เพิ่มราคาสินค้า</a>
+                                </div>
+
                             </div>
+
                             <!-- /.card-header -->
                             <div class="card-body">
-                                <form method="POST" action="price_save.php">
-                                    <table id="example1" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr class="table-info">
-                                                <th width="10%">ลำดับ</th>
-                                                <th width="50%">ลูกค้า</th>
 
-                                                <th width="20%">เพิ่มราคาสินค้า</th>
-                                                <th width="20%">แก้ไขราคาสินค้า</th>
+                                <table id="example1" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="table-info" style="text-align: center;">
+                                            <th width="10%">ลำดับ</th>
+                                            <th width="30%">สินค้า</th>
+                                            <th width="20%">หน่วยนับ</th>
+                                            <th width="20%">ราคาต่อหน่วย</th>
+                                            <th width="10%">แก้ไขราคา</th>
+                                            <th width="10%">ลบข้อมูล</th>
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $result1 = fetch_cust();
-                                            if (mysqli_num_rows($result1) > 0) {
-                                                $i = 0;
-                                                foreach ($result1 as $row) {
-                                                    $i++;
-                                            ?>
-                                                    <tr>
-                                                        <td><?= $i ?></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        $result1 = fetch_();
+                                        if (mysqli_num_rows($result1) > 0) {
+                                            $i = 0;
+                                            foreach ($result1 as $row) {
+                                                $i++;
+                                        ?>
+                                                <tr>
+                                                    <td><?= $i ?></td>
 
-                                                        <td><?= $row['c_name'] ?></td>
-                                                        <input type="hidden" name="c_id" value="<?= $row['c_id'] ?>">
-
-                                                        <td>
-                                                            <a type="button" class="btn btn-block btn-primary" href="price_add.php?pd_id=<?= $pd_id ?>&c_id=<?= $row['c_id'] ?>">เพิ่ม</a>
-                                                        </td>
-
-                                                        <td>
-                                                            <a class="btn btn-block btn-secondary" href="price.php?c_id=<?= $row['c_id'] ?>">แก้ไขราคา</a>
-                                                        </td>
-                                                    </tr>
-                                            <?php
-                                                }
-                                            } else {
-                                                echo '<tr><td colspan="6">ไม่พบข้อมูล</td></tr>';
+                                                    <td><?= $row['pd_n'] ?></td>
+                                                    <input type="hidden" name="pd_id" value="<?= $row['pd_id'] ?>">
+                                                    <td><?= $row['pu_name'] ?></td>
+                                                    <td><?= $row['pri_sell'] ?></td>
+                                                    <td>
+                                                        <a class="btn btn-block btn-secondary" href="price.php?pri_id=<?= $row['pri_id'] ?>">แก้ไขราคา</a>
+                                                    </td>
+                                                    <td>
+                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                        <?php
                                             }
-                                            ?>
-                                        </tbody>
-                                    </table>
+                                        } else {
+                                            echo '<tr><td colspan="6">ไม่พบข้อมูล</td></tr>';
+                                        }
+                                        ?>
+                                    </tbody>
+                                </table>
                                 </form>
                             </div><!-- /.card-body -->
                             <div class="card-footer">
-                                <a href="prod.php" class="btn btn-secondary">กลับ</a>
+                                <a href="cust.php" class="btn btn-secondary">กลับ</a>
                             </div>
                         </div><!-- /.card -->
                     </div> <!-- /.col -->
