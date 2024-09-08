@@ -9,7 +9,10 @@ include('../admin/_fn.php');
 //GET od_id by fn-save
 $od_id = $_GET["od_id"];
 
-$list = fetch_prod();
+$result = fetch_orders_by_id($od_id);
+$row =
+
+    $list = fetch_prod();
 
 
 ?>
