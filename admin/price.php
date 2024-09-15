@@ -8,11 +8,12 @@ include('_fn.php');
 // GET c_id by cust.php
 $c_id = $_GET['c_id'];
 
-
+echo $c_id;
 
 // เรียกใช้ function 
 $result = fetch_cust_by_cid($c_id);
 $row = mysqli_fetch_assoc($result);
+
 $c_name = $row['c_name'];
 $c_abb = $row['c_abb'];
 
@@ -50,7 +51,7 @@ $c_abb = $row['c_abb'];
                             <div class="card-header">
                                 <h3 class="card-title">ข้อมูลราคาสินค้า </h3>
                                 <div class="card-tools">
-                                    <a href="price_add.php" class="btn btn-primary">เพิ่มราคาสินค้า</a>
+                                    <a href="price_add.php?c_id=<?= $row['c_id'] ?>" class="btn btn-primary">เพิ่มราคาสินค้า</a>
                                 </div>
 
                             </div>

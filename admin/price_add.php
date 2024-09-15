@@ -1,9 +1,9 @@
 <?php
 
 $c_id = $_GET['c_id'];
-$pd_id = $_GET['pd_id'];
 
-echo $c_id . $pd_id;
+
+echo $c_id;
 
 
 
@@ -16,9 +16,9 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
-$result1 = fetch_product_by_prodid($pd_id);
-$row = mysqli_fetch_assoc($result1);
-$pd_n = $row['pd_n'];
+//ดึงข้อมูล สินค้า
+$result1 = fetch_prod();
+
 //ดึงข้อมูล หน่วยนับ 
 $result2 = fetch_unit();
 
@@ -48,6 +48,8 @@ $c_name = $row['c_name'];
     <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
 </head>
 
 <body class="">
@@ -86,7 +88,11 @@ $c_name = $row['c_name'];
                                         <div class="col-sm-6">
                                             <!-- ชื่อสินค้า -->
                                             <div class="form-group">
-                                                <input value="<?= $pd_n ?>" type="text" name="pd_n" class="form-control" disabled>
+                                                <select class=" form-control select2" name="pu_id">
+                                                    <?php foreach ($result1 as $unit) { ?>
+                                                        <option selected="selected" value="<?= $unit['pd_id'] ?>"><?= $unit['pd_n'] ?></option>
+                                                    <?php } ?>
+                                                </select>
                                             </div>
 
                                         </div>
@@ -168,7 +174,7 @@ $c_name = $row['c_name'];
                                 </table>
                             </div><!-- /.card-body -->
                             <div class="card-footer">
-                                <a href="price.php" class="btn btn-secondary">กลับ</a>
+                                <a href="price.php?c_id=<? $c_id ?>" class="btn btn-secondary">กลับ</a>
                             </div>
 
                         </div><!-- /.card -->
