@@ -10,7 +10,6 @@ $c_id = $_GET['c_id'];
 
 
 
-
 // เรียกใช้ function 
 $result = fetch_cust_by_cid($c_id);
 $row = mysqli_fetch_assoc($result);
@@ -43,11 +42,13 @@ $c_abb = $row['c_abb'];
         <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
+
                 <div class="row">
                     <div class="col-8 mx-auto">
+                        <h2><?= $c_name ?> </h2><br>
                         <div class="card card-secondary">
                             <div class="card-header">
-                                <h3 class="card-title">รายการเสนอราคาของ <?= $c_name ?> </h3>
+                                <h3 class="card-title">ข้อมูลราคาสินค้า </h3>
                                 <div class="card-tools">
                                     <a href="price_add.php" class="btn btn-primary">เพิ่มราคาสินค้า</a>
                                 </div>
@@ -62,16 +63,17 @@ $c_abb = $row['c_abb'];
                                         <tr class="table-info" style="text-align: center;">
                                             <th width="10%">ลำดับ</th>
                                             <th width="30%">สินค้า</th>
-                                            <th width="20%">หน่วยนับ</th>
-                                            <th width="20%">ราคาต่อหน่วย</th>
-                                            <th width="10%">แก้ไขราคา</th>
+                                            <th width="15%">หน่วยนับ</th>
+                                            <th width="15%">ราคาต่อหน่วย</th>
+                                            <th width="20%">แก้ไขราคา</th>
                                             <th width="10%">ลบข้อมูล</th>
 
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $result1 = fetch_();
+                                        // ดึงข้อมูล price detail
+                                        $result1 = fetch_pri_detail_dy_pdid($c_id);
                                         if (mysqli_num_rows($result1) > 0) {
                                             $i = 0;
                                             foreach ($result1 as $row) {
@@ -79,14 +81,18 @@ $c_abb = $row['c_abb'];
                                         ?>
                                                 <tr>
                                                     <td><?= $i ?></td>
-
+                                                    <!-- สินค้า -->
                                                     <td><?= $row['pd_n'] ?></td>
                                                     <input type="hidden" name="pd_id" value="<?= $row['pd_id'] ?>">
+                                                    <!-- หน่วยนับ -->
                                                     <td><?= $row['pu_name'] ?></td>
+                                                    <!-- ราคาต่อหน่วย -->
                                                     <td><?= $row['pri_sell'] ?></td>
+                                                    <!-- ปุ่มแก้ไข -->
                                                     <td>
                                                         <a class="btn btn-block btn-secondary" href="price.php?pri_id=<?= $row['pri_id'] ?>">แก้ไขราคา</a>
                                                     </td>
+                                                    <!-- ปุ่มลบข้อมูล -->
                                                     <td>
                                                         <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>">
                                                             <i class="far fa-trash-alt"></i>

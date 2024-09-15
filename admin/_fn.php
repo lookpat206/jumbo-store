@@ -459,9 +459,10 @@ function price_delete($pri_id)
 {
     global $conn;
 
-    $sql = "UPDATE products 
-            SET deleted_at = NOW()
-             WHERE pri_id = ? ";
+    $sql = "DELETE FROM 
+                    pri_detail
+             WHERE
+                    pri_id = ? ";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -479,7 +480,35 @@ function price_delete($pri_id)
 
 //***************************************** */
 
-// ดึงข้อมูลจากตาราง pri_detail
+// ดึงข้อมูลจาก TB-pri_detail โดยใช้ c_id
+
+function fetch_pri_detail_dy_pdid($c_id)
+{
+    global $conn;
+    $sql = "SELECT p.pd_n,u.pu_name,prd.pri_sell,prd.c_id,prd.pd_id,prd.pri_id 
+            FROM pri_detail as prd 
+            INNER JOIN cust as c on prd.c_id=c.c_id
+            INNER JOIN product as p on prd.pd_id = p.pd_id 
+            INNER JOIN p_unit as u on prd.pu_id = u.pu_id 
+            WHERE prd.c_id = ? ";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $c_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+
+    return $result;
+}
+
+
 
 
 
@@ -553,34 +582,6 @@ function fetch_type()
 }
 
 // *******************************************************
-// ดึงข้อมูลจาก TB-pri_detail โดยใช้ pd_id
-
-function fetch_pri_detail_dy_pdid($pd_id)
-{
-    global $conn;
-    $sql = "SELECT p.pd_n,u.pu_name,prd.pri_sell,prd.c_id,prd.pd_id,prd.pri_id 
-            FROM pri_detail as prd 
-            INNER JOIN cust as c on prd.c_id=c.c_id
-            INNER JOIN product as p on prd.pd_id = p.pd_id 
-            INNER JOIN p_unit as u on prd.pu_id = u.pu_id 
-            WHERE prd.pd_id = ? ";
-
-    // เตรียมคำสั่ง SQL
-    $stmt = mysqli_prepare($conn, $sql);
-
-    // ผูกพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "i", $pd_id);
-
-    // ดำเนินการคำสั่ง
-    mysqli_stmt_execute($stmt);
-
-    // รับผลลัพธ์
-    $result = mysqli_stmt_get_result($stmt);
-
-
-    return $result;
-}
-
 
 
 
