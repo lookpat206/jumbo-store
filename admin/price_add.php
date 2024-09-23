@@ -2,11 +2,6 @@
 
 $c_id = $_GET['c_id'];
 
-
-echo $c_id;
-
-
-
 ?>
 
 <?php
@@ -23,8 +18,8 @@ $result1 = fetch_prod();
 $result2 = fetch_unit();
 
 //ดึงข้อมูลลูกค้า
-$result4 = fetch_cust_by_cid($c_id);
-$row = mysqli_fetch_assoc($result4);
+$result3 = fetch_cust_by_cid($c_id);
+$row = mysqli_fetch_assoc($result3);
 $c_name = $row['c_name'];
 
 ?>
@@ -48,8 +43,6 @@ $c_name = $row['c_name'];
     <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
-    <!-- Tempusdominus Bootstrap 4 -->
-    <link rel="stylesheet" href="plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
 </head>
 
 <body class="">
@@ -82,15 +75,17 @@ $c_name = $row['c_name'];
                             </div>
                             <form action="price_save.php" method="post">
                                 <input type="hidden" name="c_id" value="<?= $c_id ?>">
-                                <input type="hidden" name="pd_id" value="<?= $pd_id ?>">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <!-- ชื่อสินค้า -->
                                             <div class="form-group">
-                                                <select class=" form-control select2" name="pu_id">
+                                                <label>ชื่อสินค้า : </label>
+                                                <select class=" form-control select2bs4" name="pd_id">
+                                                    <option selected="selected" value=""> -- เลือกสินค้า -- </option>
                                                     <?php foreach ($result1 as $unit) { ?>
-                                                        <option selected="selected" value="<?= $unit['pd_id'] ?>"><?= $unit['pd_n'] ?></option>
+                                                        <option value="<?= $unit['pd_id'] ?>"><?= $unit['pd_n'] ?></option>
+
                                                     <?php } ?>
                                                 </select>
                                             </div>
@@ -101,8 +96,9 @@ $c_name = $row['c_name'];
                                                 <!-- เลือกหน่วยนับ -->
                                                 <div class="mb-3">
                                                     <select class=" form-control select2" name="pu_id">
+                                                        <option selected="selected" value=""> -- เลือกหน่วยนับ --</option>
                                                         <?php foreach ($result2 as $unit) { ?>
-                                                            <option selected="selected" value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
+                                                            <option value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
                                                         <?php } ?>
                                                     </select>
                                                 </div>
@@ -144,17 +140,18 @@ $c_name = $row['c_name'];
                                         <tr class="table-info">
                                             <th width="10%">ลำดับ</th>
                                             <th width="40%">สินค้า</th>
-                                            <th width="25%">หน่วยนับ</th>
-                                            <th width="25%">ราคาขาย</th>
+                                            <th width="20%">หน่วยนับ</th>
+                                            <th width="20%">ราคาขาย</th>
+                                            <th width="10%">ลบข้อมูล</th>
 
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $result3 = fetch_pri_detail_dy_pdid($c_id);
-                                        if (mysqli_num_rows($result3) > 0) {
+                                        $result4 = fetch_pri_detail_dy_pdid($c_id);
+                                        if (mysqli_num_rows($result4) > 0) {
                                             $i = 0;
-                                            foreach ($result3 as $row) {
+                                            foreach ($result4 as $row) {
                                                 $i++;
                                         ?>
                                                 <tr>
@@ -162,6 +159,11 @@ $c_name = $row['c_name'];
                                                     <td><?= $row['pd_n'] ?></td>
                                                     <td><?= $row['pu_name'] ?></td>
                                                     <td><?= $row['pri_sell'] ?></td>
+                                                    <td>
+                                                        <a onClick="return confirm('กรุณาตรวจสอบข้อมูล')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>$c_id=<? $row['c_id'] ?>">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </a>
+                                                    </td>
 
                                                 </tr>
                                         <?php
@@ -174,7 +176,10 @@ $c_name = $row['c_name'];
                                 </table>
                             </div><!-- /.card-body -->
                             <div class="card-footer">
-                                <a href="price.php?c_id=<? $c_id ?>" class="btn btn-secondary">กลับ</a>
+
+                                <a href="price.php?c_id=<?= $c_id; ?>" class="btn btn-secondary">กลับ</a>
+
+
                             </div>
 
                         </div><!-- /.card -->
@@ -210,7 +215,93 @@ $c_name = $row['c_name'];
     <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     <!-- Bootstrap Switch -->
     <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <!-- Bootstrap4 Duallistbox -->
+    <script src="../../plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
 
+    <script>
+        $(function() {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', {
+                'placeholder': 'dd/mm/yyyy'
+            })
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', {
+                'placeholder': 'mm/dd/yyyy'
+            })
+            //Money Euro
+            $('[data-mask]').inputmask()
+
+            //Date picker
+            $('#reservationdate').datetimepicker({
+                format: 'L'
+            });
+
+            //Date and time picker
+            $('#reservationdatetime').datetimepicker({
+                icons: {
+                    time: 'far fa-clock'
+                }
+            });
+
+            //Date range picker
+            $('#reservation').daterangepicker()
+            //Date range picker with time picker
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'MM/DD/YYYY hh:mm A'
+                }
+            })
+            //Date range as a button
+            $('#daterange-btn').daterangepicker({
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function(start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                }
+            )
+
+            //Timepicker
+            $('#timepicker').datetimepicker({
+                format: 'LT'
+            })
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox()
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker()
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker()
+
+            $('.my-colorpicker2').on('colorpickerChange', function(event) {
+                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+            })
+
+            $("input[data-bootstrap-switch]").each(function() {
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            })
+
+        })
+    </script>
 
 </body>
 

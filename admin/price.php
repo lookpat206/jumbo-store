@@ -8,7 +8,7 @@ include('_fn.php');
 // GET c_id by cust.php
 $c_id = $_GET['c_id'];
 
-echo $c_id;
+//echo $c_id;
 
 // เรียกใช้ function 
 $result = fetch_cust_by_cid($c_id);
@@ -63,11 +63,10 @@ $c_abb = $row['c_abb'];
                                     <thead>
                                         <tr class="table-info" style="text-align: center;">
                                             <th width="10%">ลำดับ</th>
-                                            <th width="30%">สินค้า</th>
+                                            <th width="40%">สินค้า</th>
                                             <th width="15%">หน่วยนับ</th>
                                             <th width="15%">ราคาต่อหน่วย</th>
                                             <th width="20%">แก้ไขราคา</th>
-                                            <th width="10%">ลบข้อมูล</th>
 
                                         </tr>
                                     </thead>
@@ -93,12 +92,7 @@ $c_abb = $row['c_abb'];
                                                     <td>
                                                         <a class="btn btn-block btn-secondary" href="price.php?pri_id=<?= $row['pri_id'] ?>">แก้ไขราคา</a>
                                                     </td>
-                                                    <!-- ปุ่มลบข้อมูล -->
-                                                    <td>
-                                                        <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>">
-                                                            <i class="far fa-trash-alt"></i>
-                                                        </a>
-                                                    </td>
+
                                                 </tr>
                                         <?php
                                             }
