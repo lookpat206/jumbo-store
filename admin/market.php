@@ -12,7 +12,7 @@ include('_fn.php');
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>ข้อมูลสินค้า</h1>
+          <h1>ข้อมูลสถานที่ซื้อสินค้า</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -31,9 +31,9 @@ include('_fn.php');
         <div class="col-12">
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">ตารางข้อมูลสินค้า</h3>
+              <h3 class="card-title">ข้อมูลสถานที่ซื้อสินค้า</h3>
               <div class="card-tools">
-                <a href="prod_add.php" class="btn btn-primary">เพิ่มข้อมูลสินค้า</a>
+                <a href="supp_add.php" class="btn btn-primary">เพิ่มข้อมูล</a>
               </div>
             </div>
             <!-- /.card-header -->
@@ -41,18 +41,19 @@ include('_fn.php');
               <table id="example1" class="table table-bordered table-striped">
 
                 <thead>
-                  <tr>
-                    <th style="width: 10%;">ลำดับ</th>
-                    <th style="width: 50%;">ชื่อสินค้า</th>
-                    <th style="width: 20%">เพิ่มร้านค้า</th>
-                    <th style="width: 10%;">แก้ไข</th>
-                    <th style="width: 10%;">ลบ</th>
+                  <tr class="table-info">
+                    <th width="5%">ลำดับ</th>
+                    <th width="45%">สถานที่ซื้อสินค้า</th>
+                    <th width="30%">เพิ่มร้านค้า</th>
+
+                    <th width="10%">แก้ไข</th>
+                    <th width="10%">ลบ</th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
 
-                  $result = fetch_prod();
+                  $result = fetch_mark();
                   if (mysqli_num_rows($result) > 0) {
                     $i = 0;
                     foreach ($result as $row) {
@@ -60,17 +61,17 @@ include('_fn.php');
                   ?>
                       <tr>
                         <td><?= $i ?></td>
-                        <td><?= $row['pd_n'] ?></td>
+                        <td><?= $row['mk_name'] ?></td>
                         <td>
-                          <a class="btn btn-block btn-secondary" href="supp.php?pd_id=<?= $row['pd_id'] ?>">เพิ่มร้านค้า</a>
+                          <a class="btn btn-block btn-secondary" href="supp_add.php?mk_id=<?= $row['mk_id'] ?>">เพิ่มร้านค้า</a>
                         </td>
                         <td>
-                          <a class="btn btn-warning btn-sm" href="prod_edit.php?pd_id=<?= $row['pd_id'] ?>">
+                          <a class="btn btn-warning btn-sm" href="market_edit.php?mk_id=<?= $row['mk_id'] ?>">
                             <i class="far fa-edit"></i>
                           </a>
                         </td>
                         <td>
-                          <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="prod_delete.php?pd_id=<?= $row['pd_id'] ?>">
+                          <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="market_delete.php?mk_id=<?= $row['mk_id'] ?>">
                             <i class="far fa-trash-alt"></i>
                           </a>
                         </td>
@@ -80,8 +81,6 @@ include('_fn.php');
                   } else {
                     echo '<tr><td colspan="5">ไม่พบข้อมูล</td></tr>';
                   }
-
-
 
 
 

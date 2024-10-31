@@ -29,7 +29,7 @@
 
         <!-- จัดการข้อมูล -->
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="index.php" class="nav-link">
             <i class="nav-icon fas fa-edit"></i>
             <p>
               จัดการข้อมูล
@@ -56,7 +56,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="supplier.php" class="nav-link">
+              <a href="market.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>ข้อมูลร้านค้า</p>
               </a>

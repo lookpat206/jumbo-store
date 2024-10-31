@@ -593,7 +593,7 @@ function fetch_type()
 function fetch_supp()
 {
     global $conn;
-    $sql = "SELECT s.sp_id, s.sp_name, pt.pt_name, m.mk_name, s.sp_tel,pt.pt_id 
+    $sql = "SELECT s.sp_id, s.sp_name,  s.sp_tel,pt.pt_id 
             FROM supplier AS s 
             INNER JOIN p_type as pt ON s.pt_id = pt.pt_id 
             INNER JOIN market as m ON s.mk_id = m.mk_id 
@@ -624,14 +624,40 @@ function fetch_mark()
     return $result;
 }
 
+//###############################################################
+// รับค่า id แล้วดึงข้อมูลจาก TB-market
+
+function fetch_mark_by_mkid($mk_id)
+{
+    global $conn;
+    $sql = "SELECT *
+            FROM market
+            WHERE mk_id = ? ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $mk_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+
+    return $result;
+}
+
+
 //###############################################
 //เพิ่มข้อมูลร้านค้า
-function supp_add_save($sp_name, $pt_id, $mk_id, $sp_tel)
+function supp_add_save($mk_id, $sp_name,  $sp_tel)
 {
     global $conn;
 
-    $sql = "INSERT INTO supplier(sp_name, pt_id, mk_id, sp_tel) 
-            VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO supplier(mk_id, sp_name , sp_tel) 
+            VALUES ( ?, ?, ?)";
     // แปลง $sql เป็น $stmt            
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -641,11 +667,11 @@ function supp_add_save($sp_name, $pt_id, $mk_id, $sp_tel)
     }
 
     // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "siis", $sp_name, $pt_id, $mk_id, $sp_tel);
+    mysqli_stmt_bind_param($stmt, "iis", $mk_id, $sp_name,  $sp_tel);
 
     // ดำเนินการคำสั่ง SQL
     if (mysqli_stmt_execute($stmt)) {
-        header("Location:supplier.php");
+        header("Location:supp_add.php?");
         exit();
     } else {
         echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
