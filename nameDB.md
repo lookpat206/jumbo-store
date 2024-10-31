@@ -32,7 +32,7 @@
     	odr_id	รหัส รลอ
     	od_id	รัหัสออเดอร์
     	pd_id	รหัสสินค้า
-    	ord_quantity	ปริมาณ
+    	quantity	ปริมาณ
     	pu_id	รหัสหน่วยนับ
     	price_s	ราคาขาย
     	total	ผลรวม
