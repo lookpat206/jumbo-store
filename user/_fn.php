@@ -44,6 +44,7 @@ function fetch_orders()
     mysqli_stmt_execute($stmt);
     //เงื่อนไขการทำงาน
     $result = mysqli_stmt_get_result($stmt);
+
     //ส่งค่ากลับ
     return $result;
 }
@@ -73,6 +74,39 @@ function fetch_orders_by_id($od_id)
     return $result;
 }
 
+
+function fetch_orders_by_odid($od_id)
+{
+
+    global $conn;
+
+    $sql = " SELECT c_id
+            FROM orders 
+            WHERE od_id = ? ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์ od_id กับ statement
+    mysqli_stmt_bind_param($stmt, "i", $od_id);
+
+    // เรียกใช้ statement
+    mysqli_stmt_execute($stmt);
+
+    // ดึงผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+    // ตรวจสอบว่ามีข้อมูล
+    if (mysqli_num_rows($result) > 0) {
+        $order = mysqli_fetch_assoc($result); // ดึงข้อมูลเป็น associative array
+    } else {
+        $order = null; // ถ้าไม่มีข้อมูลให้คืนค่า null
+    }
+
+
+    return $order;
+}
+
+
 //เพิ่มข้อมูล แผนก/ครัว
 
 function update_orders($od_id, $od_note)
@@ -99,4 +133,38 @@ function update_orders($od_id, $od_note)
 
     // ปิดคำสั่ง
     //mysqli_stmt_close($stmt);
+}
+
+
+function fetch_product_by_pd_id($pd_id, $c_id)
+{
+    global $conn;
+
+    $sql = "SELECT prod.pd_n,pu.pu_name,pri_d.pri_sell 
+            FROM `pri_detail` AS pri_d 
+            INNER JOIN product AS prod ON pri_d.pd_id = prod.pd_id 
+            INNER JOIN p_unit AS pu ON pri_d.pu_id = pu.pu_id 
+            WHERE pri_d.pd_id = ? AND pri_d.c_id = ?";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "ii", $pd_id, $c_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+    // ตรวจสอบผลลัพธ์
+    if (mysqli_num_rows($result) > 0) {
+        $pd_id = mysqli_fetch_assoc($result); // ดึงข้อมูลเป็นอาเรย์ associative
+    } else {
+        $pd_id = null; // ถ้าไม่พบข้อมูล
+    }
+
+
+    return $pd_id;
 }

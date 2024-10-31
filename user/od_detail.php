@@ -1,18 +1,37 @@
 <?php
 
 include('_header.php');
-//include('_navbar.php');
-//include('_sidebar_menu.php');
+// include('_navbar.php');
+// include('_sidebar_menu.php');
 include('_fn.php');
 include('../admin/_fn.php');
 
-//GET od_id by fn-save
-$od_id = $_GET["od_id"];
 
-$result = fetch_orders_by_id($od_id);
-$row =
+// GET od_id by fn-save
+$od_id = $_GET['od_id'];
+$order = fetch_orders_by_odid($od_id);
 
-    $list = fetch_prod();
+if ($order) {
+    $c_id = $order['c_id']; // ดึงข้อมูล c_id จากผลลัพธ์
+    // ใช้ $c_id ในการดำเนินการอื่นๆ ได้ตามต้องการ
+} else {
+    echo "ไม่พบข้อมูลการสั่งซื้อ";
+}
+
+
+$product = null;
+if (isset($_POST['pd_id'])) {
+    $pd_id = $_POST['pd_id'];
+    $product = fetch_product_by_pd_id($pd_id, $c_id); // ใช้ฟังก์ชันเพื่อดึงข้อมูลสินค้า
+    $quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
+    $total = $product ? $product['price_sell'] * $quantity : 0;
+}
+
+echo $product;
+
+
+$list = fetch_prod();
+
 
 
 ?>
@@ -38,23 +57,10 @@ $row =
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
 </head>
 
-<body class="">
+<body>
     <div class="content">
-        <!-- Content Header (Page header)  -->
+        <!-- Content Header (Page header) -->
         <section class="content-header">
-            <!--<div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-6 mx-auto">
-            <h1>ข้อมูลลูกค้า</h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">DataTables</li>
-            </ol>
-          </div>
-        </div>
-      </div> /.container-fluid -->
         </section>
 
         <!-- Main content -->
@@ -62,114 +68,104 @@ $row =
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-6 mx-auto">
+                        <!-- Order Form Card -->
                         <div class="card card-primary">
                             <div class="card-header">
                                 <h3 class="card-title">เพิ่มรายการสั่งซื้อ</h3>
                             </div>
-                            <form id="orderForm" action="od_add_save.php" method="post">
-                                <input type="hidden" name="od_id" value="<?= $od_id ?>">
+                            <form id="orderForm" method="post">
+                                <input type="hidden" name="c_id" value="<?= htmlspecialchars($c_id) ?>">
+                                <input type="hidden" name="od_id" value="<?= htmlspecialchars($od_id) ?>">
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            <!-- ชื่อลูกค้า -->
+
                                             <div class="form-group">
-                                                <input value="<?= $c_name ?>" type="text" name="c_name" class="form-control">
+                                                <label for="productSelect">เลือกสินค้า:</label>
+                                                <select id="productSelect" name="pd_id" class="form-control">
+                                                    <option value="">-- กรุณาเลือกสินค้า --</option>
+                                                    <?php foreach ($list as $prod) : ?>
+                                                        <option value=" <?= $prod['pd_id'] ?>" <?= isset($pd_id) && $pd_id == $prod['pd_id'] ? 'selected' : '' ?>>
+                                                            <?= htmlspecialchars($prod['pd_n']) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-sm-6">
                                             <div class="form-group">
-                                                <input name="dp_name" type="text" class="form-control" placeholder="">
+                                                <label for="quantity">จำนวน:</label>
+                                                <input type="number" name="quantity" class="form-control" value="<?= isset($quantity) ? number_format($quantity, 2) : number_format(1, 2) ?>" min="0" step="0.01" onchange="this.form.submit()">
                                             </div>
                                         </div>
-                                    </div><!--  /.row -->
-                                </div> <!-- /.card-body -->
-                                <!-- บันทึก -->
+                                    </div>
+                                </div>
+                                <!-- Save Button -->
                                 <div class="card-footer">
                                     <button type="submit" class="btn btn-danger">เพิ่ม</button>
                                 </div>
                             </form>
                         </div>
-                        <!-- /.card -->
                     </div>
-                    <!-- /.col -->
                 </div>
-                <!-- /.row -->
-            </div>
-            <!-- /.container-fluid -->
-            <div class="container-fluid">
+
+                <!-- Product List Table -->
                 <div class="row">
                     <div class="col-6 mx-auto">
                         <div class="card card-secondary">
                             <div class="card-header">
                                 <h3 class="card-title">ข้อมูลรายการสินค้า</h3>
                             </div>
-                            <!-- /.card-header -->
                             <div class="card-body">
-                                <table id="example1" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="table-info">
-                                            <th width="5%">ลำดับ</th>
-                                            <th width="30%">รายการ</th>
-                                            <th width="10%">จำนวน</th>
-                                            <th width="10%">หน่วยนับ</th>
-                                            <th width="15">ราคาต่อหน่วย</th>
-                                            <th width="30">รวมเงิน</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        //$result1 = fetch_depart_by_id($c_id);
-                                        if (mysqli_num_rows($result1) > 0) {
-                                            $i = 0;
-                                            foreach ($result1 as $row) {
-                                                $i++;
-                                        ?>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                <!-- ตารางแสดงข้อมูลสินค้า -->
+                                <div class="row">
+                                    <div class="col-6 mx-auto">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr class="table-info">
+                                                    <th width="5%">ลำดับ</th>
+                                                    <th width="30%">รายการ</th>
+                                                    <th width="10%">จำนวน</th>
+                                                    <th width="10%">หน่วยนับ</th>
+                                                    <th width="15%">ราคาต่อหน่วย</th>
+                                                    <th width="30%">รวมเงิน</th>
                                                 </tr>
-                                        <?php
-                                            }
-                                        } else {
-                                            echo '<tr><td colspan="6">ไม่พบข้อมูล</td></tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="5" style="text-align:right">ผลรวมเงินทั้งหมด:</th>
-                                            <th><?= number_format($total_amount, 2) ?></th>
-                                            <th></th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div><!-- /.card-body -->
-                            <div class="card-footer">
-                                <a href="index.php" class="btn btn-secondary">กลับ</a>
+                                            </thead>
+                                            <tbody>
+                                                <?php if ($product) : ?>
+                                                    <tr>
+                                                        <td>1</td>
+                                                        <td><?= htmlspecialchars($product['pd_n']) ?></td>
+                                                        <td><?= htmlspecialchars($quantity) ?></td>
+                                                        <td><?= htmlspecialchars($product['pu_n']) ?></td>
+                                                        <td><?= number_format($product['price_sell'], 2) ?></td>
+                                                        <td><?= number_format($total, 2) ?></td>
+                                                    </tr>
+                                                <?php else : ?>
+                                                    <tr>
+                                                        <td colspan="6">กรุณาเลือกสินค้าเพื่อแสดงข้อมูล</td>
+                                                    </tr>
+                                                <?php endif; ?>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="5" style="text-align:right">ผลรวมเงินทั้งหมด:</th>
+                                                    <th><?= isset($total) ? number_format($total, 2) : '0.00' ?></th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
-                        </div><!-- /.card -->
-
-                    </div> <!-- /.col -->
-
-                </div><!-- /.row -->
-            </div>
-    </div> <!-- /.container-fluid -->
-    </section>
-    </div> <!-- /.content -->
-
-
-
-
-
-
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </div>
 
     <!-- jQuery -->
     <script src="plugins/jquery/jquery.min.js"></script>
-    <!-- date-range-picker -->
+    <!-- Date Range Picker -->
     <script src="plugins/daterangepicker/daterangepicker.js"></script>
     <!-- Select2 -->
     <script src="plugins/select2/js/select2.full.min.js"></script>
@@ -182,7 +178,7 @@ $row =
     <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
+        document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('orderForm').addEventListener('keypress', function(event) {
                 if (event.key === 'Enter') {
                     event.preventDefault();
@@ -191,7 +187,6 @@ $row =
             });
         });
     </script>
-
 </body>
 
 </html>

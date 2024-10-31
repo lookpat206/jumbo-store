@@ -4,7 +4,12 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
 
+
+
+
 ?>
+
+
 
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
@@ -91,20 +96,20 @@ include('_fn.php');
                 </thead>
                 <tbody>
                   <?php
-                  $result = " ";
-                  if (mysqli_num_rows() > 0) {
+                  $result = fetch_orders();
+                  if (mysqli_num_rows($result) > 0) {
                     $i = 0;
                     foreach ($result as $row) {
                       $i++;
                   ?>
                       <tr>
                         <td><?= $i ?></td>
-                        <td> </td>
-                        <td></td>
-                        <td> </td>
-                        <td> </td>
+                        <td><?= $row['od_id'] ?> </td>
+                        <td><?= $row['od_day'] ?></td>
+                        <td><?= $row['dv_day'] ?> </td>
+                        <td><?= $row['dv_time'] ?> </td>
                         <td>
-                          <a type="button" class="btn btn-block btn-primary" href="department.php?c_id=<?= $row['c_id'] ?>">เพิ่ม</a>
+                          <a type="button" class="btn btn-block btn-primary" href="department.php?c_id=<?= $row['c_id'] ?>">รายละเอียด</a>
                         </td>
 
 
