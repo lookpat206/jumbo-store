@@ -30,6 +30,37 @@ function order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note)
     }
 }
 
+
+//สร้างใบสั่งซื้อ >> เพิ่มข้อมูล แผนก/ครัว
+
+function update_orders($od_id, $c_id, $od_note)
+{
+    global $conn;
+
+    $sql = "UPDATE orders 
+               SET 
+                od_note = ?
+                where 
+                od_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "si", $od_note, $od_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:od_detail.php?od_id=$od_id?c_id=$c_id");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    // ปิดคำสั่ง
+    //mysqli_stmt_close($stmt);
+}
+
+
+
 //ดึงข้อมูล orders
 function fetch_orders()
 {
@@ -107,40 +138,13 @@ function fetch_orders_by_odid($od_id)
 }
 
 
-//เพิ่มข้อมูล แผนก/ครัว
 
-function update_orders($od_id, $od_note)
+//ดึงข้อมูลสินค้าจากตาราง pri_detail
+function fetch_product_by_pd_id($od_id, $pd_id, $c_id)
 {
     global $conn;
 
-    $sql = "UPDATE orders 
-               SET 
-                od_note = ?
-                where 
-                od_id = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-
-    //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "si", $od_note, $od_id);
-
-    // ดำเนินการคำสั่ง
-    if (mysqli_stmt_execute($stmt)) {
-        //echo "บันทึกการแก้ไขเรียบร้อย";
-        header("Location:od_detail.php?od_id=$od_id");
-    } else {
-        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
-    }
-
-    // ปิดคำสั่ง
-    //mysqli_stmt_close($stmt);
-}
-
-
-function fetch_product_by_pd_id($pd_id, $c_id)
-{
-    global $conn;
-
-    $sql = "SELECT prod.pd_n,pu.pu_name,pri_d.pri_sell 
+    $sql = "SELECT prod.pd_n,pu.pu_name,pri_d.pri_sell,prod.pd_id 
             FROM `pri_detail` AS pri_d 
             INNER JOIN product AS prod ON pri_d.pd_id = prod.pd_id 
             INNER JOIN p_unit AS pu ON pri_d.pu_id = pu.pu_id 

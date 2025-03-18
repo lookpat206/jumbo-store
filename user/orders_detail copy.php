@@ -21,6 +21,133 @@ $c_add = $row['c_add'];
 
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สั่งซื้อสินค้า</title>
+</head>
+
+<body>
+  <h3>เลือกสินค้าและกรอกข้อมูลการสั่งซื้อ</h3>
+
+  <!-- ฟอร์มสั่งซื้อสินค้า -->
+  <form action="save_order.php" method="post">
+    <input type="hidden" name="od_id" value="<?= $_GET['od_id'] ?>">
+    <input type="hidden" name="c_id" value="<?= $_GET['c_id'] ?>">
+
+    <!-- เลือกสินค้า -->
+    <label for="product">เลือกสินค้า:</label>
+    <select name="product_id" id="productSelect" required>
+      <option value="">-- เลือกสินค้า --</option>
+      <?php
+      // ดึงข้อมูลสินค้าจากฐานข้อมูล
+      include('database_connection.php');
+      $query = "SELECT pd_id, product_name, price, unit FROM products";
+      $result = mysqli_query($connection, $query);
+      while ($row = mysqli_fetch_assoc($result)) {
+        echo "<option value='{$row['pd_id']}' data-price='{$row['price']}' data-unit='{$row['unit']}'>{$row['product_name']}</option>";
+      }
+      ?>
+    </select>
+
+    <!-- แสดงหน่วยนับและราคาต่อหน่วย -->
+    <label for="unit">หน่วยนับ:</label>
+    <input type="text" name="unit" id="unitDisplay" readonly>
+
+    <label for="price">ราคาต่อหน่วย:</label>
+    <input type="text" name="price_sell" id="priceDisplay" readonly>
+
+    <!-- จำนวนสินค้า -->
+    <label for="quantity">จำนวน:</label>
+    <input type="number" name="quantity" id="quantityInput" min="1" required>
+
+    <!-- เพิ่มรายการสินค้าในตาราง -->
+    <button type="button" id="addProductBtn">เพิ่มสินค้า</button>
+
+    <!-- แสดงรายการสินค้า -->
+    <table id="productTable" class="table table-bordered table-striped">
+      <thead>
+        <tr class="table-info">
+          <th>ลำดับ</th>
+          <th>รายการ</th>
+          <th>จำนวน</th>
+          <th>หน่วยนับ</th>
+          <th>ราคาต่อหน่วย</th>
+          <th>รวมเงิน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- รายการสินค้า -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colspan="5" style="text-align:right">ผลรวมทั้งหมด:</th>
+          <th id="totalAmount">0.00</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- ปุ่มบันทึก -->
+    <button type="submit">บันทึกข้อมูลทั้งหมด</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const productSelect = document.getElementById('productSelect');
+      const unitDisplay = document.getElementById('unitDisplay');
+      const priceDisplay = document.getElementById('priceDisplay');
+      const quantityInput = document.getElementById('quantityInput');
+      const addProductBtn = document.getElementById('addProductBtn');
+      const productTableBody = document.querySelector('#productTable tbody');
+      const totalAmountDisplay = document.getElementById('totalAmount');
+      let totalAmount = 0;
+
+      productSelect.addEventListener('change', () => {
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        unitDisplay.value = selectedOption.dataset.unit || '';
+        priceDisplay.value = selectedOption.dataset.price || '';
+      });
+
+      addProductBtn.addEventListener('click', () => {
+        const productName = productSelect.options[productSelect.selectedIndex].text;
+        const price = parseFloat(priceDisplay.value);
+        const quantity = parseInt(quantityInput.value);
+        const unit = unitDisplay.value;
+
+        if (!isNaN(price) && !isNaN(quantity) && quantity > 0) {
+          const subtotal = price * quantity;
+          totalAmount += subtotal;
+          totalAmountDisplay.textContent = totalAmount.toFixed(2);
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+                        <td>${productTableBody.children.length + 1}</td>
+                        <td>${productName}</td>
+                        <td>${quantity}</td>
+                        <td>${unit}</td>
+                        <td>${price.toFixed(2)}</td>
+                        <td>${subtotal.toFixed(2)}</td>
+                    `;
+          productTableBody.appendChild(row);
+
+          // เพิ่มข้อมูลในฟอร์มสำหรับส่งไปยัง server
+          const form = document.querySelector('form');
+          form.innerHTML += `
+                        <input type="hidden" name="products[${productTableBody.children.length - 1}][product_id]" value="${productSelect.value}">
+                        <input type="hidden" name="products[${productTableBody.children.length - 1}][quantity]" value="${quantity}">
+                        <input type="hidden" name="products[${productTableBody.children.length - 1}][price]" value="${price}">
+                    `;
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
+
 
 <!DOCTYPE html>
 <html lang="en">

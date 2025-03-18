@@ -76,10 +76,10 @@
         </li>
         <li class="nav-item">
           <!-- ข้อมูลซื้อสินค้า -->
-          <a href="#" class="nav-link">
+          <a href="plan.php" class="nav-link">
             <i class="nav-icon fas fa-columns"></i>
             <p>
-              จัดการซื้อสินค้า
+              แผนการซื้อสินค้า
             </p>
           </a>
         </li>

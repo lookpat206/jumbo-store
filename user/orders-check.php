@@ -8,6 +8,7 @@ include('../admin/_fn.php');
 
 $od_id = $_GET['od_id'];
 
+
 //ดึงข้อมูล orders
 $result1 = fetch_orders_by_id($od_id);
 
@@ -88,6 +89,7 @@ $result2 = fetch_depart_by_id($c_id);
               <form action="orders_update.php" method="post">
                 <div class="card-body">
                   <input type="hidden" name="od_id" value="<?= $od_id ?>">
+                  <input type="hidden" name="c_id" value="<?= $c_id ?>">
 
                   <!-- customer -->
                   <div class="form-group">
