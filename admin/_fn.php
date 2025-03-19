@@ -594,7 +594,8 @@ function fetch_supp()
 {
     global $conn;
     $sql = "SELECT * 
-            FROM mk_sup";
+            FROM mk_sup
+            join p_type on mk_sup.pt_id = p_type.pt_id";
     // แปลง $sql เป็น $stmt
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -646,9 +647,96 @@ function fetch_mark_by_mkid($mk_id)
     return $result;
 }
 
+//###############################################################
+//เพิ่มข้อมูล ตาราง market
+
+function mark_add_save($mk_name)
+{
+    global $conn;
+
+    $sql = "INSERT INTO market(mk_name) 
+            VALUES (?)";
+    // แปลง $sql เป็น $stmt            
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "s", $mk_name);
+
+    // ดำเนินการคำสั่ง SQL
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location:market.php");
+        exit();
+    } else {
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+
+//###############################################################
+// แก้ไขข้อมูล ตาราง market
+
+function mark_edit($mk_id, $mk_name)
+{
+    global $conn;
+
+    $sql = "UPDATE market 
+               SET 
+                mk_name = ?
+                where 
+                mk_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "si", $mk_name, $mk_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:market.php");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+//###############################################################   
+// ลบข้อมูล ตาราง market
+
+function mark_delete($mk_id)
+{
+    global $conn;
+
+    $sql = "DELETE FROM 
+                     market 
+                  WHERE 
+                     mk_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $mk_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "ต้องการลบข้อมูลผู้ใช้งาน";
+        header("Location:market.php");
+    } else {
+        echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
 
 //###############################################
-//เพิ่มข้อมูลร้านค้า
+//เพิ่มข้อมูลร้านค้าจาก TB-supp
 function supp_add_save($sp_name, $pt_id, $sp_tel)
 {
     global $conn;
@@ -675,41 +763,16 @@ function supp_add_save($sp_name, $pt_id, $sp_tel)
     }
 
     mysqli_stmt_close($stmt);
-} {
-    global $conn;
-
-    $sql = "INSERT INTO supplier(mk_id, sp_name , sp_tel) 
-            VALUES ( ?, ?, ?)";
-    // แปลง $sql เป็น $stmt            
-    $stmt = mysqli_prepare($conn, $sql);
-
-    if (!$stmt) {
-        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
-        exit();
-    }
-
-    // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "iis", $mk_id, $sp_name,  $sp_tel);
-
-    // ดำเนินการคำสั่ง SQL
-    if (mysqli_stmt_execute($stmt)) {
-        header("Location:supp_add.php?");
-        exit();
-    } else {
-        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
-    }
-
-    mysqli_stmt_close($stmt);
 }
 
 //######################################################################
-// รับค่า id แล้วดึงข้อมูลจาก TB-supplier
+// รับค่า id แล้วดึงข้อมูลจาก TB-supp
 
 function fetch_supp_by_spid($sp_id)
 {
     global $conn;
     $sql = "SELECT *
-            FROM supplier
+            FROM mk_sup
             WHERE sp_id = ? ";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -725,4 +788,179 @@ function fetch_supp_by_spid($sp_id)
 
 
     return $result;
+}
+
+//######################################################################
+// แก้ไขข้อมูล ร้านค้า TB-supp
+
+function supp_edit($sp_id, $sp_name, $pt_id, $sp_tel)
+{
+    global $conn;
+
+    $sql = "UPDATE mk_sup 
+               SET 
+                sp_name = ?,
+                pt_id = ?,
+                sp_tel = ?
+                where 
+                sp_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "sisi", $sp_name, $pt_id, $sp_tel, $sp_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:supp.php");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+
+//######################################################################
+//ลบข้อมูล ร้านค้า TB-supp
+
+function supp_delete($sp_id)
+{
+    global $conn;
+
+    $sql = "DELETE FROM 
+                     mk_sup 
+                  WHERE 
+                     sp_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $sp_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "ต้องการลบข้อมูลผู้ใช้งาน";
+        header("Location:supp.php");
+    } else {
+        echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+
+//*************************************************************** */
+// ดึงข้อมูลจาก TB-plan
+function fetch_plan()
+{
+    global $conn;
+
+    $sql = "SELECT * 
+            FROM plan
+            JOIN market ON plan.mk_id = market.mk_id
+            JOIN mk_sup ON plan.sp_id = mk_sup.sp_id
+            JOIN product ON plan.pd_id = product.pd_id
+            JOIN js_user ON plan.u_id = js_user.u_id
+            ORDER BY plan_id DESC";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+    return $result;
+}
+
+//*************************************************************** */
+// ดึงข้อมูลจาก TB-plan โดยใช้ plan_id
+
+function fetch_plan_by_planid($plan_id)
+{
+    global $conn;
+
+    $sql = "SELECT * 
+            FROM plan 
+             JOIN market ON plan.mk_id = market.mk_id
+            JOIN mk_sup ON plan.sp_id = mk_sup.sp_id
+            JOIN product ON plan.pd_id = product.pd_id
+            JOIN js_user ON plan.u_id = js_user.u_id
+            WHERE plan_id = ?
+            ORDER BY plan_id DESC";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $plan_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+}
+
+//*************************************************************** */
+// บันทึกข้อมูล แผนจากการเพิ่มข้อมูล
+
+function plan_add_save($mk_id, $sp_id, $pd_id, $u_id)
+{
+    global $conn;
+
+    $sql = "INSERT INTO plan(mk_id, sp_id, pd_id, u_id) 
+            VALUES (?, ?, ?, ?)";
+    // แปลง $sql เป็น $stmt            
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "iiii", $mk_id, $sp_id, $pd_id, $u_id);
+
+    // ดำเนินการคำสั่ง SQL
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location:plan.php");
+        exit();
+    } else {
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+//*************************************************************** */
+// แก้ไขข้อมูล แผนจาก TB-plan
+
+
+//******************************************************************* */
+// ลบข้อมูล แผนจาก TB-plan
+
+function plan_delete($plan_id)
+{
+    global $conn;
+
+    $sql = "DELETE FROM 
+                     plan 
+                  WHERE 
+                     plan_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $plan_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "ต้องการลบข้อมูลผู้ใช้งาน";
+        header("Location:plan.php");
+    } else {
+        echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
 }
