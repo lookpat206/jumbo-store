@@ -75,7 +75,7 @@ $result1 = fetch_type();
               <!-- บันทึก -->
               <div class="card-footer">
                 <button type="submit" class="btn btn-danger">บันทึก</button>
-                <a href="market.php" class="btn btn-secondary">กลับ</a>
+                <a href="supp.php" class="btn btn-secondary">กลับ</a>
               </div>
             </form>
           </div>

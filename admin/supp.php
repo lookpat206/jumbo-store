@@ -46,8 +46,9 @@ include('_fn.php');
                                 <thead>
                                     <tr class="table-info">
                                         <th width="5%">ลำดับ</th>
-                                        <th width="45%">ชื่อร้านค้า</th>
-                                        <th width="30%">เบอร์โทรศัพท์</th>
+                                        <th width="30%">ชื่อร้านค้า</th>
+                                        <th width="20%">ประเภทสินค้า</th>
+                                        <th width="25%">เบอร์โทรศัพท์</th>
                                         <th width="10%">แก้ไข</th>
                                         <th width="10%">ลบ</th>
                                     </tr>
@@ -64,6 +65,7 @@ include('_fn.php');
                                             <tr>
                                                 <td><?= $i ?></td>
                                                 <td><?= $row['sp_name'] ?></td>
+                                                <td><?= $row['pt_name'] ?></td>
                                                 <td><?= $row['sp_tel'] ?></td>
 
                                                 <td>
@@ -72,7 +74,7 @@ include('_fn.php');
                                                     </a>
                                                 </td>
                                                 <td>
-                                                    <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="spuu_delete.php?mk_id=<?= $row['sp_id'] ?>">
+                                                    <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="supp_delete.php?sp_id=<?= $row['sp_id'] ?>">
                                                         <i class="far fa-trash-alt"></i>
                                                     </a>
                                                 </td>
