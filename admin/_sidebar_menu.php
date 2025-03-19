@@ -58,6 +58,12 @@
             <li class="nav-item">
               <a href="market.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
+                <p>ข้อมูลสถานที่ซื้อสินค้า</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="supp.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
                 <p>ข้อมูลร้านค้า</p>
               </a>
             </li>

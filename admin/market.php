@@ -44,8 +44,6 @@ include('_fn.php');
                   <tr class="table-info">
                     <th width="5%">ลำดับ</th>
                     <th width="45%">สถานที่ซื้อสินค้า</th>
-                    <th width="30%">เพิ่มร้านค้า</th>
-
                     <th width="10%">แก้ไข</th>
                     <th width="10%">ลบ</th>
                   </tr>
@@ -62,9 +60,7 @@ include('_fn.php');
                       <tr>
                         <td><?= $i ?></td>
                         <td><?= $row['mk_name'] ?></td>
-                        <td>
-                          <a class="btn btn-block btn-secondary" href="supp_add.php?mk_id=<?= $row['mk_id'] ?>">เพิ่มร้านค้า</a>
-                        </td>
+
                         <td>
                           <a class="btn btn-warning btn-sm" href="market_edit.php?mk_id=<?= $row['mk_id'] ?>">
                             <i class="far fa-edit"></i>

@@ -593,11 +593,8 @@ function fetch_type()
 function fetch_supp()
 {
     global $conn;
-    $sql = "SELECT s.sp_id, s.sp_name,  s.sp_tel,pt.pt_id 
-            FROM supplier AS s 
-            INNER JOIN p_type as pt ON s.pt_id = pt.pt_id 
-            INNER JOIN market as m ON s.mk_id = m.mk_id 
-            ORDER BY pt.pt_id  DESC ";
+    $sql = "SELECT * 
+            FROM mk_sup";
     // แปลง $sql เป็น $stmt
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -652,8 +649,33 @@ function fetch_mark_by_mkid($mk_id)
 
 //###############################################
 //เพิ่มข้อมูลร้านค้า
-function supp_add_save($mk_id, $sp_name,  $sp_tel)
+function supp_add_save($sp_name, $pt_id, $sp_tel)
 {
+    global $conn;
+
+    $sql = "INSERT INTO mk_sup(sp_name, pt_id, sp_tel) 
+            VALUES (?, ?, ?)";
+    // แปลง $sql เป็น $stmt            
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "sis", $sp_name, $pt_id, $sp_tel);
+
+    // ดำเนินการคำสั่ง SQL
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location:supp.php?");
+        exit();
+    } else {
+        echo "เพิ่มข้อมูลผู้ใช้ไม่สำเร็จ: " . mysqli_stmt_error($stmt);
+    }
+
+    mysqli_stmt_close($stmt);
+} {
     global $conn;
 
     $sql = "INSERT INTO supplier(mk_id, sp_name , sp_tel) 

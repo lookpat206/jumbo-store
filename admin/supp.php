@@ -4,14 +4,6 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
 
-
-//get mk_id by market.php
-$mk_id = $_GET['mk_id'];
-
-$result = fetch_mark_by_mkid($mk_id);
-$row = mysqli_fetch_assoc($result);
-$mk_name = $row['mk_name'];
-
 ?>
 
 
@@ -43,6 +35,7 @@ $mk_name = $row['mk_name'];
                         <div class="card-header">
                             <h3 class="card-title">ข้อมูลร้านค้า</h3>
                             <div class="card-tools">
+                                <a href="supp_add.php" class="btn btn-primary">เพิ่มข้อมูลลูกค้า</a>
 
                             </div>
                         </div>
@@ -54,7 +47,7 @@ $mk_name = $row['mk_name'];
                                     <tr class="table-info">
                                         <th width="5%">ลำดับ</th>
                                         <th width="45%">ชื่อร้านค้า</th>
-
+                                        <th width="30%">เบอร์โทรศัพท์</th>
                                         <th width="10%">แก้ไข</th>
                                         <th width="10%">ลบ</th>
                                     </tr>
@@ -71,11 +64,10 @@ $mk_name = $row['mk_name'];
                                             <tr>
                                                 <td><?= $i ?></td>
                                                 <td><?= $row['sp_name'] ?></td>
+                                                <td><?= $row['sp_tel'] ?></td>
+
                                                 <td>
-                                                    <a class="btn btn-block btn-secondary" href="supp_add.php?mk_id=<?= $row['mk_id'] ?>">เพิ่มราคา</a>
-                                                </td>
-                                                <td>
-                                                    <a class="btn btn-warning btn-sm" href="supp.php?mk_id=<?= $row['mk_id'] ?>">
+                                                    <a class="btn btn-warning btn-sm" href="supp_edit.php?sp_id=<?= $row['sp_id'] ?>">
                                                         <i class="far fa-edit"></i>
                                                     </a>
                                                 </td>
