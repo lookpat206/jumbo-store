@@ -881,14 +881,15 @@ function fetch_plan_by_planid($plan_id)
 {
     global $conn;
 
-    $sql = "SELECT * 
+    $sql = "SELECT  market.mk_name,mk_sup.sp_name,product.pd_n,js_user.u_name,
+                    plan.plan_id,plan.mk_id,plan.sp_id,plan.pd_id,plan.u_id
+
             FROM plan 
              JOIN market ON plan.mk_id = market.mk_id
             JOIN mk_sup ON plan.sp_id = mk_sup.sp_id
             JOIN product ON plan.pd_id = product.pd_id
             JOIN js_user ON plan.u_id = js_user.u_id
-            WHERE plan_id = ?
-            ORDER BY plan_id DESC";
+            WHERE plan_id = ? ";
 
     // เตรียมคำสั่ง SQL
     $stmt = mysqli_prepare($conn, $sql);
@@ -901,6 +902,8 @@ function fetch_plan_by_planid($plan_id)
 
     // รับผลลัพธ์
     $result = mysqli_stmt_get_result($stmt);
+
+    return $result;
 }
 
 //*************************************************************** */
@@ -936,6 +939,34 @@ function plan_add_save($mk_id, $sp_id, $pd_id, $u_id)
 
 //*************************************************************** */
 // แก้ไขข้อมูล แผนจาก TB-plan
+
+function plan_edit($plan_id, $mk_id, $sp_id, $pd_id, $u_id)
+{
+    global $conn;
+
+    $sql = "UPDATE plan 
+               SET 
+                mk_id = ?,
+                sp_id = ?,
+                pd_id = ?,
+                u_id = ?
+                where 
+                plan_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "iiiii", $mk_id, $sp_id, $pd_id, $u_id, $plan_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:plan.php");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
 
 
 //******************************************************************* */
