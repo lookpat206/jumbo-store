@@ -59,7 +59,7 @@ $sp_tel = $row['sp_tel'];
                 <div class="form-group">
                   <label for="type">ประเภทสินค้า:</label>
                   <select class="form-control select2" name="pt_id" style="width: 100%;">
-                    <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                    <option selected="selected" value=""><?= $pt_id ?></option>
                     <?php foreach ($result1 as $row) { ?>
                       <option value="<?= $row['pt_id'] ?>"> <?= $row['pt_name'] ?> </option>
                     <?php } ?>
