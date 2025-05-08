@@ -1,0 +1,257 @@
+<?php
+
+
+include('_header.php');
+//include('_navbar.php');
+//include('_sidebar_menu.php');
+include('_fn.php');
+
+
+// GET pri_id by price.php
+$pri_id = $_GET['pri_id'];
+
+//ดึงข้อมูล สินค้า
+$result1 = fetch_prod();
+
+//ดึงข้อมูล หน่วยนับ 
+$result2 = fetch_unit();
+
+//ดึงข้อมูล ราคาสินค้า จาก pri_id
+$result3 = fetch_pri_detail_dy_priid($pri_id);
+$row = mysqli_fetch_assoc($result3);
+$pri_id = $row['pri_id'];
+$pd_id = $row['pd_id'];
+$pu_id = $row['pu_id'];
+$pri_sell = $row['pri_sell'];
+$pd_n = $row['pd_n'];
+$pu_name = $row['pu_name'];
+$c_id = $row['c_id'];
+
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>จัดการข้อมูลราคาสินค้า</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <!-- icheck bootstrap -->
+    <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
+
+<body class="">
+    <div class="content">
+        <!-- Content Header (Page header)  -->
+        <section class="content-header">
+            <!--<div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-6 mx-auto">
+            <h1>ข้อมูลลูกค้า</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">DataTables</li>
+            </ol>
+          </div>
+        </div>
+      </div> /.container-fluid -->
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-6 mx-auto">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">แก้ไขราคาสินค้า</h3>
+                            </div>
+                            <form action="price_edit_save.php" method="post">
+                                <input type="hidden" name="pri_id" value="<?= $pri_id ?>">
+                                <input type="hidden" name="c_id" value="<?= $c_id ?>">
+
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <!-- ชื่อสินค้า -->
+                                            <div class="form-group">
+                                                <label>ชื่อสินค้า : </label>
+                                                <select class=" form-control select2bs4" name="pd_id">
+                                                    <option selected="selected" value="<?= $pd_id ?>"> <?= $pd_n ?></option>
+                                                    <?php foreach ($result1 as $unit) { ?>
+                                                        <option value="<?= $unit['pd_id'] ?>"><?= $unit['pd_n'] ?></option>
+
+                                                    <?php } ?>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group">
+                                                <!-- เลือกหน่วยนับ -->
+                                                <div class="mb-3">
+                                                    <select class=" form-control select2" name="pu_id">
+                                                        <option selected="selected" value="<?= $pu_id ?>"><?= $pu_name ?></option>
+                                                        <?php foreach ($result2 as $unit) { ?>
+                                                            <option value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                                <!-- ราคาขาย -->
+                                                <div class="mb-3">
+                                                    <input type=" number" class="form-control" name="pri_sell" step="0.01" min="0" placeholder="<?= $pri_sell ?>">
+                                                    <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!--  /.row -->
+                                </div> <!-- /.card-body -->
+                                <!-- บันทึก -->
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-danger">บันทึก</button>
+                                    <a href="cust.php" class="btn btn-secondary">กลับ</a>
+
+                                </div>
+                            </form>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+
+
+    </div>
+    <!-- /.container-fluid -->
+
+    </section>
+    </div> <!-- /.content -->
+
+
+
+
+
+
+
+    <!-- jQuery -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- date-range-picker -->
+    <script src="plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Select2 -->
+    <script src="plugins/select2/js/select2.full.min.js"></script>
+    <!-- InputMask -->
+    <script src="plugins/moment/moment.min.js"></script>
+    <script src="plugins/inputmask/jquery.inputmask.min.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Bootstrap Switch -->
+    <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <!-- Bootstrap4 Duallistbox -->
+    <script src="../../plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
+
+    <script>
+        $(function() {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', {
+                'placeholder': 'dd/mm/yyyy'
+            })
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', {
+                'placeholder': 'mm/dd/yyyy'
+            })
+            //Money Euro
+            $('[data-mask]').inputmask()
+
+            //Date picker
+            $('#reservationdate').datetimepicker({
+                format: 'L'
+            });
+
+            //Date and time picker
+            $('#reservationdatetime').datetimepicker({
+                icons: {
+                    time: 'far fa-clock'
+                }
+            });
+
+            //Date range picker
+            $('#reservation').daterangepicker()
+            //Date range picker with time picker
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'MM/DD/YYYY hh:mm A'
+                }
+            })
+            //Date range as a button
+            $('#daterange-btn').daterangepicker({
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function(start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                }
+            )
+
+            //Timepicker
+            $('#timepicker').datetimepicker({
+                format: 'LT'
+            })
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox()
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker()
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker()
+
+            $('.my-colorpicker2').on('colorpickerChange', function(event) {
+                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+            })
+
+            $("input[data-bootstrap-switch]").each(function() {
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            })
+
+        })
+    </script>
+
+</body>
+
+</html>

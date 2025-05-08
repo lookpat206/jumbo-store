@@ -1,4 +1,6 @@
 <?php
+
+//สินค้าคงเหลือ Inventory
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
@@ -12,7 +14,7 @@ include('_fn.php');
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>ข้อมูลสินค้า</h1>
+                    <h1>ข้อมูลสินค้าคงเหลือ</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -31,9 +33,9 @@ include('_fn.php');
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">ตารางข้อมูลสินค้า</h3>
+                            <h3 class="card-title">ตารางข้อมูลสินค้าคงเหลือ</h3>
                             <div class="card-tools">
-                                <a href="prod_add.php" class="btn btn-primary">เพิ่มข้อมูลสินค้า</a>
+                                <a href="inv_add.php" class="btn btn-primary">เพิ่มข้อมูลสินค้า</a>
                             </div>
                         </div>
                         <!-- /.card-header -->
@@ -44,7 +46,7 @@ include('_fn.php');
                                     <tr>
                                         <th style="width: 10%;">ลำดับ</th>
                                         <th style="width: 50%;">ชื่อสินค้า</th>
-                                        <th style="width: 20%">เพิ่มร้านค้า</th>
+                                        <th style="width: 20%">จำนวน</th>
                                         <th style="width: 10%;">แก้ไข</th>
                                         <th style="width: 10%;">ลบ</th>
                                     </tr>

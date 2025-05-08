@@ -508,7 +508,64 @@ function fetch_pri_detail_dy_pdid($c_id)
     return $result;
 }
 
+//***************************************** */
+// ดึงข้อมูลจาก TB-pri_detail โดยใช้ pri_id
 
+function   fetch_pri_detail_dy_priid($pri_id)
+{
+    global $conn;
+    $sql = "SELECT p.pd_n,u.pu_name,prd.pri_sell,prd.c_id,prd.pd_id,prd.pri_id,prd.pu_id
+            FROM pri_detail as prd 
+            INNER JOIN cust as c on prd.c_id=c.c_id
+            INNER JOIN product as p on prd.pd_id = p.pd_id 
+            INNER JOIN p_unit as u on prd.pu_id = u.pu_id 
+            WHERE prd.pri_id = ? ";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $pri_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+
+
+    return $result;
+}
+
+//***************************************** */
+// แก้ไขข้อมูล ราคาสินค้า TB-pri_detail
+
+function price_edit($pd_id, $pu_id, $pri_sell, $pri_id, $c_id)
+{
+    global $conn;
+
+    $sql = "UPDATE pri_detail 
+               SET pd_id = ?,
+                pu_id = ?,
+                pri_sell = ?
+                where 
+                pri_id = ? 
+                AND
+                c_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "iiiii", $pd_id, $pu_id, $pri_sell, $pri_id, $c_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:price.php?c_id=$c_id");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
 
 
 

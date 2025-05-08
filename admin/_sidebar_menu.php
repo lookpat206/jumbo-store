@@ -91,7 +91,7 @@
         </li>
         <li class="nav-item">
           <!-- เพิ่มหน้าเพจการซื้อสินค้า -->
-          <a href="store.php" class="nav-link">
+          <a href="inv.php" class="nav-link">
             <i class="nav-icon fas fa-carrot"></i>
             <p>
               จัดการสินค้าคงเหลือ

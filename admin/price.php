@@ -90,7 +90,7 @@ $c_abb = $row['c_abb'];
                                                     <td><?= $row['pri_sell'] ?></td>
                                                     <!-- ปุ่มแก้ไข -->
                                                     <td>
-                                                        <a class="btn btn-block btn-secondary" href="price.php?pri_id=<?= $row['pri_id'] ?>">แก้ไขราคา</a>
+                                                        <a class="btn btn-block btn-secondary" href="price_edit.php?pri_id=<?= $row['pri_id'] ?>">แก้ไขราคา</a>
                                                     </td>
 
                                                 </tr>
