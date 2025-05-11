@@ -4,7 +4,10 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
 
-
+$result1 = fetch_mark();
+$result2 = fetch_supp();
+$result3 = fetch_prod();
+$result4 = fetch_user();
 
 ?>
 
@@ -16,7 +19,7 @@ include('_fn.php');
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>ข้อมูลแผนการซื้อสินค้า</h1>
+                    <h1>แผนการซื้อสินค้า</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -32,79 +35,86 @@ include('_fn.php');
 
     <section class="content">
         <div class="container-fluid">
-            <!-- Small boxes (Stat box) จำนวนลูกค้า -->
             <div class="row">
-                <div class="col-lg-3 col-6">
-                    <!-- small box -->
-                    <div class="small-box bg-orange">
-                        <div class="inner">
-                            <h3>รอข้อมูล</h3>
-
-                            <p>จำนวนสถานที่ซื้อสินค้า</p>
+                <!-- left column -->
+                <div class="col-md-12">
+                    <!-- jquery validation -->
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">สร้างแผนการซื้อสินค้า</small></h3>
                         </div>
-                        <!-- <div class="icon">
-                <i class="ion-android-person"></i>
-              </div> -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form action="plan_add_save.php" method="post">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="type">สถานที่ซื้อสินค้า:</label>
+                                            <select class="form-control select2" name="mk_id" style="width: 100%;">
+                                                <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                                                <?php foreach ($result1 as $row) { ?>
+                                                    <option value="<?= $row['mk_id'] ?>"> <?= $row['mk_name'] ?> </option>
+                                                <?php } ?>
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="type">ร้านค้า:</label>
+                                            <select class="form-control select2" name="sp_id" style="width: 100%;">
+                                                <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                                                <?php foreach ($result2 as $row) { ?>
+                                                    <option value="<?= $row['sp_id'] ?>"> <?= $row['sp_name'] ?> </option>
+                                                <?php } ?>
+
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="type">ชื่อสินค้า:</label>
+                                            <select class="form-control select2" name="pd_id" style="width: 100%;">
+                                                <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                                                <?php foreach ($result3 as $row) { ?>
+                                                    <option value="<?= $row['pd_id'] ?>"> <?= $row['pd_n'] ?> </option>
+                                                <?php } ?>
+
+                                            </select>
+
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label for="type">ผู้รับผิดชอบ :</label>
+                                            <select class="form-control select2" name="u_id" style="width: 100%;">
+                                                <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                                                <?php foreach ($result4 as $row) { ?>
+                                                    <option value="<?= $row['u_id'] ?>"> <?= $row['u_name'] ?> </option>
+                                                <?php } ?>
+
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div> <!-- /.row -->
+                            </div> <!-- /.card-body -->
+
+                            <!-- บันทึก -->
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-danger">บันทึก</button>
+                            </div><!-- /.card-footer -->
+                        </form>
                     </div>
+                    <!-- /.card -->
                 </div>
-                <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box จำนวนสินค้า-->
-                    <div class="small-box bg-green">
-                        <div class="inner">
-                            <h3>รอข้อมูล<!--<sup style="font-size: 20px">%</sup> --></h3>
-
-                            <p>จำนวนร้านค้า</p>
-                        </div>
-                        <!-- <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div> -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box จำนวนผู้ใช้ -->
-                    <div class="small-box bg-warning">
-                        <div class="inner">
-                            <h3>รอข้อมูล</h3>
-
-                            <p>จำนวนสินค้า</p>
-                        </div>
-                        <!-- <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>  -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box จำนวนผู้ใช้ -->
-                    <div class="small-box bg-teal">
-                        <div class="inner">
-                            <h3>รอข้อมูล</h3>
-
-                            <p>จำนวนผู้รับผิดชอบ</p>
-                        </div>
-                        <!-- <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>  -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-
-
 
             </div>
-            <!-- /.row -->
-
         </div><!-- /.container-fluid -->
     </section>
 
@@ -112,13 +122,10 @@ include('_fn.php');
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
+                    <div class="card card-secondary">
                         <div class="card-header">
-                            <h3 class="card-title">แผนการซื้อสินค้า</h3>
-                            <div class="card-tools">
-                                <a href="plan_add.php" class="btn btn-primary">เพิ่มข้อมูล</a>
-
-                            </div>
+                            <h3 class="card-title">ข้อมูลแผนการซื้อสินค้า</h3>
+                            <div class="card-tools"></div>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
