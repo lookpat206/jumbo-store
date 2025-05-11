@@ -472,7 +472,7 @@ function price_delete($pri_id, $c_id)
     // ดำเนินการคำสั่ง
     if (mysqli_stmt_execute($stmt)) {
         //echo "ต้องการลบข้อมูลผู้ใช้งาน";
-        header("Location:price_add.php?$c_id=$c_id");
+        header("Location:price_add.php?c_id=$c_id");
     } else {
         echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . $sql;
     }
