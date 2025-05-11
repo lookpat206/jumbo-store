@@ -1,5 +1,5 @@
 <?php
-// ติดปัญหาบันทึกข้อมูล
+
 include('_header.php');
 //include('_navbar.php');
 //include('_sidebar_menu.php');
@@ -8,7 +8,7 @@ include('_fn.php');
 // GET c_id by cust.php
 $c_id = $_GET['c_id'];
 
-//echo $c_id;
+//echo "ระหัส" . $c_id;
 
 // เรียกใช้ function 
 $result = fetch_cust_by_cid($c_id);

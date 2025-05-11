@@ -123,7 +123,7 @@ $c_id = $row['c_id'];
                                 <!-- บันทึก -->
                                 <div class="card-footer">
                                     <button type="submit" class="btn btn-danger">บันทึก</button>
-                                    <a href="cust.php" class="btn btn-secondary">กลับ</a>
+                                    <a href="price.php?c_id=<?= $row['c_id'] ?>" class="btn btn-secondary">กลับ</a>
 
                                 </div>
                             </form>
