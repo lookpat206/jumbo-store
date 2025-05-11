@@ -67,8 +67,9 @@ function fetch_orders()
     global $conn; //ประกาศตัวแปร conn
 
     //ดึงข้อมูล
-    $sql = "SELECT *
-            FROM orders ";
+    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id
+            FROM orders AS o
+I           NNER JOIN cust AS c ON o.c_id = c.c_id";
 
     $stmt = mysqli_prepare($conn, $sql);
     // ผูกพารามิเตอร์
