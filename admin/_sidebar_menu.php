@@ -29,7 +29,7 @@
 
         <!-- จัดการข้อมูล -->
         <li class="nav-item">
-          <a href="index.php" class="nav-link">
+          <a href="#" class="nav-link">
             <i class="nav-icon fas fa-edit"></i>
             <p>
               จัดการข้อมูล
@@ -38,21 +38,15 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="cust.php" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>ข้อมูลลูกค้า</p>
-              </a>
-            </li>
-            <li class="nav-item">
               <a href="prod.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>ข้อมูลสินค้า</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="user.php" class="nav-link">
+              <a href="cust.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>ข้อมูลผู้ใช้</p>
+                <p>ข้อมูลลูกค้า</p>
               </a>
             </li>
             <li class="nav-item">
@@ -67,37 +61,73 @@
                 <p>ข้อมูลร้านค้า</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="user.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>ข้อมูลพนักงาน</p>
+              </a>
+            </li>
           </ul>
         </li>
-        <!-- สั่งสินค้า -->
+        <!-- สั่งซื้อสินค้า -->
         <li class="nav-item">
-
-          <a href="../user/orders.php" class="nav-link">
-            <i class="nav-icon fas fa-cart-plus"></i>
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-shopping-cart"></i>
             <p>
-              การสั่งสินค้า
-              <!-- <span class="right badge badge-danger">New</span> -->
+              สั่งซื้อสินค้า
+              <i class="fas fa-angle-left right"></i>
             </p>
           </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="order.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>สร้างใบสั่งซื้อ</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="po.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>ข้อมูลใบสั่งซื้อ</p>
+              </a>
+            </li>
+
+          </ul>
         </li>
+        <!-- แผนการซื้อสินค้า -->
         <li class="nav-item">
-          <!-- ข้อมูลซื้อสินค้า -->
-          <a href="plan.php" class="nav-link">
-            <i class="nav-icon fas fa-columns"></i>
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-briefcase"></i>
             <p>
               แผนการซื้อสินค้า
+              <i class="fas fa-angle-left right"></i>
             </p>
           </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="plan.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>สร้างแผนการซื้อสินค้า</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="list.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>รายการซื้อสินค้า</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="inv.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>สินค้าคงเหลือ</p>
+              </a>
+            </li>
+          </ul>
         </li>
-        <li class="nav-item">
-          <!-- เพิ่มหน้าเพจการซื้อสินค้า -->
-          <a href="inv.php" class="nav-link">
-            <i class="nav-icon fas fa-carrot"></i>
-            <p>
-              จัดการสินค้าคงเหลือ
-            </p>
-          </a>
-        </li>
+
+
+
+
       </ul>
 
     </nav>
