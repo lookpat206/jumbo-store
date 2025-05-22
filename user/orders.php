@@ -1,9 +1,35 @@
 <?php
-
+session_start();
 include("_fn.php");
 include('../admin/_fn.php');
-//ดึงข้อมูลลูกค้า จาก TB-cust
-$result2 = fetch_cust();
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  $c_id = $_POST['c_id'];
+  $od_day = $_POST['od_day'];
+  $dv_day = $_POST['dv_day'];
+  $dv_time = $_POST['dv_time'];
+  $od_note = $_POST['od_note'];
+
+
+  $od_id = create_od($c_id, $od_day, $dv_day, $dv_time, $od_note);
+
+
+  if ($od_id && $c_id) {
+    $_SESSION['od_id'] = $od_id;
+    $_SESSION['c_id'] = $c_id;
+    if ($od_id && $c_id) {
+      echo "สร้างใบสั่งซื้อเรียบร้อย: เลขที่ $od_id";
+    } else {
+      echo "ไม่สามารถสร้างใบสั่งซื้อได้";
+    }
+    header("Location: od_detail.php"); // ไปเพิ่มรายการสินค้า
+    exit;
+  } else {
+    echo "ไม่สามารถสร้างใบสั่งซื้อได้";
+  }
+}
+
 ?>
 
 
@@ -26,6 +52,7 @@ $result2 = fetch_cust();
   <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -68,17 +95,21 @@ $result2 = fetch_cust();
               <div class="card-header">
                 <h3 class="card-title">Purchase order</h3>
               </div>
-              <form action="orders_save.php" method="post" onsubmit="return validateForm()" name="myForm">
+              <form method="post" onsubmit="return validateForm()" name="myForm">
                 <div class="card-body">
 
                   <!-- customer -->
                   <div class="form-group">
                     <label for="cust">Customer:</label>
-                    <select class="form-control select2" name="c_id" id="" mySelect" style="width: 100%;">
+
+                    <select class="form-control select2" name="c_id" id="c_id" style="width: 100%;">
                       <option selected="selected" value="">-- เลือกชื่อลูกค้า --</option>
-                      <?php foreach ($result2 as $row) { ?>
-                        <option value="<?= $row['c_id'] ?>"> <?= $row['c_name'] ?> </option>
-                      <?php } ?>
+                      <?php
+                      $customers = get_cust();
+                      while ($row = mysqli_fetch_assoc($customers)) {
+                        echo "<option value='{$row['c_id']}'>{$row['c_name']}</option>";
+                      }
+                      ?>
 
                     </select>
 
@@ -125,6 +156,13 @@ $result2 = fetch_cust();
                         <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
                           <div class="input-group-text"><i class="far fa-clock"></i></div>
                         </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="">แผนก/ครัว:</label>
+
+                        <select class="form-control" name="od_note" id="dp_id" style="width: 100%;">
+                          <option value="">-- เลือกแผนก/ครัว --</option>
+                        </select>
                       </div>
                       <!-- /.input group -->
                       <input type="hidden" name="od_note" value=" ">
@@ -184,6 +222,16 @@ $result2 = fetch_cust();
   <!-- AdminLTE App -->
   <script src="dist/js/adminlte.min.js"></script>
 
+  <script>
+    $('#c_id').on('change', function() {
+      const c_id = $(this).val();
+      $.post('orders_update.php', {
+        c_id: c_id
+      }, function(data) {
+        $('#dp_id').html(data);
+      });
+    });
+  </script>
   <!-- Page specific script -->
   <script>
     // ตรวจสอบค่า " " ของ c_id ,od_day ,dv_day ,dv_time 

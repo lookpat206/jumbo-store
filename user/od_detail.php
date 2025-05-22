@@ -1,202 +1,123 @@
 <?php
+session_start();
+require_once '_fn.php';
 
-include('_header.php');
-// include('_navbar.php');
-// include('_sidebar_menu.php');
-include('_fn.php');
-include('../admin/_fn.php');
 
-$od_id = $_GET['od_id'];
-//$c_id = $_GET['c_id'];
+if (!isset($_SESSION['od_id']) || !isset($_SESSION['c_id'])) {
+    echo "กรุณาสร้างใบสั่งซื้อก่อน";
 
-$result = fetch_prod();
+    exit;
+}
 
+$od_id = $_SESSION['od_id'];
+$c_id = $_SESSION['c_id'];
+$alert = '';
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $pd_id = $_POST['pd_id'];
+    $pu_id = $_POST['pu_id'];
+    $qty = $_POST['qty'];
+    $c_id = $_POST['c_id'];
+
+    $price_s = get_price($pd_id, $pu_id, $c_id);
+    print_r($price_s);
+    // ตรวจสอบว่าเจอราคาหรือไม่
+    // เช็คราคาว่าดึงได้ไหม
+    if ($price_s === false) {
+        $alert = "ไม่สามารถเพิ่มสินค้าได้: ไม่พบราคาสำหรับสินค้านี้ หน่วยนับ หรือรหัสลูกค้า";
+    } else {
+        $total = $price_s * $qty;
+        if (add_po_detail($od_id, $pd_id, $pu_id, $qty, $price_s, $total)) {
+            $alert = "เพิ่มสินค้าเรียบร้อยแล้ว";
+        } else {
+            $alert = "เกิดข้อผิดพลาดในการเพิ่มสินค้า";
+        }
+    }
+}
+print_r($_POST);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
+<form method="post">
+    <label>สินค้า:</label>
+    <input type="hidden" name="c_id" value="<?= $c_id ?>">
+    <select name="pd_id">
+        <?php
+        $products = get_prod();
+        while ($row = mysqli_fetch_assoc($products)) {
+            echo "<option value='{$row['pd_id']}'>{$row['pd_n']}</option>";
+        }
+        ?>
+    </select><br>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>รายการสั่งซื้อ</title>
+    <label>หน่วยนับ:</label>
+    <select name="pu_id">
+        <?php
+        $units = get_units();
+        while ($row = mysqli_fetch_assoc($units)) {
+            echo "<option value='{$row['pu_id']}'>{$row['pu_name']}</option>";
+        }
+        ?>
+    </select><br>
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
-    <!-- Select2 -->
-    <link rel="stylesheet" href="plugins/select2/css/select2.min.css">
-    <link rel="stylesheet" href="plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-    <!-- icheck bootstrap -->
-    <link rel="stylesheet" href="plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="dist/css/adminlte.min.css">
-</head>
+    <label>จำนวน:</label>
+    <input type="number" name="qty" step="0.01" min="0" required><br>
 
-<body>
-    <div class="content">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-        </section>
+    <button type="submit">เพิ่มรายการสินค้า</button>
+</form>
 
-        <!-- Main content -->
-        <section class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-6 mx-auto">
-                        <!-- Order Form Card -->
-                        <div class="card card-primary">
-                            <div class="card-header">
-                                <h3 class="card-title">เพิ่มรายการสั่งซื้อ</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <form id="orderForm" method="post" action=" ">
-                                            <input type="hidden" name="c_id" value="<?= htmlspecialchars($c_id) ?>">
-                                            <input type="hidden" name="od_id" value="<?= htmlspecialchars($od_id) ?>">
+<!-- ตารางแสดงรายการสินค้าในใบสั่งซื้อนี้ -->
 
-
-                                            <div class="form-group">
-                                                <label for="productSelect">เลือกสินค้า:</label>
-                                                <select id="productSelect" name="pd_id" class="form-control" onchange="this.form.submit()">
-                                                    <option value="">-- กรุณาเลือกสินค้า --</option>
-                                                    <?php foreach ($result as $row) : ?>
-                                                        <option value=" <?= $row['pd_id'] ?>" <?= isset($pd_id) && $pd_id == $row['pd_id'] ? 'selected' : '' ?>>
-                                                            <?= htmlspecialchars($row['pd_n']) ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                    </div>
-                                </div>
-
-
-                                </form>
-                                <form action="clone.php" method="post">
-                                    <input type="hidden" name="od_id" value="<?= $oc_id ?>">
-                                    <input type="hidden" name="c_id" value="<?= $c_id ?>">
-                                    <input type="hidden" name="pd_id" value="<?= $pd_id ?>">
-
-
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="productSelect">หน่วยนับ:</label>
-                                                <select id="productSelect" name="pu_id" class="form-control">
-                                                    <option value="">-- กรุณาเลือกสินค้า --</option>
-                                                    <?php foreach ($list as $prod) : ?>
-                                                        <option value=" <?= $prod['pd_id'] ?>" <?= isset($pd_id) && $pd_id == $prod['pd_id'] ? 'selected' : '' ?>>
-                                                            <?= htmlspecialchars($prod['pd_n']) ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="price_Sell">ราคาต่อหน่วย:</label>
-                                            <input type="text" name="price_sell" class="form-control" value="<?= $productDetails['pri_sell'] ? number_format($quantity, 2) : number_format(1, 2) ?>" min="0" step="0.01" onchange="this.form.submit()">
-                                        </div>
-
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <label for="quantity">จำนวน:</label>
-                                                <input type="number" name="quantity" class="form-control" value="<?= isset($quantity) ? number_format($quantity, 2) : number_format(1, 2) ?>" min="0" step="0.01" onchange="this.form.submit()">
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                            </div>
-                        </div>
-                        <!-- Save Button -->
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-danger">เพิ่ม</button>
-                        </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product List Table -->
-            <div class="row">
-                <div class="col-6 mx-auto">
-                    <div class="card card-secondary">
-                        <div class="card-header">
-                            <h3 class="card-title">ข้อมูลรายการสินค้า</h3>
-                        </div>
-                        <div class="card-body">
-                            <!-- ตารางแสดงข้อมูลสินค้า -->
-                            <div class="row">
-                                <div class="col-6 mx-auto">
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr class="table-info">
-                                                <th width="5%">ลำดับ</th>
-                                                <th width="30%">รายการ</th>
-                                                <th width="10%">จำนวน</th>
-                                                <th width="10%">หน่วยนับ</th>
-                                                <th width="15%">ราคาต่อหน่วย</th>
-                                                <th width="30%">รวมเงิน</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php if ($product) : ?>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td><?= htmlspecialchars($product['pd_n']) ?></td>
-                                                    <td><?= htmlspecialchars($quantity) ?></td>
-                                                    <td><?= htmlspecialchars($product['pu_n']) ?></td>
-                                                    <td><?= number_format($product['price_sell'], 2) ?></td>
-                                                    <td><?= number_format($total, 2) ?></td>
-                                                </tr>
-                                            <?php else : ?>
-                                                <tr>
-                                                    <td colspan="6">กรุณาเลือกสินค้าเพื่อแสดงข้อมูล</td>
-                                                </tr>
-                                            <?php endif; ?>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th colspan="5" style="text-align:right">ผลรวมเงินทั้งหมด:</th>
-                                                <th><?= isset($total) ? number_format($total, 2) : '0.00' ?></th>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<?php if (!empty($alert)) : ?>
+    <div class="alert alert-warning">
+        <?= $alert ?>
     </div>
+<?php endif; ?>
+<h3>📦 รายการสินค้าในใบสั่งซื้อ</h3>
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ลำดับ</th>
+            <th>สินค้า</th>
+            <th>หน่วยนับ</th>
+            <th>จำนวน</th>
+            <th>ราคาต่อหน่วย</th>
+            <th>รวม</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $details = get_orders_detail($od_id);
+        $i = 0;
+        $grand_total = 0;
 
-    <!-- jQuery -->
-    <script src="plugins/jquery/jquery.min.js"></script>
-    <!-- Date Range Picker -->
-    <script src="plugins/daterangepicker/daterangepicker.js"></script>
-    <!-- Select2 -->
-    <script src="plugins/select2/js/select2.full.min.js"></script>
-    <!-- InputMask -->
-    <script src="plugins/moment/moment.min.js"></script>
-    <script src="plugins/inputmask/jquery.inputmask.min.js"></script>
-    <!-- Tempusdominus Bootstrap 4 -->
-    <script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <!-- Bootstrap Switch -->
-    <script src="plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+        while ($row = mysqli_fetch_assoc($details)) {
+            $i++;
+            $grand_total += $row['total'];
+            echo "<tr>
+                <td>{$i}</td>
+                <td>{$row['pd_n']}</td>
+                <td>{$row['pu_name']}</td>
+                <td>{$row['qty']}</td>
+                <td>" . number_format($row['price_s'], 2) . "</td>
+                <td>" . number_format($row['total'], 2) . "</td>
+            </tr>";
+        }
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('orderForm').addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
-                    this.submit();
-                }
-            });
-        });
-    </script>
-</body>
+        if ($i == 0) {
+            echo "<tr><td colspan='6'>ยังไม่มีรายการสินค้า</td></tr>";
+        }
+        ?>
+    </tbody>
+    <?php if ($i > 0): ?>
+        <tfoot>
+            <tr>
+                <td colspan="5" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                <td><strong><?= number_format($grand_total, 2) ?></strong></td>
+            </tr>
+        </tfoot>
+    <?php endif; ?>
+</table>
 
-</html>
+<br>
+<a href="od_confirm.php" class="btn btn-success" onclick="return confirm('ยืนยันการสั่งซื้อหรือไม่?')">
+    ยืนยันการสั่งซื้อ
+</a>
