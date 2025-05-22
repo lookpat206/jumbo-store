@@ -5,171 +5,159 @@
 include('../_conf/conn.inc.php');
 
 
-// 333333333333333333333333333333333333333333333333333333333333333
-//TB-orders
-//บันทึกข้อมูล orders
-function order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note)
+// ฟังก์ชันสร้างใบสั่งซื้อ
+function create_od($c_id, $od_day, $dv_day, $dv_time, $od_note, $status_id = 'กำลังดำเนินการ')
 {
     global $conn;
 
-    $sql = "INSERT INTO orders(c_id,od_day,dv_day, dv_time,od_note)
-                    VALUES (?, ?, ?, ?,?)";
+    // คำสั่ง SQL เตรียมเพิ่มข้อมูลใบสั่งซื้อ
+    $sql = "INSERT INTO orders (c_id, od_day, dv_day, dv_time, od_note, status_id) 
+            VALUES (?, ?, ?, ?, ?, ?)";
+
+    // เตรียม statement
     $stmt = mysqli_prepare($conn, $sql);
 
-    //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "issss", $c_id, $od_day, $dv_day, $dv_time, $od_note);
+    // ตรวจสอบว่า prepare ผ่านหรือไม่
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
+    }
 
-    //เงื่อนไขการทำงาน
+    // ผูกค่าตัวแปรกับ parameter ใน SQL โดยใช้รูปแบบ: int, string, string, string, string, string
+    mysqli_stmt_bind_param($stmt, "isssss", $c_id, $od_day, $dv_day, $dv_time, $od_note, $status_id);
 
+    // พยายาม execute คำสั่ง
     if (mysqli_stmt_execute($stmt)) {
-        //รับค่า od_id
-        $od_id = mysqli_insert_id($conn);
-        header("Location:orders-check.php?od_id=$od_id");
+        // ถ้า execute ผ่าน ให้ return id ที่เพิ่มล่าสุด
+        return mysqli_insert_id($conn);
     } else {
-        echo "สร้างใบสั่งซื่อไม่สำเร็จ : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+        // ถ้า execute ไม่ผ่าน ให้แสดง error
+        echo "Execute failed: " . mysqli_stmt_error($stmt);
+        return false;
     }
 }
 
 
-//สร้างใบสั่งซื้อ >> เพิ่มข้อมูล แผนก/ครัว
-
-function update_orders($od_id, $c_id, $od_note)
+// ฟังก์ชันเพิ่มรายละเอียดสินค้า
+function add_po_detail($od_id, $pd_id, $pu_id, $qty, $price_s, $total)
 {
     global $conn;
 
-    $sql = "UPDATE orders 
-               SET 
-                od_note = ?
-                where 
-                od_id = ?";
+    $sql = "INSERT INTO orders_detail (od_id, pd_id, pu_id, qty, price_s, total) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
 
-    //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "si", $od_note, $od_id);
-
-    // ดำเนินการคำสั่ง
-    if (mysqli_stmt_execute($stmt)) {
-        //echo "บันทึกการแก้ไขเรียบร้อย";
-        header("Location:od_detail.php?od_id=$od_id?c_id=$c_id");
-    } else {
-        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    if (!$stmt) {
+        // แสดง error จาก mysqli_prepare
+        echo "Prepare failed: " . mysqli_error($conn);
+        return false;
     }
 
-    // ปิดคำสั่ง
-    //mysqli_stmt_close($stmt);
-}
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "iiiddd", $od_id, $pd_id, $pu_id, $qty, $price_s, $total);
 
+    // รันคำสั่งและคืนค่าผลลัพธ์
+    $result = mysqli_stmt_execute($stmt);
 
-
-//ดึงข้อมูล orders
-function fetch_orders()
-{
-    global $conn; //ประกาศตัวแปร conn
-
-    //ดึงข้อมูล
-    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id
-            FROM orders AS o
-I           NNER JOIN cust AS c ON o.c_id = c.c_id";
-
-    $stmt = mysqli_prepare($conn, $sql);
-    // ผูกพารามิเตอร์
-    mysqli_stmt_execute($stmt);
-    //เงื่อนไขการทำงาน
-    $result = mysqli_stmt_get_result($stmt);
-
-    //ส่งค่ากลับ
+    mysqli_stmt_close($stmt); // ปิด statement
     return $result;
 }
 
-//ดึงข้อมูลรายระเอียด จาก od_id
-
-function fetch_orders_by_id($od_id)
+// ดึงราคาขายจากตารางราคา
+function get_price($pd_id, $pu_id, $c_id)
 {
     global $conn;
-
-    $sql = " SELECT  o.od_id, c.c_name ,o.od_day ,o.dv_day ,o.dv_time ,o.od_note ,c.c_id
-            FROM orders AS o
-            INNER JOIN cust AS c ON o.c_id = c.c_id
-            WHERE o.od_id = ? ";
-
+    $sql = "SELECT pri_sell FROM pri_detail WHERE pd_id = ? AND pu_id = ? AND c_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        echo "Prepare failed: " . mysqli_error($conn);
+        return false;
+    }
 
-    mysqli_stmt_bind_param($stmt, 'i', $od_id);
-
-    // ดำเนินการคำสั่ง
+    mysqli_stmt_bind_param($stmt, "iii", $pd_id, $pu_id, $c_id);
     mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $pri_sell);
 
-    // รับผลลัพธ์
-    $result = mysqli_stmt_get_result($stmt);
-
-
-    return $result;
+    if (mysqli_stmt_fetch($stmt)) {
+        mysqli_stmt_close($stmt);
+        return $pri_sell;
+    } else {
+        mysqli_stmt_close($stmt);
+        return false;
+    }
 }
 
 
-function fetch_orders_by_odid($od_id)
+// ดึงข้อมูลลูกค้า
+function get_cust()
 {
-
     global $conn;
+    return mysqli_query($conn, "SELECT * FROM cust");
+}
 
-    $sql = " SELECT c_id
-            FROM orders 
-            WHERE od_id = ? ";
+// ดึงข้อมูลสินค้า
+function get_prod()
+{
+    global $conn;
+    return mysqli_query($conn, "SELECT * FROM product");
+}
 
+// ดึงข้อมูลหน่วยนับ
+function get_units()
+{
+    global $conn;
+    return mysqli_query($conn, "SELECT * FROM p_unit");
+}
+
+
+// ฟังก์ชันดึงรายการสินค้าใน po_detail พร้อมชื่อสินค้าและหน่วย
+function get_orders_detail($od_id)
+{
+    global $conn;
+    $sql = "SELECT pd.pd_n, pu.pu_name, d.qty, d.price_s, d.total
+            FROM orders_detail AS d
+            JOIN product AS pd ON d.pd_id = pd.pd_id
+            JOIN p_unit AS pu ON d.pu_id = pu.pu_id
+            WHERE d.od_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
-
-    // ผูกพารามิเตอร์ od_id กับ statement
+    // ตรวจสอบว่า prepare ผ่านหรือไม่
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
+    }
     mysqli_stmt_bind_param($stmt, "i", $od_id);
-
-    // เรียกใช้ statement
     mysqli_stmt_execute($stmt);
-
-    // ดึงผลลัพธ์
-    $result = mysqli_stmt_get_result($stmt);
-
-    // ตรวจสอบว่ามีข้อมูล
-    if (mysqli_num_rows($result) > 0) {
-        $order = mysqli_fetch_assoc($result); // ดึงข้อมูลเป็น associative array
-    } else {
-        $order = null; // ถ้าไม่มีข้อมูลให้คืนค่า null
-    }
-
-
-    return $order;
+    return mysqli_stmt_get_result($stmt);
 }
 
-
-
-//ดึงข้อมูลสินค้าจากตาราง pri_detail
-function fetch_product_by_pd_id($od_id, $pd_id, $c_id)
+function get_orders()
 {
     global $conn;
+    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id, o.status_id
+            FROM orders AS o
+            INNER JOIN cust AS c ON o.c_id = c.c_id";
+    return mysqli_query($conn, $sql);
+}
 
-    $sql = "SELECT prod.pd_n,pu.pu_name,pri_d.pri_sell,prod.pd_id 
-            FROM `pri_detail` AS pri_d 
-            INNER JOIN product AS prod ON pri_d.pd_id = prod.pd_id 
-            INNER JOIN p_unit AS pu ON pri_d.pu_id = pu.pu_id 
-            WHERE pri_d.pd_id = ? AND pri_d.c_id = ?";
-
-    // เตรียมคำสั่ง SQL
+function confirm_od($od_id)
+{
+    global $conn;
+    $sql = "UPDATE orders SET status_id = 'สั่งซื้อสำเร็จ' WHERE od_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
-
-    // ผูกพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "ii", $pd_id, $c_id);
-
-    // ดำเนินการคำสั่ง
-    mysqli_stmt_execute($stmt);
-
-    // รับผลลัพธ์
-    $result = mysqli_stmt_get_result($stmt);
-
-    // ตรวจสอบผลลัพธ์
-    if (mysqli_num_rows($result) > 0) {
-        $pd_id = mysqli_fetch_assoc($result); // ดึงข้อมูลเป็นอาเรย์ associative
-    } else {
-        $pd_id = null; // ถ้าไม่พบข้อมูล
+    // ตรวจสอบว่า prepare ผ่านหรือไม่
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
     }
+    mysqli_stmt_bind_param($stmt, "i", $od_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
 
+function get_departments_by_customer($c_id)
+{
+    global $conn;
+    $sql = "SELECT dp_id, dp_name FROM c_depart WHERE c_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) return false;
 
-    return $pd_id;
+    mysqli_stmt_bind_param($stmt, "i", $c_id);
+    mysqli_stmt_execute($stmt);
+    return mysqli_stmt_get_result($stmt);
 }
