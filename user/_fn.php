@@ -112,7 +112,7 @@ function get_units()
 function get_orders_detail($od_id)
 {
     global $conn;
-    $sql = "SELECT pd.pd_n, pu.pu_name, d.qty, d.price_s, d.total
+    $sql = "SELECT pd.pd_n, pu.pu_name, d.qty, d.price_s, d.total,d.ord_id
             FROM orders_detail AS d
             JOIN product AS pd ON d.pd_id = pd.pd_id
             JOIN p_unit AS pu ON d.pu_id = pu.pu_id
@@ -125,6 +125,26 @@ function get_orders_detail($od_id)
     mysqli_stmt_bind_param($stmt, "i", $od_id);
     mysqli_stmt_execute($stmt);
     return mysqli_stmt_get_result($stmt);
+}
+
+
+function get_order_by_id($od_id)
+{
+    global $conn;
+    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id, o.dv_time, o.od_note,c.c_add,c.c_tel
+            FROM orders AS o
+            INNER JOIN cust AS c ON o.c_id = c.c_id
+             WHERE od_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    // ตรวจสอบว่า prepare ผ่านหรือไม่
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
+    }
+    mysqli_stmt_bind_param($stmt, "i", $od_id);
+    mysqli_stmt_execute($stmt);
+    // ดึงผลลัพธ์จาก statement
+    $result = mysqli_stmt_get_result($stmt);
+    return mysqli_fetch_assoc($result); // ✅ คืนเป็น array
 }
 
 function get_orders()
@@ -149,7 +169,7 @@ function confirm_od($od_id)
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 }
-
+// ฟังก์ชันดึงข้อมูลแผนก/ครัวตามรหัสลูกค้า
 function get_departments_by_customer($c_id)
 {
     global $conn;
@@ -160,4 +180,54 @@ function get_departments_by_customer($c_id)
     mysqli_stmt_bind_param($stmt, "i", $c_id);
     mysqli_stmt_execute($stmt);
     return mysqli_stmt_get_result($stmt);
+}
+
+
+// ฟังก์ชันลบรายการใน orders_detail ตามรหัส odr_id
+function delete_order_detail($ord_id)
+{
+    global $conn;
+    $sql = "DELETE FROM orders_detail WHERE ord_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $ord_id);
+
+    return mysqli_stmt_execute($stmt);
+}
+
+// ฟังก์ชันลบใบสั่งซื้อ
+function delete_po($od_id)
+{
+    global $conn;
+
+    $sql = "DELETE FROM orders WHERE od_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
+    }
+    mysqli_stmt_bind_param($stmt, "i", $od_id);
+    $result = mysqli_stmt_execute($stmt);
+    return $result;
+}
+
+function fetch_totalod()
+{
+    global $conn;
+
+    $sql = "SELECT COUNT(*) as totalod FROM orders";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Prepare Failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    mysqli_stmt_close($stmt);
+
+    // ดึงค่าจากผลลัพธ์
+    $row = mysqli_fetch_assoc($result);
+    return $row['totalod'];
 }

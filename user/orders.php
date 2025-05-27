@@ -1,4 +1,6 @@
 <?php
+// เริ่มต้นการสร้างใบสั่งซื้อใหม่
+
 session_start();
 include("_fn.php");
 include('../admin/_fn.php');
@@ -123,10 +125,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                       </div>
-                      <input type="text" name="od_day" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ. " data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                      <input type="text" name="od_day" id="order_date" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ. " data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask required>
                     </div>
                     <!-- /.input group -->
-                    <small class="form-text text-danger">กรุณากรอกปีเป็น พุทธศักราช (เช่น 2567)</small>
+                    <small class="form-text text-danger">กรุณากรอกปีเป็น คริสตศักราช (เช่น 2025)</small>
                   </div>
                   <!-- /.form group -->
 
@@ -138,37 +140,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                       </div>
-                      <input type="text" name="dv_day" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ." data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
+                      <input type="text" name="dv_day" id="delivery_date" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ." data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask required>
                     </div>
                     <!-- /.input group -->
-                    <small class="form-text text-danger">กรุณากรอกปีเป็น พุทธศักราช (เช่น 2567)</small>
+                    <small class="form-text text-danger">กรุณากรอกปีเป็น คริสตศักราช (เช่น 2025)</small>
                   </div>
                   <!-- /.form group -->
-
-
                   <!-- Delivery time -->
                   <div class="bootstrap-timepicker">
                     <div class="form-group">
                       <label>Delivery time:</label>
 
                       <div class="input-group date" id="timepicker" data-target-input="nearest">
-                        <input type="text" name="dv_time" class="form-control datetimepicker-input" data-target="#timepicker" />
+                        <input type="text" name="dv_time" id="delivery_date" class="form-control datetimepicker-input" data-target="#timepicker" />
                         <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
                           <div class="input-group-text"><i class="far fa-clock"></i></div>
                         </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="">แผนก/ครัว:</label>
-
-                        <select class="form-control" name="od_note" id="dp_id" style="width: 100%;">
-                          <option value="">-- เลือกแผนก/ครัว --</option>
-                        </select>
-                      </div>
-                      <!-- /.input group -->
-                      <input type="hidden" name="od_note" value=" ">
+                      </div><!-- /.input group -->
                     </div>
                     <!-- /.form group -->
                   </div>
+                  <!-- /.bootstrap time picker -->
+                  <!-- ครัว/แผนก -->
+                  <div class="form-group">
+                    <label for="">แผนก/ครัว:</label>
+
+                    <select class="form-control" name="od_note" id="dp_id" style="width: 100%;">
+                      <option value="">-- เลือกแผนก/ครัว --</option>
+                    </select>
+                  </div>
+
 
                   <!-- submit   -->
                   <div>
@@ -222,6 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <!-- AdminLTE App -->
   <script src="dist/js/adminlte.min.js"></script>
 
+  <!-- ดึงข้อมูลแผนง/ครัวจากฐานข้อมูล -->
   <script>
     $('#c_id').on('change', function() {
       const c_id = $(this).val();
@@ -230,6 +232,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       }, function(data) {
         $('#dp_id').html(data);
       });
+    });
+  </script>
+  <!-- เช็ควันที่สั่งซื้อและวันที่ส่ง -->
+  <script>
+    $(":input").inputmask();
+
+    function parseDate(str) {
+      const [day, month, year] = str.split('/');
+      return new Date(`${year}-${month}-${day}`);
+    }
+
+    $('#order_date, #delivery_date').on('change', function() {
+      const orderDate = parseDate($('#order_date').val());
+      const deliveryDate = parseDate($('#delivery_date').val());
+
+      if ($('#order_date').val() && $('#delivery_date').val()) {
+        if (orderDate > deliveryDate) {
+          alert('❌ วันที่สั่งต้องมาก่อนหรือเท่ากับวันที่ส่ง');
+          $('#delivery_date').val('');
+        }
+      }
     });
   </script>
   <!-- Page specific script -->

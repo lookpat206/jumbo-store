@@ -1,9 +1,14 @@
 <?php
+//แสดงข้อมูลใบสั่งซื้อ
+
+session_start();
+
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
 
+$total_od = fetch_totalod();
 
 
 
@@ -37,7 +42,7 @@ include('_fn.php');
         <div class="col-lg-3 col-6">
           <div class="small-box bg-orange">
             <div class="inner">
-              <h3>รอข้อมูล</h3>
+              <h3><?= $total_od ?></h3>
               <p>จำนวนออเดอร์</p>
             </div>
 
@@ -103,6 +108,8 @@ include('_fn.php');
                   if (mysqli_num_rows($result) > 0) {
                     while ($row = mysqli_fetch_assoc($result)) {
                       $i++;
+                      $c_id = $row['c_id'];
+                      $od_id = $row['od_id'];
                   ?>
                       <tr>
                         <td><?= $i ?></td>
@@ -112,10 +119,10 @@ include('_fn.php');
                         <td><?= $row['dv_day'] ?></td>
                         <td><?= $row['status_id'] ?></td>
                         <td>
-                          <a type="button" class="btn btn-block btn-primary" href="department.php?c_id=<?= $row['c_id'] ?>">รายละเอียด</a>
+                          <a type="button" class="btn btn-block btn-primary" href="po_get_detail.php?od_id=<?= $row['od_id'] ?>">รายละเอียด</a>
                         </td>
                         <td>
-                          <a type="button" class="btn btn-block btn-danger" href="department.php?c_id=<?= $row['c_id'] ?>">ยกเลิกใบสั่ง</a>
+                          <a onclick="return confirm('คุณต้องการลบใบสั่งซื้อหรือไม่?')" type="button" class="btn btn-block btn-danger" href="po_delete_u.php?od_id=<?= $row['od_id'] ?>">ยกเลิกใบสั่ง</a>
                         </td>
                       </tr>
                   <?php
