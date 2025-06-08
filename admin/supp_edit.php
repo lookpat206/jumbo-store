@@ -15,6 +15,7 @@ $result3 = fetch_supp_by_spid($sp_id);
 $row = mysqli_fetch_assoc($result3);
 $sp_name = $row['sp_name'];
 $pt_id = $row['pt_id'];
+$pt_name = $row['pt_name'];
 $sp_tel = $row['sp_tel'];
 
 ?>
@@ -59,7 +60,7 @@ $sp_tel = $row['sp_tel'];
                 <div class="form-group">
                   <label for="type">ประเภทสินค้า:</label>
                   <select class="form-control select2" name="pt_id" style="width: 100%;">
-                    <option selected="selected" value=""><?= $pt_id ?></option>
+                    <option selected="selected" value="<?= $pt_id ?>"><?= $pt_name ?></option>
                     <?php foreach ($result1 as $row) { ?>
                       <option value="<?= $row['pt_id'] ?>"> <?= $row['pt_name'] ?> </option>
                     <?php } ?>
