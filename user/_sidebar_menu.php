@@ -1,6 +1,5 @@
 <?php
 
-
 ?>
 
 <!-- Main Sidebar Container -->
@@ -42,10 +41,19 @@
         </li>
         <li class="nav-item">
           <!-- รายการซื้อสินค้า -->
-          <a href="index.php" class="nav-link">
+          <a href="po.php" class="nav-link">
             <i class="nav-icon fas fa-columns"></i>
             <p>
-              ข้อมูลสั่งสินค้า
+              ข้อมูลใบสั่งสินค้า
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <!-- รายการซื้อสินค้า -->
+          <a href="pl.php" class="nav-link">
+            <i class="nav-icon fas fa-columns"></i>
+            <p>
+              ข้อมูลรายการสั่งซื้อ
             </p>
           </a>
         </li>

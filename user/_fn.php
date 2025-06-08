@@ -169,6 +169,20 @@ function confirm_od($od_id)
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 }
+
+function confirm_po($od_id)
+{
+    global $conn;
+    $sql = "UPDATE orders SET status_id = 'จัดส่งสำเร็จ' WHERE od_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    // ตรวจสอบว่า prepare ผ่านหรือไม่
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
+    }
+    mysqli_stmt_bind_param($stmt, "i", $od_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
 // ฟังก์ชันดึงข้อมูลแผนก/ครัวตามรหัสลูกค้า
 function get_departments_by_customer($c_id)
 {
