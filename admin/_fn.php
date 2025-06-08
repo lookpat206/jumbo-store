@@ -1144,17 +1144,62 @@ function get_sp_list()
             JOIN product AS pro ON pl.pd_id = pro.pd_id
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id";
 
-    $result = mysqli_query($conn, $sql);
-
-    if (!$result) {
-        die("Query failed: " . mysqli_error($conn));
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn));
     }
 
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (!$result) {
+        die("Get result failed: " . mysqli_error($conn));
+    }
     return $result; // คืนผลลัพธ์ไปให้หน้า main ใช้
 }
 
 
 //spspspspspspspspspspspspspspspsspspspspsps
+//ดึงข้อมูล shopping list โดยใช้ pl_id
+function fetch_sp_list_by_plid($pl_id)
+
+{
+    global $conn;
+
+    $sql = "SELECT m.mk_name, 
+                sup.sp_name, 
+                u.u_name, 
+                pro.pd_n,            
+                pl.quantity, 
+                pu.pu_name, 
+                pl.sp_price, 
+                pl.sp_status,
+                pl.pl_id,
+                pl.mk_id,
+                pl.sp_id,
+                pl.pd_id,
+                pl.u_id
+                
+            FROM sp_list AS pl
+            JOIN market AS m ON pl.mk_id = m.mk_id
+            JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
+            JOIN js_user AS u ON pl.u_id = u.u_id
+            JOIN product AS pro ON pl.pd_id = pro.pd_id
+            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
+            WHERE pl.pl_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $pl_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    if (!$result) {
+        die("Query failed (fetch_sp_list_by_plid): " . mysqli_error($conn));
+    }
+
+    return $result; // คืนผลลัพธ์ไปให้หน้า main ใช้
+}
 
 //นับจำนวนรายการใน shopping list 
 
@@ -1176,6 +1221,37 @@ function count_failed_delivery()
     return $row['total_failed']; // คืนค่าเป็นจำนวน
 }
 
+//spspspspspspsppspspspspspspspspspspspspspspspspspsps
+//แก้ไขข้อมูล shopping list
+
+
+function sp_list_edit($pl_id, $mk_id, $sp_id, $u_id, $quantity, $sp_price, $sp_status)
+{
+    global $conn;
+
+    $sql = "UPDATE sp_list 
+               SET 
+                mk_id = ?,
+                sp_id = ?,
+                u_id = ?,
+                quantity = ?,
+                sp_price = ?,
+                sp_status = ?
+                WHERE pl_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    mysqli_stmt_bind_param($stmt, "iiiiddi", $mk_id, $sp_id,  $u_id, $quantity,  $sp_price, $sp_status, $pl_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:shopping.php");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
 
 function get_status_text_and_class($status_code)
 {

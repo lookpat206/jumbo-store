@@ -14,11 +14,21 @@ $result4 = fetch_user();
 //รับค่า id จาก plan.php
 $pl_id = $_GET['pl_id'];
 
-//exit($plan);
-
-
-
-
+//exit($pl_id);
+$result = fetch_sp_list_by_plid($pl_id);
+$row = mysqli_fetch_assoc($result);
+$mk_id = $row['mk_id'];
+$sp_id = $row['sp_id'];
+$u_id = $row['u_id'];
+$mk_name = $row['mk_name'];
+$sp_name = $row['sp_name'];
+$pd_n = $row['pd_n'];
+$u_name = $row['u_name'];
+$pu_name = $row['pu_name'];
+$sp_price = $row['sp_price'];
+$sp_status = $row['sp_status'];
+$quantity = $row['quantity'];
+$pl_id = $row['pl_id'];
 
 ?>
 
@@ -60,7 +70,7 @@ $pl_id = $_GET['pl_id'];
                                             <!-- สถานที่ซื้อสินค้า -->
                                             <label for="type">สถานที่ซื้อสินค้า:</label>
                                             <select class="form-control select2" name="mk_id" style="width: 100%;">
-                                                <option selected="selected" value="<?= $mk_id ?>"><?= $m_name ?></option>
+                                                <option selected="selected" value="<?= $mk_id ?>"><?= $mk_name ?></option>
                                                 <?php foreach ($result1 as $row) { ?>
                                                     <option value="<?= $row['mk_id'] ?>"> <?= $row['mk_name'] ?> </option>
                                                 <?php } ?>
@@ -74,7 +84,7 @@ $pl_id = $_GET['pl_id'];
                                         <div class="form-group">
                                             <label for="type">ร้านค้า:</label>
                                             <select class="form-control select2" name="sp_id" style="width: 100%;">
-                                                <option selected="selected" value="<?= $sp_id ?>"><?= $s_name ?></option>
+                                                <option selected="selected" value="<?= $sp_id ?>"><?= $sp_name ?></option>
                                                 <?php foreach ($result2 as $row) { ?>
                                                     <option value="<?= $row['sp_id'] ?>"> <?= $row['sp_name'] ?> </option>
                                                 <?php } ?>
@@ -85,26 +95,13 @@ $pl_id = $_GET['pl_id'];
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <!-- text input -->
-                                        <div class="form-group">
-                                            <label for="type">ชื่อสินค้า:</label>
-                                            <select class="form-control select2" name="pd_id" style="width: 100%;">
-                                                <option selected="selected" value="<?= $pd_id ?>"><?= $p_name ?></option>
-                                                <?php foreach ($result3 as $row) { ?>
-                                                    <option value="<?= $row['pd_id'] ?>"> <?= $row['pd_n'] ?> </option>
-                                                <?php } ?>
 
-                                            </select>
-
-                                        </div>
-                                    </div>
                                     <div class="col-sm-6">
                                         <!-- ผู้รับผิดชอบ -->
                                         <div class="form-group">
                                             <label for="type">ผู้รับผิดชอบ :</label>
                                             <select class="form-control select2" name="u_id" style="width: 100%;">
-                                                <option selected="selected" value="<?= $u_id ?>"><?= $u_n ?></option>
+                                                <option selected="selected" value="<?= $u_id ?>"><?= $u_name ?></option>
                                                 <?php foreach ($result4 as $row) { ?>
                                                     <option value="<?= $row['u_id'] ?>"> <?= $row['u_name'] ?> </option>
                                                 <?php } ?>
@@ -112,21 +109,32 @@ $pl_id = $_GET['pl_id'];
                                             </select>
 
                                         </div>
+
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <!-- text input -->
+                                        <div class="form-group">
+                                            <label>สินค้า</label>
+                                            <input type="text" class="form-control" placeholder="<?= $pd_n ?>" disabled>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <!-- text input -->
+                                        <!-- จำนวนสินค้า-->
                                         <div class="form-group">
-                                            <label>สินค้า</label>
-                                            <input type="text" class="form-control" placeholder="Enter ..." disabled>
+                                            <label>จำนวนสินค้า</label>
+                                            <input type=" number" class="form-control" name="quantity" step="0.01" min="0" placeholder="<?= $quantity ?>">
+                                            <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
+
                                         </div>
                                     </div>
+
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>หน่วยนับ</label>
-                                            <input type="text" class="form-control" placeholder="Enter ..." disabled>
+                                            <input type="text" class="form-control" placeholder="<?= $pu_name ?>" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -135,14 +143,16 @@ $pl_id = $_GET['pl_id'];
                                         <!-- text input -->
                                         <div class="form-group">
                                             <label>ราคาซื้อสินค้า</label>
-                                            <input type="text" class="form-control" placeholder="Enter ...">
+                                            <input type=" number" class="form-control" name="sp_price" step="0.01" min="0" placeholder="<?= $sp_price ?>">
+                                            <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
+
                                         </div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label>สถานะ</label>
-                                            <select multiple class="form-control">
-                                                <option value="0"></option>
+                                            <select multiple class="form-control" name="sp_status" style="width: 100%;">
+                                                <option value="<?= $sp_status ?>">แก้ไขรายการสำเร็จ</option>
                                                 <option value="1">ซื้อสำเร็จ</option>
                                                 <option value="2">ไม่มีสินค้า</option>
                                                 <option value="3">รอสินค้าวันต่อไป</option>
