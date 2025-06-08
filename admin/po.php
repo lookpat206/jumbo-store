@@ -1,8 +1,15 @@
 <?php
+
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
+include('../user/_fn.php');
 include('_fn.php');
+
+
+// ดึงข้อมูลจำนวนใบสั่งซื้อทั้งหมด
+$total_od = fetch_totalod();
+$total_failed = count_failed_delivery();
 
 
 
@@ -16,12 +23,11 @@ include('_fn.php');
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>ข้อมูลใบสั่งซื้อสินค้า</h1>
+                    <h1></h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">DataTables</li> -->
+                        <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                     </ol>
                 </div>
             </div>
@@ -29,121 +35,90 @@ include('_fn.php');
     </section>
 
     <!-- Main content -->
-
     <section class="content">
         <div class="container-fluid">
+
             <!-- Small boxes (Stat box) จำนวนลูกค้า -->
             <div class="row">
+                <!-- กล่องที่ 1: จำนวนออเดอร์ -->
                 <div class="col-lg-3 col-6">
-                    <!-- small box -->
                     <div class="small-box bg-orange">
                         <div class="inner">
-                            <h3>รอข้อมูล</h3>
-
-                            <p>จำนวนสถานที่ซื้อสินค้า</p>
+                            <h3><?= $total_od ?></h3>
+                            <p>จำนวนออเดอร์</p>
                         </div>
-                        <!-- <div class="icon">
-                <i class="ion-android-person"></i>
-              </div> -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+
                     </div>
                 </div>
                 <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box จำนวนสินค้า-->
+
+                <!-- กล่องที่ 2: วันที่ปัจจุบัน -->
+                <div class="col-lg-6 col-6">
                     <div class="small-box bg-green">
                         <div class="inner">
-                            <h3>รอข้อมูล<!--<sup style="font-size: 20px">%</sup> --></h3>
-
-                            <p>จำนวนร้านค้า</p>
+                            <h4>วันที่</h4>
+                            <h1><?php echo date('d-m-Y'); ?></h>
                         </div>
-                        <!-- <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-              </div> -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
+
                 </div>
                 <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+                <!-- กล่องที่ 3: Icon รถเข็น และลิงก์ไปที่ orders.php -->
                 <div class="col-lg-3 col-6">
-                    <!-- small box จำนวนผู้ใช้ -->
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3>รอข้อมูล</h3>
-
-                            <p>จำนวนสินค้า</p>
+                            <h3><?php echo $total_failed; ?></h3>
+                            <p>ยอดค้างส่ง</p>
                         </div>
-                        <!-- <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>  -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+
                     </div>
                 </div>
                 <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-                <div class="col-lg-3 col-6">
-                    <!-- small box จำนวนผู้ใช้ -->
-                    <div class="small-box bg-teal">
-                        <div class="inner">
-                            <h3>รอข้อมูล</h3>
-
-                            <p>จำนวนผู้รับผิดชอบ</p>
-                        </div>
-                        <!-- <div class="icon">
-                <i class="ion ion-person-add"></i>
-              </div>  -->
-                        <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
-                    </div>
-                </div>
-                <!-- ./col -->
-                <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-
-
-
             </div>
             <!-- /.row -->
+            <?php
+            // ตรวจสอบว่ามีการส่งค่าพารามิเตอร์ success มาหรือไม่
+            if (isset($_GET['success']) && $_GET['success'] == 'confirmed') {
+                echo '<div class="alert alert-success">ยืนยันการจัดส่งเรียบร้อยแล้ว</div>';
+            }
+
+            ?>
 
         </div><!-- /.container-fluid -->
-    </section>
 
-    <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">ใบสั่งซื้อสินค้า</h3>
-                            <div class="card-tools">
-                                <a href="order.php" class="btn btn-primary">สร้างใบสั่งซื้อ</a>
+                            <h1 class="card-title">ข้อมูลใบสั่งสินค้า</hๅ>
 
-                            </div>
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped">
-
                                 <thead>
                                     <tr class="table-info">
                                         <th width="10%">ลำดับ</th>
-                                        <th width="15%">เลขที่ใบสั่งซื้อ</th>
-                                        <th width="15%">ลูกค้า</th>
-                                        <th width="15%">วันที่สั่ง</th>
-                                        <th width="15%">วันที่ส่ง</th>
+                                        <th width="10%">เลขที่ใบสั่งซื้อ</th>
+                                        <th width="20%">ชื่อลูกค้า</th>
+                                        <th width="10%">วันที่สั่ง</th>
+                                        <th width="10%">วันที่ส่ง</th>
                                         <th width="20%">สถานะ</th>
-                                        <th width="5%">รายละเอียด</th>
-                                        <th width="5%">ลบ</th>
+                                        <th width="10">รายละเอียด</th>
+                                        <th width="10%">ยกเลิก</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-
-                                    $result = fetch_order();
+                                    $result = get_orders();
+                                    $i = 0;
                                     if (mysqli_num_rows($result) > 0) {
-                                        $i = 0;
-                                        foreach ($result as $row) {
+                                        while ($row = mysqli_fetch_assoc($result)) {
                                             $i++;
+                                            $c_id = $row['c_id'];
+                                            $od_id = $row['od_id'];
                                     ?>
                                             <tr>
                                                 <td><?= $i ?></td>
@@ -151,31 +126,26 @@ include('_fn.php');
                                                 <td><?= $row['c_name'] ?></td>
                                                 <td><?= $row['od_day'] ?></td>
                                                 <td><?= $row['dv_day'] ?></td>
-                                                <td><?= $row['od_status'] ?></td>
-                                                <td>
-                                                    <a class="btn btn-info btn-sm" href="order_detail.php?od_id=<?= $row['od_id'] ?>">
-                                                        <i class="far fa-eye"></i>
-                                                    </a>
+                                                <td><?= $row['status_id'] ?>
                                                 </td>
                                                 <td>
-                                                    <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="po_delete.php?od_id=<?= $row['od_id'] ?>">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </a>
+                                                    <a type="button" class="btn btn-block btn-primary" href="po_detail.php?od_id=<?= $row['od_id'] ?>">รายละเอียด</a>
+                                                </td>
+                                                <td>
+                                                    <a onclick="return confirm('คุณต้องการลบใบสั่งซื้อหรือไม่?')" type="button" class="btn btn-block btn-danger" href="po_delete.php?od_id=<?= $row['od_id'] ?>">ยกเลิกใบสั่ง</a>
                                                 </td>
                                             </tr>
                                     <?php
                                         }
                                     } else {
-                                        echo '<tr><td colspan="5">ไม่พบข้อมูล</td></tr>';
+                                        echo '<tr><td colspan="7" class="text-center">ไม่พบข้อมูล</td></tr>';
                                     }
-
-
-
                                     ?>
                                 </tbody>
-
                             </table>
                         </div>
+
+
                         <!-- /.card-body -->
                     </div>
                     <!-- /.card -->
@@ -187,8 +157,8 @@ include('_fn.php');
         <!-- /.container-fluid -->
     </section>
     <!-- /.content -->
+
 </div>
-<!-- /.content-wrapper -->
 
 
 

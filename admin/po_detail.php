@@ -1,150 +1,205 @@
 <?php
-include('_header.php');
-include('_fn.php');
+session_start();
 
-$od_id = $_GET['od_id'];
-$c_id = $_GET['c_id'];
 
-$result1 = fetch_prod();
+include('../user/_fn.php');
 
+if (isset($_GET['od_id'])) {
+    $od_id = $_GET['od_id'];
+
+    // ดึงข้อมูลใบสั่งซื้อ
+    $order = get_order_by_id($od_id);
+    if (!$order) {
+        echo "ไม่พบใบสั่งซื้อที่ระบุ";
+        exit;
+    }
+
+    // ดึงรายละเอียดสินค้าในใบสั่งซื้อ
+    $order_details = get_orders_detail($od_id);
+} else {
+    echo "ไม่มีรหัสใบสั่งซื้อ";
+    exit;
+}
+
+// ถ้า get_order_by_id คืนมาเป็น array
+$row1 = $order;
+
+$od_id   = $row1['od_id'];
+$c_name  = $row1['c_name'];
+$c_add   = $row1['c_add'];
+$c_tel   = $row1['c_tel'];
+$od_day  = $row1['od_day'];
+$dv_day  = $row1['dv_day'];
+$dv_time = $row1['dv_time'];
+$od_note = $row1['od_note'];
 
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<body class="">
-    <div class="content">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AdminLTE 3 | Invoice</title>
 
-        <!-- Main content -->
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/adminlte.min.css">
+</head>
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper Content">
+        <div class="Content">
+            <div class="content-header">
+
+            </div>
+        </div>
+
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-6 mx-auto">
-                        <div class="card card-primary">
-                            <div class="card-header">
-                                <h3 class="card-title">เพิ่มรายการสั่งซื้อ</h3>
-                            </div>
-                            <form action="po_datail_save.php" method="post">
-                                <input type="hidden" name="c_id" value="<?= $c_id ?>">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <!-- ชื่อสินค้า -->
-                                            <div class="form-group">
-                                                <label>ชื่อสินค้า : </label>
-                                                <select class=" form-control select2bs4" name="pd_id">
-                                                    <option selected="selected" value=""> -- เลือกสินค้า -- </option>
-                                                    <?php foreach ($result1 as $unit) { ?>
-                                                        <option value="<?= $unit['pd_id'] ?>"><?= $unit['pd_n'] ?></option>
-
-                                                    <?php } ?>
-                                                </select>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="form-group">
-                                                <!-- เลือกหน่วยนับ -->
-                                                <div class="mb-3">
-                                                    <select class=" form-control select2" name="pu_id">
-                                                        <option selected="selected" value=""> -- เลือกหน่วยนับ --</option>
-                                                        <?php foreach ($result2 as $unit) { ?>
-                                                            <option value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
-                                                        <?php } ?>
-                                                    </select>
-                                                </div>
-                                                <!-- ราคาขาย -->
-                                                <div class="mb-3">
-                                                    <input type=" number" class="form-control" name="pri_sell" step="0.01" min="0" placeholder="ราคาสินค้า">
-                                                    <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div><!--  /.row -->
-                                </div> <!-- /.card-body -->
-                                <!-- บันทึก -->
-                                <div class="card-footer">
-                                    <button type="submit" class="btn btn-danger">บันทึก</button>
-
-                                </div>
-                            </form>
+                    <div class="col-10 mx-auto">
+                        <div class="callout callout-info">
+                            <h5><i class="fas fa-info"></i> Note:</h5>
+                            กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยันการจัดส่ง หากมีข้อผิดพลาดสามารถติดต่อเจ้าหน้าที่ได้ที่เบอร์โทรศัพท์ที่ระบุในใบสั่งซื้อ
                         </div>
-                        <!-- /.card -->
-                    </div>
-                    <!-- /.col -->
-                </div>
-                <!-- /.row -->
-            </div>
-            <!-- /.container-fluid -->
 
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-6 mx-auto">
-                        <div class="card card-secondary">
-                            <div class="card-header">
-                                <h3 class="card-title">ข้อมูลราคาสินค้า</h3>
+
+                        <!-- Main content -->
+                        <div class="invoice p-3 mb-3">
+                            <!-- title row -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <h3>
+                                        ร้านจัมโบ้อาหารสด
+                                        <?php date_default_timezone_set("Asia/Bangkok"); ?>
+                                        <small class="float-right">Date: <?= date("d/m/Y") ?></small>
+                                    </h3>
+                                </div>
+                                <!-- /.col -->
                             </div>
-                            <!-- /.card-header -->
-                            <div class="card-body">
-                                <table id="example1" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="table-info">
-                                            <th width="10%">ลำดับ</th>
-                                            <th width="40%">สินค้า</th>
-                                            <th width="20%">หน่วยนับ</th>
-                                            <th width="20%">ราคาขาย</th>
-                                            <th width="10%">ลบข้อมูล</th>
+                            <!-- info row -->
+                            <div class="row invoice-info">
+                                <div class="col-sm-4 invoice-col">
+                                    จาก
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $result4 = fetch_pri_detail_dy_pdid($c_id);
-                                        if (mysqli_num_rows($result4) > 0) {
+                                    <address>
+                                        ร้านจัมโบ้อาหารสด<br>
+                                        Phone: 081-530-4703 ,089-700-0922<br>
+
+
+                                    </address>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-sm-4 invoice-col">
+                                    ถึง
+                                    <address>
+                                        <strong><?= htmlspecialchars($c_name) ?></strong><br>
+                                        <?= nl2br(htmlspecialchars($c_add)) ?><br>
+                                        Phone: <?= htmlspecialchars($c_tel) ?><br>
+                                        <!-- Email:  -->
+                                    </address>
+                                </div>
+                                <!-- /.col -->
+                                <div class="col-sm-4 invoice-col">
+                                    <b>Order ID:</b> <?= htmlspecialchars($od_id) ?><br>
+                                    <b>Orders date:</b> <?= htmlspecialchars($od_day) ?><br>
+                                    <b>Delivery date:</b> <?= htmlspecialchars($dv_day) ?><br>
+                                    <b>Delivery time:</b> <?= htmlspecialchars($dv_time) ?><br>
+                                    <b>Note:</b> <?= htmlspecialchars($od_note) ?><br>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
+
+                            <!-- Table row -->
+                            <div class="row">
+                                <div class="col-12 table-responsive">
+                                    <table id="example2" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr class="table-info">
+                                                <th width="10%">ลำดับ</th>
+                                                <th width="40%">สินค้า</th>
+                                                <th width="20%">หน่วยนับ</th>
+                                                <th width="20%">จำนวน</th>
+                                                <th width="20%">ราคาต่อหน่วย</th>
+                                                <th width="20%">รวม</th>
+
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            $details = get_orders_detail($od_id);
                                             $i = 0;
-                                            foreach ($result4 as $row) {
+                                            $grand_total = 0;
+                                            //$ord_id = $row['ord_id']; // สมมติชื่อ PK ในตารางคือ odr_id
+
+
+                                            while ($row = mysqli_fetch_assoc($details)) {
                                                 $i++;
-                                        ?>
-                                                <tr>
-                                                    <td><?= $i ?></td>
-                                                    <td><?= $row['pd_n'] ?></td>
-                                                    <td><?= $row['pu_name'] ?></td>
-                                                    <td><?= $row['pri_sell'] ?></td>
-                                                    <td>
-                                                        <a onClick="return confirm('กรุณาตรวจสอบข้อมูล')" class="btn btn-danger btn-sm" href="price_delete.php?pri_id=<?= $row['pri_id'] ?>$c_id=<? $row['c_id'] ?>">
-                                                            <i class="far fa-trash-alt"></i>
-                                                        </a>
-                                                    </td>
+                                                $grand_total += $row['total'];
+                                                $ord_id = $row['ord_id']; // สมมติชื่อ PK ในตารางคือ ord_id
 
-                                                </tr>
-                                        <?php
+                                                echo "<tr>
+                                                <td>{$i}</td>
+                                                <td>{$row['pd_n']}</td>
+                                                <td>{$row['pu_name']}</td>
+                                                <td>{$row['qty']}</td>
+                                                <td>" . number_format($row['price_s'], 2) . "</td>
+                                                <td>" . number_format($row['total'], 2) . "</td>
+                                                
+                                            </tr>";
                                             }
-                                        } else {
-                                            echo '<tr><td colspan="5">ไม่พบข้อมูล</td></tr>';
-                                        }
-                                        ?>
-                                    </tbody>
-                                </table>
-                            </div><!-- /.card-body -->
-                            <div class="card-footer">
 
-                                <a href="price.php?c_id=<?= $c_id; ?>" class="btn btn-secondary">กลับ</a>
+                                            if ($i == 0) {
+                                                echo "<tr><td colspan='7'>ยังไม่มีรายการสินค้า</td></tr>";
+                                            }
+                                            ?>
+                                        </tbody>
+                                        <?php if ($i > 0): ?>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                                                    <td><strong><?= number_format($grand_total, 2) ?></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        <?php endif; ?>
+                                    </table>
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                            <!-- /.row -->
 
 
+
+                            <!-- this row will not appear when printing -->
+                            <div class="row no-print">
+                                <div class="col-12 text-right">
+
+                                    <a href="po_confirm.php?od_id=<?= $od_id ?>"
+                                        class="btn btn-warning"
+                                        onclick="return confirm('ยืนยันการจัดส่งหรือไม่?')">
+                                        จัดส่งสำเร็จ
+                                    </a>
+
+                                    <a href="po.php" class="btn btn-secondary">Back</a>
+                                </div>
                             </div>
 
-                        </div><!-- /.card -->
-
-                    </div> <!-- /.col -->
-
+                        </div>
+                        <!-- /.invoice -->
+                    </div><!-- /.col -->
                 </div><!-- /.row -->
-            </div>
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
     </div>
-    <!-- /.container-fluid -->
-
-    </section>
-    </div> <!-- /.content -->
-
-
+    <!-- /.content-wrapper -->
     <?php
     include('_footer.php');
     ?>
