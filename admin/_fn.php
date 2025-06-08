@@ -830,6 +830,7 @@ function fetch_supp_by_spid($sp_id)
     global $conn;
     $sql = "SELECT *
             FROM mk_sup
+            JOIN p_type ON mk_sup.pt_id = p_type.pt_id
             WHERE sp_id = ? ";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -1080,103 +1081,114 @@ function order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note)
 }
 
 
-//สร้างใบสั่งซื้อ >> เพิ่มข้อมูล แผนก/ครัว
+//spspspspspspspspspspspspspspspsspspspspsps
 
-function update_orders($od_id, $c_id, $od_note)
+//ดึงข้อมูล orders details
+function save_shopping($dv_day_new)
 {
     global $conn;
 
-    $sql = "UPDATE orders 
-               SET 
-                od_note = ?
-                where 
-                od_id = ?";
+    $sql = "INSERT INTO sp_list (mk_id, sp_id, u_id, od_id, pd_id, quantity, pu_id, sp_price, sp_status)
+            SELECT p.mk_id, p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id, ord.price_s, '0'
+            FROM orders_detail AS ord
+            JOIN orders AS od ON ord.od_id = od.od_id
+            JOIN plan AS p ON ord.pd_id = p.pd_id
+            WHERE od.dv_day = ?";
+
+    // เตรียมคำสั่ง SQL
     $stmt = mysqli_prepare($conn, $sql);
 
-    //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "si", $od_note, $od_id);
-
-    // ดำเนินการคำสั่ง
-    if (mysqli_stmt_execute($stmt)) {
-        //echo "บันทึกการแก้ไขเรียบร้อย";
-        header("Location:od_detail.php?od_id=$od_id?c_id=$c_id");
-    } else {
-        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn));
     }
 
-    // ปิดคำสั่ง
-    //mysqli_stmt_close($stmt);
-}
-
-
-
-//ดึงข้อมูล orders
-function fetch_order()
-{
-    global $conn; //ประกาศตัวแปร conn
-
-    //ดึงข้อมูล
-    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id
-            FROM orders AS o
-            INNER JOIN cust AS c ON o.c_id = c.c_id";
-
-    $stmt = mysqli_prepare($conn, $sql);
     // ผูกพารามิเตอร์
-    mysqli_stmt_execute($stmt);
-    //เงื่อนไขการทำงาน
-    $result = mysqli_stmt_get_result($stmt);
-
-    //ส่งค่ากลับ
-    return $result;
-}
-
-//ดึงข้อมูลรายระเอียด จาก od_id
-
-function fetch_orders_by_id($od_id)
-{
-    global $conn;
-
-    $sql = " SELECT  o.od_id, c.c_name ,o.od_day ,o.dv_day ,o.dv_time ,o.od_note ,c.c_id
-            FROM orders AS o
-            INNER JOIN cust AS c ON o.c_id = c.c_id
-            WHERE o.od_id = ? ";
-
-    $stmt = mysqli_prepare($conn, $sql);
-
-    mysqli_stmt_bind_param($stmt, 'i', $od_id);
-
-    // ดำเนินการคำสั่ง
-    mysqli_stmt_execute($stmt);
-
-    // รับผลลัพธ์
-    $result = mysqli_stmt_get_result($stmt);
-
-
-    return $result;
-}
-
-//popopopopopopopopopopopopopopopopopopopopopopopopopopopopo
-//ลบข้อมูล ใบสั่งซื้อ orders
-function po_delete($od_id)
-{
-    global $conn;
-
-    $sql = "DELETE FROM 
-                    orders 
-                WHERE 
-                    od_id = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-
-    // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "i", $od_id);
+    mysqli_stmt_bind_param($stmt, "s", $dv_day_new);
 
     // ดำเนินการคำสั่ง
     if (mysqli_stmt_execute($stmt)) {
-        //echo "ต้องการลบข้อมูลผู้ใช้งาน";
-        header("Location:po.php");
+        // ดูจำนวน row ที่ insert ได้จริง
+        $rows_inserted = mysqli_stmt_affected_rows($stmt);
+
+        // Redirect ไปหน้า order-check.php
+        header("Location: shopping.php?success=1&rows=$rows_inserted");
+        exit();
     } else {
-        echo "เกิดข้อผิดพลาดในการลบข้อมูล" . mysqli_stmt_error($stmt) . "<br>" . $sql;
+        echo "เกิดข้อผิดพลาดในการบันทึกรายการซื้อสินค้า: " . mysqli_stmt_error($stmt) . "<br>" . $sql;
     }
 
+    // ปิด statement
     mysqli_stmt_close($stmt);
+}
+
+//spspspspsppspspsppspspsppspspsppspspsppspspspspsppspspspspsp
+
+//ดึงข้อมูล shopping list
+function get_sp_list()
+{
+    global $conn;
+
+    $sql = "SELECT m.mk_name, 
+                sup.sp_name, 
+                u.u_name, 
+                pro.pd_n,            
+                pl.quantity, 
+                pu.pu_name, 
+                pl.sp_price, 
+                pl.sp_status,
+                pl.pl_id
+            FROM sp_list AS pl
+            JOIN market AS m ON pl.mk_id = m.mk_id
+            JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
+            JOIN js_user AS u ON pl.u_id = u.u_id
+            JOIN product AS pro ON pl.pd_id = pro.pd_id
+            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id";
+
+    $result = mysqli_query($conn, $sql);
+
+    if (!$result) {
+        die("Query failed: " . mysqli_error($conn));
+    }
+
+    return $result; // คืนผลลัพธ์ไปให้หน้า main ใช้
+}
+
+
+//spspspspspspspspspspspspspspspsspspspspsps
+
+//นับจำนวนรายการใน shopping list 
+
+function count_failed_delivery()
+{
+    global $conn;
+
+    $sql = "SELECT COUNT(*) AS total_failed 
+            FROM sp_list 
+            WHERE sp_status = 'จัดส่งไม่สำเร็จ'";
+
+    $result = mysqli_query($conn, $sql);
+
+    if (!$result) {
+        die("Query failed (count_failed_delivery): " . mysqli_error($conn));
+    }
+
+    $row = mysqli_fetch_assoc($result);
+    return $row['total_failed']; // คืนค่าเป็นจำนวน
+}
+
+
+function get_status_text_and_class($status_code)
+{
+    switch ($status_code) {
+        case 0:
+            return ['สั่งซื้อสำเร็จ', 'status-orange'];
+        case 1:
+            return ['กำลังดำเนินการ', 'status-yellow'];
+        case 2:
+            return ['การจัดส่งสำเร็จ', 'status-green'];
+        case 3:
+            return ['จัดส่งไม่สำเร็จ', 'status-red'];
+        default:
+            return ['ไม่ทราบสถานะ', 'status-default'];
+    }
 }
