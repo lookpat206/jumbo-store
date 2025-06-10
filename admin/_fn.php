@@ -1089,7 +1089,7 @@ function save_shopping($dv_day_new)
     global $conn;
 
     $sql = "INSERT INTO sp_list (mk_id, sp_id, u_id, od_id, pd_id, quantity, pu_id, sp_price, sp_status)
-            SELECT p.mk_id, p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id, ord.price_s, '0'
+            SELECT p.mk_id, p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,'0', '0'
             FROM orders_detail AS ord
             JOIN orders AS od ON ord.od_id = od.od_id
             JOIN plan AS p ON ord.pd_id = p.pd_id
@@ -1136,13 +1136,17 @@ function get_sp_list()
                 pu.pu_name, 
                 pl.sp_price, 
                 pl.sp_status,
-                pl.pl_id
+                pl.pl_id,
+                od.od_id,
+                c.c_abb
             FROM sp_list AS pl
             JOIN market AS m ON pl.mk_id = m.mk_id
             JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
             JOIN js_user AS u ON pl.u_id = u.u_id
             JOIN product AS pro ON pl.pd_id = pro.pd_id
-            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id";
+            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
+            join orders AS od ON pl.od_id = od.od_id
+            join cust AS c ON od.c_id = c.c_id";
 
     $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
@@ -1187,6 +1191,7 @@ function fetch_sp_list_by_plid($pl_id)
             JOIN js_user AS u ON pl.u_id = u.u_id
             JOIN product AS pro ON pl.pd_id = pro.pd_id
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
+            
             WHERE pl.pl_id = ?";
 
     $stmt = mysqli_prepare($conn, $sql);

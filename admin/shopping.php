@@ -1,6 +1,5 @@
 <?php
-
-
+// shopping.php
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
@@ -108,12 +107,14 @@ $sp_list_result = get_sp_list();
                                     <tr class="table-info">
                                         <th width="5%">ลำดับ</th>
                                         <th width="15%">ตลาด</th>
-                                        <th width="15%">ร้านค้า</th>
+                                        <th width="10%">ร้านค้า</th>
+
                                         <th width="10%">ผู้รับผิดชอบ</th>
                                         <th width="15%">สินค้า</th>
                                         <th width="5%">จำนวน</th>
                                         <th width="10%">หน่วยนับ</th>
                                         <th width="10%">ราคา</th>
+                                        <th width="5%">ลูกค้า</th>
                                         <th width="5%">สถานะ</th>
                                         <th width="10%">แก้ไข</th>
                                     </tr>
@@ -133,6 +134,7 @@ $sp_list_result = get_sp_list();
                                             <td><?php echo (int)$row['quantity']; ?></td>
                                             <td><?php echo htmlspecialchars($row['pu_name']); ?></td>
                                             <td><?php echo number_format($row['sp_price'], 2); ?></td>
+                                            <td><?php echo htmlspecialchars($row['c_abb']); ?></td>
                                             <td>
                                                 <?php
                                                 $status = $row['sp_status'];

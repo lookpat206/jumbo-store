@@ -25,6 +25,7 @@ if (isset($_POST['pl_id'], $_POST['mk_id'], $_POST['sp_id'], $_POST['u_id'], $_P
     }
 } else {
     echo "ข้อมูลไม่ครบถ้วน กรุณาตรวจสอบ!";
+    print_r($_POST); // สำหรับดีบัก
 }
 ?>
 

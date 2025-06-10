@@ -167,7 +167,7 @@ $pl_id = $row['pl_id'];
                             <!-- บันทึก -->
                             <div class="card-footer">
                                 <button type="submit" class="btn btn-danger">บันทึก</button>
-                                <a href="plan.php" class="btn btn-secondary">กลับ</a>
+                                <a href="shopping.php" class="btn btn-secondary">กลับ</a>
                             </div>
                         </form>
                     </div>
