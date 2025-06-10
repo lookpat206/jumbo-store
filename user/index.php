@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AdminLTE 3 | Log in (v2)</title>
+  <title>ร้านจัมโบ้</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -36,13 +36,13 @@
             <div class="card-footer p-0">
               <ul class="nav flex-column">
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    Projects <span class="float-right badge bg-primary">31</span>
+                  <a href="pl.php" class="nav-link">
+                    รายการซื้อสินค้า <span class="float-right badge bg-primary">31</span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    Tasks <span class="float-right badge bg-info">5</span>
+                  <a href="po.php" class="nav-link">
+                    ใบสั่งซื้อสินค้า <span class="float-right badge bg-info">5</span>
                   </a>
                 </li>
                 <li class="nav-item">

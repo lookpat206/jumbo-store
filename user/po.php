@@ -26,7 +26,7 @@ $total_od = fetch_totalod();
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="../admin/index.php">Home</a></li>
+            <li class="breadcrumb-item"><a href="index.php">Home</a></li>
           </ol>
         </div>
       </div>
@@ -98,7 +98,7 @@ $total_od = fetch_totalod();
                     <th width="10%">วันที่ส่ง</th>
                     <th width="20%">สถานะ</th>
                     <th width="10">รายละเอียด</th>
-                    <th width="10%">ยกเลิก</th>
+
                   </tr>
                 </thead>
                 <tbody>
@@ -121,9 +121,7 @@ $total_od = fetch_totalod();
                         <td>
                           <a type="button" class="btn btn-block btn-primary" href="po_get_detail.php?od_id=<?= $row['od_id'] ?>">รายละเอียด</a>
                         </td>
-                        <td>
-                          <a onclick="return confirm('คุณต้องการลบใบสั่งซื้อหรือไม่?')" type="button" class="btn btn-block btn-danger" href="po_delete_u.php?od_id=<?= $row['od_id'] ?>">ยกเลิกใบสั่ง</a>
-                        </td>
+
                       </tr>
                   <?php
                     }

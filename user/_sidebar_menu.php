@@ -1,11 +1,12 @@
 <?php
 
+
 ?>
 
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!-- Brand Logo -->
-  <a href="index3.html" class="brand-link">
+  <a href="index.php" class="brand-link">
     <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
     <span class="brand-text font-weight-light">JumBo-Store</span>
   </a>
@@ -34,7 +35,7 @@
           <a href="orders.php" class="nav-link">
             <i class="nav-icon fas fa-cart-plus"></i>
             <p>
-              สั่งสินค้า
+              สั่งซื้อสินค้า
               <!-- <span class="right badge badge-danger">New</span> -->
             </p>
           </a>
@@ -42,18 +43,18 @@
         <li class="nav-item">
           <!-- รายการซื้อสินค้า -->
           <a href="po.php" class="nav-link">
-            <i class="nav-icon fas fa-columns"></i>
+            <i class="nav-icon fas fa-dolly-flatbed"></i>
             <p>
-              ข้อมูลใบสั่งสินค้า
+              ใบสั่งสินค้า
             </p>
           </a>
         </li>
         <li class="nav-item">
           <!-- รายการซื้อสินค้า -->
           <a href="pl.php" class="nav-link">
-            <i class="nav-icon fas fa-columns"></i>
+            <i class="nav-icon fas fa-clipboard-list"></i>
             <p>
-              ข้อมูลรายการสั่งซื้อ
+              รายการซื้อสินค้า
             </p>
           </a>
         </li>

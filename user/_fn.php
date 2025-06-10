@@ -1,5 +1,5 @@
 <?php
-
+// user/_fn.php
 //ใช้ดึงข้อมูลจาก DB
 //connected  database
 include('../_conf/conn.inc.php');
@@ -244,4 +244,29 @@ function fetch_totalod()
     // ดึงค่าจากผลลัพธ์
     $row = mysqli_fetch_assoc($result);
     return $row['totalod'];
+}
+
+function fetch_market_dyuid($u_id)
+{
+    global $conn;
+
+    $sql = "SELECT js.u_id, js.u_name, sp.m_id, m.m_name
+            FROM sp_list AS sp
+            JOIN js_user AS js ON sp.u_id = js.u_id
+            join market AS m ON sp.m_id = m.m_id
+            WHERE js.u_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Prepare Failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $u_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+
+    return mysqli_fetch_assoc($result);
 }
