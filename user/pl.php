@@ -120,9 +120,9 @@ include('_fn.php');
                         <!-- ชื่อร้านค้า -->
                         <!-- href ="#activity" เชื่อมกับ id="activity" -->
                         <ul class="nav nav-pills">
-                            <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Activity</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Timeline</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Settings</a></li>
+                            <li class="nav-item"><a class="nav-link active" href="#shpo1" data-toggle="tab">ร้าน1</a></li>
+                            <li class="nav-item"><a class="nav-link " href="#shop2" data-toggle="tab">ร้าน2</a></li>
+                            <li class="nav-item"><a class="nav-link " href="#shop3" data-toggle="tab">ร้าน3</a></li>
                         </ul>
                     </div><!-- /.card-header -->
                     <div class="card-body">
@@ -130,23 +130,29 @@ include('_fn.php');
 
                             <!-- อันดับแรกคือการแสดงข้อมูลกิจกรรมของผู้ใช้ -->
 
-                            <div class="active tab-pane" id="activity">
+                            <div class="active tab-pane" id="shpo1">
                                 <div class="row">
-                                    <div class="col-md-9">
-                                        <table>
+                                    <div class="col-md-12">
+                                        <table id="example1" class="table table-bordered table-striped">
                                             <thead>
-                                                <tr>
+                                                <tr class="table-info">
                                                     <th>ลำดับ</th>
                                                     <th>ชื่อสินค้า</th>
                                                     <th>จำนวน</th>
                                                     <th>ราคา</th>
+                                                    <th>แก้ไขรายการ</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <td>1</td>
-                                                <td>สินค้า A</td>
-                                                <td>2</td>
-                                                <td>100 บาท</td>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>สินค้า A</td>
+                                                    <td>2</td>
+                                                    <td>100 บาท</td>
+                                                    <td>
+                                                        <a href="#" class="btn btn-warning btn-sm">แก้ไข</a>
+                                                    </td>
+                                                </tr>
 
 
                                             </tbody>
@@ -158,13 +164,70 @@ include('_fn.php');
                             </div>
                             <!-- /.tab-pane -->
                             <!-- อันที่ 2  -->
-                            <div class="tab-pane" id="timeline">
+                            <div class="tab-pane" id="shop2">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table id="example1" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr class="table-info">
+                                                    <th>ลำดับ</th>
+                                                    <th>ชื่อสินค้า</th>
+                                                    <th>จำนวน</th>
+                                                    <th>ราคา</th>
+                                                    <th>แก้ไขรายการ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>สินค้า A</td>
+                                                    <td>2</td>
+                                                    <td>100 บาท</td>
+                                                    <td>
+                                                        <a href="#" class="btn btn-warning btn-sm">แก้ไข</a>
+                                                    </td>
+                                                </tr>
 
+
+                                            </tbody>
+
+
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                             <!-- /.tab-pane -->
+                            <div class="active tab-pane" id="shop3">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table id="example1" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr class="table-info">
+                                                    <th>ลำดับ</th>
+                                                    <th>ชื่อสินค้า</th>
+                                                    <th>จำนวน</th>
+                                                    <th>ราคา</th>
+                                                    <th>แก้ไขรายการ</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>สินค้า A</td>
+                                                    <td>2</td>
+                                                    <td>100 บาท</td>
+                                                    <td>
+                                                        <a href="#" class="btn btn-warning btn-sm">แก้ไข</a>
+                                                    </td>
+                                                </tr>
 
-                            <div class="tab-pane" id="settings">
 
+                                            </tbody>
+
+
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                             <!-- /.tab-pane -->
                         </div>
