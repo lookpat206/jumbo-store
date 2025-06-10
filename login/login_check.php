@@ -1,44 +1,37 @@
 <?php
 session_start();
 include('../_conf/conn.inc.php');
+include('auth_fn.php');
 
-// Get username and password from POST request
-$name = mysqli_real_escape_string($conn, $_POST['name']);
-$pass = mysqli_real_escape_string($conn, $_POST['pass']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['name'] ?? '';
+    $pass = $_POST['pass'] ?? '';
 
-// SQL query to check username and password
-$sql = "SELECT u_user, u_pass, u_status FROM js_user WHERE u_user = '$name' AND u_pass = '$pass'";
+    $userData = login_user($name, $pass);
 
-$result = mysqli_query($conn, $sql);
+    if ($userData) {
+        $_SESSION['u_id'] = $userData['u_id'];
+        $_SESSION['u_user'] = $userData['u_user'];
+        $_SESSION['u_status'] = $userData['u_status'];
 
-if (mysqli_num_rows($result) > 0) {
-    // Fetch user data
-    $row = mysqli_fetch_assoc($result);
-    $u_user = $row['u_user'];
-    $u_pass = $row['u_pass'];
-    $u_status = $row['u_status'];
-
-    // Start session and set session variables
-    $_SESSION['u_user'] = $u_user;
-    $_SESSION['u_status'] = $u_status;
-
-    // Redirect based on user status
-    if ($u_status == "ผู้ดูแลระบบ") {
-        header("Location: ../admin/index.php");
-    } elseif ($u_status == "พนักงาน") {
-        header("Location: ../admin/index.php");
-    } elseif ($u_status == "ลูกค้า") {
-        header("Location: ../user/index.php");
+        switch ($userData['u_status']) {
+            case 'ผู้ดูแลระบบ':
+                header("Location: ../admin/index.php");
+                break;
+            case 'พนักงาน':
+                header("Location: ../user/index.php");
+                break;
+            case 'ลูกค้า':
+                header("Location: ../user/index.php");
+                break;
+            default:
+                $_SESSION['msg_err'] = "สถานะผู้ใช้ไม่ถูกต้อง";
+                header("Location:index.php");
+        }
+        exit();
     } else {
-        $_SESSION['msg_err'] = "สถานะผู้ใช้ไม่ถูกต้อง";
-        header('Location: index.php');
+        $_SESSION['msg_err'] = "ชื่อผู้ใช้และรหัสผ่านไม่ถูกต้อง";
+        header("Location: index.php");
+        exit();
     }
-    exit();
-} else {
-    // If username or password is incorrect
-    $_SESSION['msg_err'] = "ชื่อผู้ใช้และรหัสผ่านไม่ถูกต้อง";
-    header('Location: index.php');
-    exit();
 }
-
-mysqli_close($conn);

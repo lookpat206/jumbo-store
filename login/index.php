@@ -1,6 +1,6 @@
 <?php
 session_start();
-// include ("../_conf/conn.inc.php");
+
 
 if (isset($_SESSION['msg_err'])) {
     $msg_err = $_SESSION['msg_err'];
