@@ -28,7 +28,7 @@ $sp_list_result = get_sp_list();
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="text">ค้นหาข้อมูลสินค้าจากวันที่ส่ง</h4>
+                            <h4 class="text">สรุปรายการซื้อสินค้า</h4>
 
                         </div>
                         <!-- /.card-header -->
@@ -37,9 +37,9 @@ $sp_list_result = get_sp_list();
 
                                 <div class="form-group">
 
-                                    <p style="color: red; font-size: smaller;">กรอกวันที่ mm/dd/yyy (เดือน/วัน/ปี) : 06/03/2025</p>
+                                    <p style="color: red; font-size: smaller;">เลือกวันที่ส่งสินค้าจากปฏิทิน</p>
                                     <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                        <input type="text" name="dv_day" class="form-control datetimepicker-input" data-target="#reservationdate" />
+                                        <input type="text" name="dv_day" class="form-control datetimepicker-input" placeholder="mm/dd/yyy (เดือน/วัน/ปี) : 06/03/2025" data-target="#reservationdate" />
 
                                         <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -52,7 +52,7 @@ $sp_list_result = get_sp_list();
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-danger">ค้นหา</button>
+                                <button type="submit" class="btn btn-danger">สรุปยอดสั่งซื้อสินค้า</button>
 
 
                             </div>
@@ -79,24 +79,7 @@ $sp_list_result = get_sp_list();
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h1 class="card-title">ข้อมูลใบสั่งสินค้า</h1>
-                            <?php
-                            if (isset($_GET['success']) && $_GET['success'] == 1 && isset($_GET['rows'])) {
-                                $rows = (int)$_GET['rows'];
-                                echo "
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            icon: 'success',
-            title: 'บันทึกสำเร็จ',
-            text: 'จำนวน {$rows} รายการ',
-            confirmButtonText: 'ตกลง'
-        });
-    });
-    </script>
-    ";
-                            }
-                            ?>
+                            <h1 class="card-title">รายการซื้อสินค้า</h1>
 
 
                         </div>
@@ -106,17 +89,17 @@ $sp_list_result = get_sp_list();
                                 <thead>
                                     <tr class="table-info">
                                         <th width="5%">ลำดับ</th>
-                                        <th width="15%">ตลาด</th>
+                                        <th width="10%">ตลาด</th>
                                         <th width="10%">ร้านค้า</th>
 
                                         <th width="10%">ผู้รับผิดชอบ</th>
-                                        <th width="15%">สินค้า</th>
+                                        <th width="25%">สินค้า</th>
                                         <th width="5%">จำนวน</th>
                                         <th width="10%">หน่วยนับ</th>
                                         <th width="10%">ราคา</th>
-                                        <th width="5%">ลูกค้า</th>
+                                        <th width="5%">รวม</th>
                                         <th width="5%">สถานะ</th>
-                                        <th width="10%">แก้ไข</th>
+                                        <th width="5%">แก้ไข</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,28 +117,8 @@ $sp_list_result = get_sp_list();
                                             <td><?php echo (int)$row['quantity']; ?></td>
                                             <td><?php echo htmlspecialchars($row['pu_name']); ?></td>
                                             <td><?php echo number_format($row['sp_price'], 2); ?></td>
-                                            <td><?php echo htmlspecialchars($row['c_abb']); ?></td>
-                                            <td>
-                                                <?php
-                                                $status = $row['sp_status'];
-                                                $class = '';
-                                                switch ($status) {
-                                                    case 'สั่งซื้อสำเร็จ':
-                                                        $class = 'status-orange';
-                                                        break;
-                                                    case 'กำลังดำเนินการ':
-                                                        $class = 'status-yellow';
-                                                        break;
-                                                    case 'การจัดส่งสำเร็จ':
-                                                        $class = 'status-green';
-                                                        break;
-                                                    case 'จัดส่งไม่สำเร็จ':
-                                                        $class = 'status-red';
-                                                        break;
-                                                }
-                                                echo "<span class='{$class}'>" . htmlspecialchars($status) . "</span>";
-                                                ?>
-                                            </td>
+                                            <td><?php echo htmlspecialchars($row['total_price'], 2); ?></td>
+                                            <td><?php echo htmlspecialchars($row['sp_status']); ?></td>
                                             <td>
                                                 <a class="btn btn-warning btn-sm" href="sp_edit.php?pl_id=<?= $row['pl_id'] ?>">
                                                     <i class="far fa-edit"></i>
@@ -163,8 +126,34 @@ $sp_list_result = get_sp_list();
 
                                             </td>
                                         </tr>
-                                    <?php endwhile; ?>
+                                    <?php endwhile;
+                                    $grand_total = 0;
+                                    if ($i > 0) {
+                                        mysqli_data_seek($sp_list_result, 0); // Reset pointer to the start
+                                        while ($row = mysqli_fetch_assoc($sp_list_result)) {
+                                            $grand_total += $row['total_price'];
+                                        }
+                                    }
+
+                                    ?>
+                                    <?php
+
+                                    // ตรวจสอบว่ามีรายการสินค้าหรือไม่        
+
+
+                                    if ($i == 0) {
+                                        echo "<tr><td colspan='9'>ยังไม่มีรายการสินค้า</td></tr>";
+                                    }
+                                    ?>
                                 </tbody>
+                                <?php if ($i > 0): ?>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="8" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                                            <td><strong><?= number_format($grand_total, 2) ?></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                <?php endif; ?>
                             </table>
                         </div>
 
@@ -182,6 +171,23 @@ $sp_list_result = get_sp_list();
     <!-- /.content -->
 
 </div>
+<?php
+if (isset($_GET['success']) && $_GET['success'] == 1 && isset($_GET['rows'])) {
+    $rows = (int)$_GET['rows'];
+    echo "
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: 'success',
+            title: 'บันทึกสำเร็จ',
+            text: 'จำนวน {$rows} รายการ',
+            confirmButtonText: 'ตกลง'
+        });
+    });
+    </script>
+    ";
+}
+?>
 
 
 

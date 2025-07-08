@@ -1,10 +1,21 @@
 <?php
+session_start();
 // product list รายการซื้อสินค้า
 include('_header.php');
-include('_sidebar_menu.php');
+//include('_sidebar_menu.php');
 include('_fn.php');
 
+// ตรวจสอบว่ามีการ login แล้วหรือไม่ และ u_id ถูกเก็บไว้ใน session หรือไม่
+if (!isset($_SESSION['u_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
+$u_id = $_SESSION['u_id'];
+//print_r($u_id); // แสดงค่า u_id สำหรับดีบัก
+
+$markets = fetch_market_byuid($u_id); // ดึงข้อมูลตลาดที่ซื้อสินค้า
+print_r($markets); // แสดงข้อมูลตลาดสำหรับดีบัก
 
 ?>
 
@@ -43,35 +54,18 @@ include('_fn.php');
                     </div>
                     <div class="card-body p-0">
                         <ul class="nav nav-pills flex-column">
-                            <li class="nav-item active">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-inbox"></i> Inbox
-                                    <span class="badge bg-primary float-right">12</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="far fa-envelope"></i> Sent
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="far fa-file-alt"></i> Drafts
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-filter"></i> Junk
-                                    <span class="badge bg-warning float-right">65</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="far fa-trash-alt"></i> Trash
-                                </a>
-                            </li>
+                            <?php foreach ($markets as $market): ?>
+                                <li class="nav-item">
+                                    <a class="nav-link">
+                                        <?= htmlspecialchars($market['mk_name']) ?>
+                                        <!-- ถ้าอยากใส่จำนวน สามารถเพิ่ม badge ได้ เช่น -->
+                                        <!-- <span class="badge bg-primary float-right">10</span> -->
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
                     </div>
+
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
@@ -114,26 +108,32 @@ include('_fn.php');
                 <!-- /.card -->
             </div>
             <!-- /.col -->
+            <!-- เริ่มส่วน Tab -->
             <div class="col-md-9">
                 <div class="card">
                     <div class="card-header p-2">
-                        <!-- ชื่อร้านค้า -->
-                        <!-- href ="#activity" เชื่อมกับ id="activity" -->
                         <ul class="nav nav-pills">
-                            <li class="nav-item"><a class="nav-link active" href="#shpo1" data-toggle="tab">ร้าน1</a></li>
-                            <li class="nav-item"><a class="nav-link " href="#shop2" data-toggle="tab">ร้าน2</a></li>
-                            <li class="nav-item"><a class="nav-link " href="#shop3" data-toggle="tab">ร้าน3</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#shop1" data-toggle="tab">ร้าน 1</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#shop2" data-toggle="tab">ร้าน 2</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#shop3" data-toggle="tab">ร้าน 3</a>
+                            </li>
                         </ul>
-                    </div><!-- /.card-header -->
+                    </div>
+
+                    <!-- เริ่มเนื้อหา Tab -->
                     <div class="card-body">
                         <div class="tab-content">
 
-                            <!-- อันดับแรกคือการแสดงข้อมูลกิจกรรมของผู้ใช้ -->
-
-                            <div class="active tab-pane" id="shpo1">
+                            <!-- ร้าน 1 -->
+                            <div class="tab-pane fade show active" id="shop1">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <table id="example1" class="table table-bordered table-striped">
+                                        <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr class="table-info">
                                                     <th>ลำดับ</th>
@@ -153,21 +153,17 @@ include('_fn.php');
                                                         <a href="#" class="btn btn-warning btn-sm">แก้ไข</a>
                                                     </td>
                                                 </tr>
-
-
                                             </tbody>
-
-
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.tab-pane -->
-                            <!-- อันที่ 2  -->
-                            <div class="tab-pane" id="shop2">
+
+                            <!-- ร้าน 2 -->
+                            <div class="tab-pane fade" id="shop2">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <table id="example1" class="table table-bordered table-striped">
+                                        <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr class="table-info">
                                                     <th>ลำดับ</th>
@@ -180,27 +176,24 @@ include('_fn.php');
                                             <tbody>
                                                 <tr>
                                                     <td>1</td>
-                                                    <td>สินค้า A</td>
-                                                    <td>2</td>
-                                                    <td>100 บาท</td>
+                                                    <td>สินค้า B</td>
+                                                    <td>5</td>
+                                                    <td>250 บาท</td>
                                                     <td>
                                                         <a href="#" class="btn btn-warning btn-sm">แก้ไข</a>
                                                     </td>
                                                 </tr>
-
-
                                             </tbody>
-
-
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.tab-pane -->
-                            <div class="active tab-pane" id="shop3">
+
+                            <!-- ร้าน 3 -->
+                            <div class="tab-pane fade" id="shop3">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <table id="example1" class="table table-bordered table-striped">
+                                        <table class="table table-bordered table-striped">
                                             <thead>
                                                 <tr class="table-info">
                                                     <th>ลำดับ</th>
@@ -213,29 +206,25 @@ include('_fn.php');
                                             <tbody>
                                                 <tr>
                                                     <td>1</td>
-                                                    <td>สินค้า A</td>
-                                                    <td>2</td>
-                                                    <td>100 บาท</td>
+                                                    <td>สินค้า C</td>
+                                                    <td>3</td>
+                                                    <td>180 บาท</td>
                                                     <td>
                                                         <a href="#" class="btn btn-warning btn-sm">แก้ไข</a>
                                                     </td>
                                                 </tr>
-
-
                                             </tbody>
-
-
                                         </table>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /.tab-pane -->
-                        </div>
-                        <!-- /.tab-content -->
-                    </div><!-- /.card-body -->
-                </div>
-                <!-- /.card -->
+
+                        </div> <!-- /.tab-content -->
+                    </div> <!-- /.card-body -->
+
+                </div> <!-- /.card -->
             </div>
+
             <!-- /.col -->
             <!-- /.card -->
         </div>

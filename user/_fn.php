@@ -246,15 +246,16 @@ function fetch_totalod()
     return $row['totalod'];
 }
 
-function fetch_market_dyuid($u_id)
+function fetch_market_byuid($u_id)
 {
     global $conn;
 
-    $sql = "SELECT js.u_id, js.u_name, sp.m_id, m.m_name
+    $sql = "SELECT js.u_id, js.u_name, sp.mk_id, m.mk_name
             FROM sp_list AS sp
             JOIN js_user AS js ON sp.u_id = js.u_id
-            join market AS m ON sp.m_id = m.m_id
-            WHERE js.u_id = ?";
+            JOIN market AS m ON sp.mk_id = m.mk_id
+            WHERE js.u_id = ?
+            GROUP BY js.u_id, sp.mk_id";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -269,4 +270,11 @@ function fetch_market_dyuid($u_id)
     mysqli_stmt_close($stmt);
 
     return mysqli_fetch_assoc($result);
+
+    $markets = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $markets[] = $row;
+    }
+
+    return $markets;
 }

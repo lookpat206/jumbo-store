@@ -1089,7 +1089,7 @@ function save_shopping($dv_day_new)
     global $conn;
 
     $sql = "INSERT INTO sp_list (mk_id, sp_id, u_id, od_id, pd_id, quantity, pu_id, sp_price, sp_status)
-            SELECT p.mk_id, p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,'0', '0'
+            SELECT p.mk_id, p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'กำลังซื้อสินค้า'
             FROM orders_detail AS ord
             JOIN orders AS od ON ord.od_id = od.od_id
             JOIN plan AS p ON ord.pd_id = p.pd_id
@@ -1130,15 +1130,15 @@ function get_sp_list()
 
     $sql = "SELECT m.mk_name, 
                 sup.sp_name, 
-                u.u_name, 
+                u.u_name,
+                pl.pd_id, 
                 pro.pd_n,            
-                pl.quantity, 
+                SUM(pl.quantity) AS quantity, 
                 pu.pu_name, 
-                pl.sp_price, 
-                pl.sp_status,
-                pl.pl_id,
-                od.od_id,
-                c.c_abb
+                pl.sp_price,
+                SUM(pl.quantity) * pl.sp_price AS total_price,
+                pl.sp_status
+                
             FROM sp_list AS pl
             JOIN market AS m ON pl.mk_id = m.mk_id
             JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
@@ -1146,7 +1146,9 @@ function get_sp_list()
             JOIN product AS pro ON pl.pd_id = pro.pd_id
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
             join orders AS od ON pl.od_id = od.od_id
-            join cust AS c ON od.c_id = c.c_id";
+            join cust AS c ON od.c_id = c.c_id
+            GROUP BY pl.pd_id, pl.mk_id, pl.sp_id, pl.u_id, pl.pu_id, pl.sp_price, pl.sp_status
+            ORDER BY pl.mk_id DESC";
 
     $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
