@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                       <input type="text" name="od_day" id="order_date" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ. " data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask required>
                     </div>
                     <!-- /.input group -->
-                    <small class="form-text text-danger">กรุณากรอกปีเป็น คริสตศักราช (เช่น 2025)</small>
+                    <small class="form-text text-danger">กรุณากรอกปีเป็น ค.ศ. (เช่น 2025)</small>
                   </div>
                   <!-- /.form group -->
 
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                       <input type="text" name="dv_day" id="delivery_date" class="form-control" placeholder="วัน/เดือน/ปี พ.ศ." data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask required>
                     </div>
                     <!-- /.input group -->
-                    <small class="form-text text-danger">กรุณากรอกปีเป็น คริสตศักราช (เช่น 2025)</small>
+                    <small class="form-text text-danger">กรุณากรอกปีเป็น ค.ศ.(เช่น 2025)</small>
                   </div>
                   <!-- /.form group -->
                   <!-- Delivery time -->

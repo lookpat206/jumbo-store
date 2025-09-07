@@ -39,7 +39,7 @@ $result1 = fetch_type();
 
                 <!--name ร้านค้า -->
                 <div class="form-group">
-                  <label for="name">ชื่อร้นค้า:</label>
+                  <label for="name">ชื่อร้านค้า:</label>
                   <input type="text" name="sp_name" class="form-control" id="name" placeholder="ชื่อร้านค้า">
                 </div>
 

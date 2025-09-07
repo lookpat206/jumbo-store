@@ -35,7 +35,7 @@ include('_fn.php');
                         <div class="card-header">
                             <h3 class="card-title">ข้อมูลร้านค้า</h3>
                             <div class="card-tools">
-                                <a href="supp_add.php" class="btn btn-primary">เพิ่มข้อมูลลูกค้า</a>
+                                <a href="supp_add.php" class="btn btn-primary">เพิ่มข้อมูลร้านค้า</a>
 
                             </div>
                         </div>
