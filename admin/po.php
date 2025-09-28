@@ -5,6 +5,7 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('../user/_fn.php');
 include('_fn.php');
+include('_fn_db.php');
 
 
 // ดึงข้อมูลจำนวนใบสั่งซื้อทั้งหมด

@@ -17,9 +17,9 @@ $pd_id = $_GET['pd_id'];
 $result = fetch_sp_list_by_pdid($pd_id);
 $row = mysqli_fetch_assoc($result);
 $c_id = $row['c_id'];
+$c_abb = $row['c_abb']; //=ชื่อย่อ
 $pd_n = $row['pd_n'];
 $pu_name = $row['pu_name'];
-$sp_price = $row['sp_price'];
 $sp_status = $row['sp_status'];
 $quantity = $row['quantity'];
 
@@ -70,7 +70,7 @@ $quantity = $row['quantity'];
                                     <tbody>
                                         <?php
                                         // ดึงข้อมูล ปริมาณการสั่งซื้อสินค้า
-                                        $result1 = fetch_pri_detail_dy_pdid($c_id);
+                                        $result1 = fetch_sp_list_by_pdid($pd_id);
                                         if (mysqli_num_rows($result1) > 0) {
                                             $i = 0;
                                             foreach ($result1 as $row) {
@@ -78,17 +78,15 @@ $quantity = $row['quantity'];
                                         ?>
                                                 <tr>
                                                     <td><?= $i ?></td>
-                                                    <!-- สินค้า -->
-                                                    <td><?= $row['pd_n'] ?></td>
-                                                    <input type="hidden" name="pd_id" value="<?= $row['pd_id'] ?>">
+                                                    <!-- ลูกค้า -->
+                                                    <td><?= $row['c_abb'] ?></td>
+                                                    <input type="hidden" name="c_id" value="<?= $row['c_id'] ?>">
                                                     <!-- หน่วยนับ -->
                                                     <td><?= $row['pu_name'] ?></td>
-                                                    <!-- ราคาต่อหน่วย -->
-                                                    <td><?= $row['pri_sell'] ?></td>
-                                                    <!-- ปุ่มแก้ไข -->
-                                                    <td>
-                                                        <a class="btn btn-block btn-secondary" href="price_edit.php?pri_id=<?= $row['pri_id'] ?>">แก้ไขราคา</a>
-                                                    </td>
+                                                    <!-- จำนวน -->
+                                                    <td><?= $row['quantity'] ?></td>
+                                                    <!-- สถานะ -->
+                                                    <td><?= $row['sp_status'] ?></td>
 
                                                 </tr>
                                         <?php
@@ -104,7 +102,7 @@ $quantity = $row['quantity'];
 
                             <!-- บันทึก -->
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-danger">บันทึก</button>
+
                                 <a href="shopping.php" class="btn btn-secondary">กลับ</a>
                             </div>
                         </form>

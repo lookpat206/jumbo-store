@@ -100,3 +100,27 @@ function fetch_total_customers()
 
     return $data;
 }
+
+
+function fetch_totalod()
+{
+    global $conn;
+
+    $sql = "SELECT COUNT(*) as totalod FROM orders";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Prepare Failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    mysqli_stmt_close($stmt);
+
+    // ดึงค่าจากผลลัพธ์
+    $row = mysqli_fetch_assoc($result);
+    return $row['totalod'];
+}

@@ -7,6 +7,11 @@ include('../user/_fn.php');
 include('_fn.php');
 include('_fn_db.php');
 
+
+
+$dv_day = $_GET['dv_day'] ?? date('d/m/Y');
+
+
 // เรียกข้อมูล
 $sp_list_result = get_sp_list();
 
@@ -74,7 +79,7 @@ $totals_cust = fetch_total_customers();
                         <div class="widget-user-header bg-green " style=" text-align: center">
                             <div class="inner">
                                 <h5>วันที่ส่งสินค้า</h5>
-                                <h1><?php echo date('d-m-Y'); ?></h1>
+                                <h1><?php echo "$dv_day" ?></h1>
 
                             </div>
 
@@ -160,10 +165,10 @@ $totals_cust = fetch_total_customers();
                                             <td><?php echo htmlspecialchars($row['sp_name']); ?></td>
                                             <td><?php echo htmlspecialchars($row['u_name']); ?></td>
                                             <td><?php echo htmlspecialchars($row['pd_n']); ?></td>
-                                            <td><?php echo (float)$row['quantity']; ?></td>
+                                            <td><?php echo number_format((float)$row['quantity'], 2); ?></td>
                                             <td><?php echo htmlspecialchars($row['pu_name']); ?></td>
-                                            <td><?php echo number_format($row['avg_price'], 2); ?></td>
-                                            <td><?php echo htmlspecialchars($row['total_price'], 2); ?></td>
+                                            <td><?php echo number_format((float)$row['avg_price'], 2); ?></td>
+                                            <td><?php echo number_format((float)$row['total_price'], 2); ?></td>
                                             <td><?php echo htmlspecialchars($row['sp_status']); ?></td>
                                             <td>
                                                 <a class="btn btn-warning btn-sm" href="sp_edit.php?pd_id=<?= $row['pd_id'] ?>">

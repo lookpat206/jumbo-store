@@ -65,19 +65,20 @@ function fetch_user_by_uid($u_id)
 
 //=====================================================================
 //แก้ไขข้อมูล user
-function user_edit($u_id, $u_name)
+function user_edit($u_id, $u_name, $u_status)
 {
     global $conn;
 
     $sql = "UPDATE js_user 
                SET 
-                u_name = ?
+                u_name = ?,
+                u_status = ?
                 where 
                 u_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
 
     //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "si", $u_name, $u_id);
+    mysqli_stmt_bind_param($stmt, "ssi", $u_name, $u_status, $u_id);
 
     // ดำเนินการคำสั่ง
     if (mysqli_stmt_execute($stmt)) {
@@ -1110,8 +1111,8 @@ function save_shopping($dv_day_new)
         // ดูจำนวน row ที่ insert ได้จริง
         $rows_inserted = mysqli_stmt_affected_rows($stmt);
 
-        // Redirect ไปหน้า order-check.php
-        header("Location: shopping.php?success=1&rows=$rows_inserted");
+        // Redirect ไปหน้า .php
+        header("Location: shopping.php?success=1&rows=$rows_inserted&dv_day=$dv_day_new");
         exit();
     } else {
         echo "เกิดข้อผิดพลาดในการบันทึกรายการซื้อสินค้า: " . mysqli_stmt_error($stmt) . "<br>" . $sql;
@@ -1269,7 +1270,7 @@ function fetch_sp_list_by_pdid($pd_id)
 {
     global $conn;
 
-    $sql = " SELECT sp.pd_id ,pro.pd_n,c.c_abb,sp.quantity,pu.pu_name,od.dv_day 
+    $sql = " SELECT sp.pd_id ,pro.pd_n,c.c_id,c.c_abb,sp.quantity,pu.pu_name,od.dv_day,sp.sp_status 
     FROM sp_list AS sp 
     JOIN product as pro on sp.pd_id = pro.pd_id 
     JOIN p_unit as pu on sp.pu_id = pu.pu_id 
