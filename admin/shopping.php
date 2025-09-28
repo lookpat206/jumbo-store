@@ -5,11 +5,13 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('../user/_fn.php');
 include('_fn.php');
+include('_fn_db.php');
 
 // เรียกข้อมูล
 $sp_list_result = get_sp_list();
 
-
+$totals = fetch_total_shopping();
+$totals_cust = fetch_total_customers();
 
 
 
@@ -25,10 +27,11 @@ $sp_list_result = get_sp_list();
             <h4 class="text display-4">รายการซื้อสินค้า</h4>
 
             <div class="row">
-                <div class="col-12">
-                    <div class="card">
+                <!-- สรุปยอดสั่งซื้อสินค้า -->
+                <div class="col-6 mx-auto">
+                    <div class="card card-danger">
                         <div class="card-header">
-                            <h4 class="text">สรุปรายการซื้อสินค้า</h4>
+                            <h3 class="card-title">สรุปรายการซื้อสินค้า</h3>
 
                         </div>
                         <!-- /.card-header -->
@@ -64,10 +67,53 @@ $sp_list_result = get_sp_list();
                     </div>
                     <!-- /.card -->
                 </div>
-                <!-- /.col -->
-            </div>
-            <!-- /.row -->
+                <!--แสดงวันที่ จำนวน ตลาด , ร้านค้า,ผู้รับผิดชอบ -->
+                <div class="col-6 mx-auto">
+                    <div class="card card-widget">
 
+                        <div class="widget-user-header bg-green " style=" text-align: center">
+                            <div class="inner">
+                                <h5>วันที่ส่งสินค้า</h5>
+                                <h1><?php echo date('d-m-Y'); ?></h1>
+
+                            </div>
+
+                        </div>
+                        <div class=" card-footer p-0">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link">
+                                        ลูกค้า <span class="float-right badge bg-secondary"><?= $totals_cust['total_cust'] ?></span>
+                                    </a>
+
+
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link">
+                                        ตลาด <span class="float-right badge bg-secondary"><?= $totals['total_markets'] ?></span>
+                                        <br>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link">
+                                        ร้านค้า <span class="float-right badge bg-secondary"><?= $totals['total_suppliers'] ?></span>
+                                        <br>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class=" nav-link">
+                                        ผู้รับผิดชอบ <span class="float-right badge bg-secondary"><?= $totals['total_users'] ?></span>
+                                        <br>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+
+            </div>
         </div>
     </section>
 
@@ -99,7 +145,7 @@ $sp_list_result = get_sp_list();
                                         <th width="10%">ราคา</th>
                                         <th width="5%">รวม</th>
                                         <th width="5%">สถานะ</th>
-                                        <th width="5%">แก้ไข</th>
+                                        <th width="5%">รายระเอียด</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -114,13 +160,13 @@ $sp_list_result = get_sp_list();
                                             <td><?php echo htmlspecialchars($row['sp_name']); ?></td>
                                             <td><?php echo htmlspecialchars($row['u_name']); ?></td>
                                             <td><?php echo htmlspecialchars($row['pd_n']); ?></td>
-                                            <td><?php echo (int)$row['quantity']; ?></td>
+                                            <td><?php echo (float)$row['quantity']; ?></td>
                                             <td><?php echo htmlspecialchars($row['pu_name']); ?></td>
-                                            <td><?php echo number_format($row['sp_price'], 2); ?></td>
+                                            <td><?php echo number_format($row['avg_price'], 2); ?></td>
                                             <td><?php echo htmlspecialchars($row['total_price'], 2); ?></td>
                                             <td><?php echo htmlspecialchars($row['sp_status']); ?></td>
                                             <td>
-                                                <a class="btn btn-warning btn-sm" href="sp_edit.php?pl_id=<?= $row['pl_id'] ?>">
+                                                <a class="btn btn-warning btn-sm" href="sp_edit.php?pd_id=<?= $row['pd_id'] ?>">
                                                     <i class="far fa-edit"></i>
                                                 </a>
 
@@ -149,7 +195,7 @@ $sp_list_result = get_sp_list();
                                 <?php if ($i > 0): ?>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="8" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                                            <td colspan="10" align="right"><strong>รวมทั้งสิ้น</strong></td>
                                             <td><strong><?= number_format($grand_total, 2) ?></strong></td>
                                         </tr>
                                     </tfoot>
@@ -171,23 +217,7 @@ $sp_list_result = get_sp_list();
     <!-- /.content -->
 
 </div>
-<?php
-if (isset($_GET['success']) && $_GET['success'] == 1 && isset($_GET['rows'])) {
-    $rows = (int)$_GET['rows'];
-    echo "
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            icon: 'success',
-            title: 'บันทึกสำเร็จ',
-            text: 'จำนวน {$rows} รายการ',
-            confirmButtonText: 'ตกลง'
-        });
-    });
-    </script>
-    ";
-}
-?>
+<!-- /.content-wrapper -->
 
 
 

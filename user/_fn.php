@@ -94,19 +94,42 @@ function get_cust()
 }
 
 // ดึงข้อมูลสินค้า
-function get_prod()
+function get_products_by_customer($c_id)
 {
     global $conn;
-    return mysqli_query($conn, "SELECT * FROM product");
+    $sql = "SELECT DISTINCT pd.pd_id, pd.pd_n
+            FROM pri_detail AS pri
+            JOIN product AS pd ON pri.pd_id = pd.pd_id
+            WHERE pri.c_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $c_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $products = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $products[] = $row;
+    }
+    return $products;
 }
 
 // ดึงข้อมูลหน่วยนับ
-function get_units()
+function get_units_by_customer_and_product($c_id, $pd_id)
 {
     global $conn;
-    return mysqli_query($conn, "SELECT * FROM p_unit");
+    $sql = "SELECT pu.pu_id, pu.pu_name
+            FROM pri_detail AS pri
+            JOIN p_unit AS pu ON pri.pu_id = pu.pu_id
+            WHERE pri.c_id = ? AND pri.pd_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $c_id, $pd_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $units = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $units[] = $row;
+    }
+    return $units;
 }
-
 
 // ฟังก์ชันดึงรายการสินค้าใน po_detail พร้อมชื่อสินค้าและหน่วย
 function get_orders_detail($od_id)

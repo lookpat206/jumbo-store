@@ -152,7 +152,7 @@ $result4 = fetch_user();
                                             $i++;
                                     ?>
                                             <tr>
-                                                <td><?= $i ?></td>
+                                                <td><?= $row['plan_id'] ?></td>
                                                 <td><?= $row['mk_name'] ?></td>
                                                 <td><?= $row['sp_name'] ?></td>
                                                 <td><?= $row['pd_n'] ?></td>

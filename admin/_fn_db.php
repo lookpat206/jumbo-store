@@ -61,3 +61,42 @@ function fetch_total_counts()
 
     return $data;
 }
+
+function fetch_total_shopping()
+{
+    global $conn;
+
+    $sql = "SELECT 
+    COUNT(DISTINCT pl.mk_id) AS total_markets,     -- นับจำนวนตลาดไม่ซ้ำ
+    COUNT(DISTINCT pl.sp_id) AS total_suppliers,   -- นับจำนวนร้านค้าไม่ซ้ำ
+    COUNT(DISTINCT pl.u_id) AS total_users         -- นับจำนวนผู้รับผิดชอบไม่ซ้ำ
+    FROM sp_list AS pl;";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+
+    return $data;
+}
+
+function fetch_total_customers()
+{
+    global $conn;
+
+    $sql = "SELECT 
+    COUNT(DISTINCT od.c_id ) AS total_cust    
+    FROM sp_list AS pl
+    JOIN orders AS od ON pl.od_id = od.od_id;";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+
+    mysqli_stmt_close($stmt);
+
+    return $data;
+}

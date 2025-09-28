@@ -76,8 +76,8 @@ $od_note = $row1['od_note'];
                                 <div class="col-12">
                                     <h3>
                                         ร้านจัมโบ้อาหารสด
-                                        <?php date_default_timezone_set("Asia/Bangkok"); ?>
-                                        <small class="float-right">Date: <?= date("d/m/Y") ?></small>
+                                        <!-- <?php date_default_timezone_set("Asia/Bangkok"); ?>
+                                        <small class="float-right">Date: <?= date("d/m/Y") ?></small> -->
                                     </h3>
                                 </div>
                                 <!-- /.col -->

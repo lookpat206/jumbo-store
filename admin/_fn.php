@@ -1124,6 +1124,8 @@ function save_shopping($dv_day_new)
 //spspspspsppspspsppspspsppspspsppspspsppspspspspsppspspspspsp
 
 //ดึงข้อมูล shopping list
+
+//ตต้องสร้างตารางต้นทุน เพื่อนำราคาท
 function get_sp_list()
 {
     global $conn;
@@ -1135,8 +1137,8 @@ function get_sp_list()
                 pro.pd_n,            
                 SUM(pl.quantity) AS quantity, 
                 pu.pu_name, 
-                pl.sp_price,
-                SUM(pl.quantity) * pl.sp_price AS total_price,
+                AVG(pl.sp_price) AS avg_price,  
+                SUM(pl.quantity) * AVG(pl.sp_price) AS total_price,
                 pl.sp_status
                 
             FROM sp_list AS pl
@@ -1147,7 +1149,7 @@ function get_sp_list()
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
             join orders AS od ON pl.od_id = od.od_id
             join cust AS c ON od.c_id = c.c_id
-            GROUP BY pl.pd_id, pl.mk_id, pl.sp_id, pl.u_id, pl.pu_id, pl.sp_price, pl.sp_status
+            GROUP BY pl.pd_id, pl.mk_id, pl.sp_id, pl.u_id, pl.pu_id, pl.sp_status
             ORDER BY pl.mk_id DESC";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -1260,6 +1262,27 @@ function sp_list_edit($pl_id, $mk_id, $sp_id, $u_id, $quantity, $sp_price, $sp_s
     mysqli_stmt_close($stmt);
 }
 
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//ดึงข้อมูลสินค้าและจำนวน ของลูกค้าแต่ละราย
+function fetch_sp_list_by_pdid($pd_id)
+{
+    global $conn;
+
+    $sql = " SELECT sp.pd_id ,pro.pd_n,c.c_abb,sp.quantity,pu.pu_name,od.dv_day 
+    FROM sp_list AS sp 
+    JOIN product as pro on sp.pd_id = pro.pd_id 
+    JOIN p_unit as pu on sp.pu_id = pu.pu_id 
+    JOIN orders AS od ON sp.od_id = od.od_id 
+    JOIN cust AS c ON od.c_id = c.c_id
+     WHERE sp.pd_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return $result;
+}
 function get_status_text_and_class($status_code)
 {
     switch ($status_code) {
