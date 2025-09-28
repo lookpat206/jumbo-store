@@ -7,6 +7,7 @@ include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
+include('../admin/_fn_db.php');
 
 $total_od = fetch_totalod();
 

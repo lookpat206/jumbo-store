@@ -1,17 +1,17 @@
 <!-- /.content-wrapper -->
-  <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
-    All rights reserved.
-    <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.2.0
-    </div>
-  </footer>
+<footer class="main-footer">
+  <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+  All rights reserved.
+  <div class="float-right d-none d-sm-inline-block">
+    <b>Version</b> 3.2.0
+  </div>
+</footer>
 
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
-  <!-- /.control-sidebar -->
+<!-- Control Sidebar -->
+<aside class="control-sidebar control-sidebar-dark">
+  <!-- Control sidebar content goes here -->
+</aside>
+<!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
 
@@ -50,8 +50,9 @@
 <!-- bs-custom-file-input -->
 <script src="plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
 <!-- date-range-picker -->
-<script src="../../plugins/daterangepicker/daterangepicker.js"></script>
-
+<script src="plugins/daterangepicker/daterangepicker.js"></script>
+<!-- overlayScrollbars -->
+<script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 
 <!-- <script>
     document.getElementById('inputImage').addEventListener('change', function(event) {
@@ -70,15 +71,19 @@
 
 <!-- Page specific script -->
 <script>
-  $(function () {
-  bsCustomFileInput.init();
-});
-  $(function () {
+  $(function() {
+    bsCustomFileInput.init();
+  });
+  $(function() {
     $("#example1").DataTable({
       //"lengthChange": true กำหนดจำนวนหน้า,
       //"autoWidth": false ความกว้างของคอลัม
-      "responsive": true, "lengthChange": true , "autoWidth": false,
-      "aaSorting":[[0,"desc"]],
+      "responsive": true,
+      "lengthChange": true,
+      "autoWidth": false,
+      "aaSorting": [
+        [0, "desc"]
+      ],
       // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     $('#example2').DataTable({
@@ -92,9 +97,9 @@
     });
   });
 
-  
 
-     $(function () {
+
+  $(function() {
     //Initialize Select2 Elements
     $('.select2').select2()
 
@@ -104,19 +109,27 @@
     })
 
     //Datemask dd/mm/yyyy
-    $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+    $('#datemask').inputmask('dd/mm/yyyy', {
+      'placeholder': 'dd/mm/yyyy'
+    })
     //Datemask2 mm/dd/yyyy
-    $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+    $('#datemask2').inputmask('mm/dd/yyyy', {
+      'placeholder': 'mm/dd/yyyy'
+    })
     //Money Euro
     $('[data-mask]').inputmask()
 
     //Date picker
     $('#reservationdate').datetimepicker({
-        format: 'L'
+      format: 'L'
     });
 
     //Date and time picker
-    $('#reservationdatetime').datetimepicker({ icons: { time: 'far fa-clock' } });
+    $('#reservationdatetime').datetimepicker({
+      icons: {
+        time: 'far fa-clock'
+      }
+    });
 
     //Date range picker
     $('#reservation').daterangepicker()
@@ -129,20 +142,19 @@
       }
     })
     //Date range as a button
-    $('#daterange-btn').daterangepicker(
-      {
-        ranges   : {
-          'Today'       : [moment(), moment()],
-          'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-          'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+    $('#daterange-btn').daterangepicker({
+        ranges: {
+          'Today': [moment(), moment()],
+          'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+          'Last 7 Days': [moment().subtract(6, 'days'), moment()],
           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-          'This Month'  : [moment().startOf('month'), moment().endOf('month')],
-          'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+          'This Month': [moment().startOf('month'), moment().endOf('month')],
+          'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
         },
         startDate: moment().subtract(29, 'days'),
-        endDate  : moment()
+        endDate: moment()
       },
-      function (start, end) {
+      function(start, end) {
         $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
       }
     )
@@ -164,12 +176,12 @@
       $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
     })
 
-    $("input[data-bootstrap-switch]").each(function(){
+    $("input[data-bootstrap-switch]").each(function() {
       $(this).bootstrapSwitch('state', $(this).prop('checked'));
     })
 
   })
-
 </script>
 </body>
+
 </html>

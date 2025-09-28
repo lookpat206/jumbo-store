@@ -37,7 +37,7 @@ function create_od($c_id, $od_day, $dv_day, $dv_time, $od_note, $status_id = '�
 }
 
 
-// ฟังก์ชันเพิ่มรายละเอียดสินค้า
+// ฟังก์ชันเพิ่มรายการสินค้า
 function add_po_detail($od_id, $pd_id, $pu_id, $qty, $price_s, $total)
 {
     global $conn;
@@ -93,7 +93,7 @@ function get_cust()
     return mysqli_query($conn, "SELECT * FROM cust");
 }
 
-// ดึงข้อมูลสินค้า
+// ดึงข้อมูลสินค้าจากตาราง pri_detail โดยกรองด้วย c_id
 function get_products_by_customer($c_id)
 {
     global $conn;
@@ -112,7 +112,7 @@ function get_products_by_customer($c_id)
     return $products;
 }
 
-// ดึงข้อมูลหน่วยนับ
+// ดึงข้อมูลหน่วยนับจากตาราง pri_detail โดยกรองด้วย c_id และ pd_id
 function get_units_by_customer_and_product($c_id, $pd_id)
 {
     global $conn;
@@ -150,7 +150,7 @@ function get_orders_detail($od_id)
     return mysqli_stmt_get_result($stmt);
 }
 
-
+// ฟังก์ชันดึงข้อมูลใบสั่งซื้อพร้อมรายการสินค้า
 function get_order_by_id($od_id)
 {
     global $conn;
@@ -170,6 +170,8 @@ function get_order_by_id($od_id)
     return mysqli_fetch_assoc($result); // ✅ คืนเป็น array
 }
 
+
+// ฟังก์ชันดึงข้อมูลใบสั่งซื้อทั้งหมด
 function get_orders()
 {
     global $conn;
@@ -193,6 +195,7 @@ function confirm_od($od_id)
     mysqli_stmt_close($stmt);
 }
 
+// ฟังก์ชันยืนยันใบสั่งซื้อ เปลี่ยนสถานะเป็น "จัดส่งสำเร็จ"
 function confirm_po($od_id)
 {
     global $conn;
@@ -206,6 +209,8 @@ function confirm_po($od_id)
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
 }
+
+
 // ฟังก์ชันดึงข้อมูลแผนก/ครัวตามรหัสลูกค้า
 function get_departments_by_customer($c_id)
 {
@@ -246,28 +251,6 @@ function delete_po($od_id)
     return $result;
 }
 
-function fetch_totalod()
-{
-    global $conn;
-
-    $sql = "SELECT COUNT(*) as totalod FROM orders";
-
-    $stmt = mysqli_prepare($conn, $sql);
-
-    if (!$stmt) {
-        die("SQL Prepare Failed: " . mysqli_error($conn));
-    }
-
-    mysqli_stmt_execute($stmt);
-
-    $result = mysqli_stmt_get_result($stmt);
-
-    mysqli_stmt_close($stmt);
-
-    // ดึงค่าจากผลลัพธ์
-    $row = mysqli_fetch_assoc($result);
-    return $row['totalod'];
-}
 
 function fetch_market_byuid($u_id)
 {
@@ -278,7 +261,7 @@ function fetch_market_byuid($u_id)
             JOIN js_user AS js ON sp.u_id = js.u_id
             JOIN market AS m ON sp.mk_id = m.mk_id
             WHERE js.u_id = ?
-            GROUP BY js.u_id, sp.mk_id";
+            GROUP BY js.u_id, js.u_name,sp.mk_id, m.mk_name";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -292,12 +275,37 @@ function fetch_market_byuid($u_id)
     $result = mysqli_stmt_get_result($stmt);
     mysqli_stmt_close($stmt);
 
-    return mysqli_fetch_assoc($result);
+    return $result;
+}
 
-    $markets = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $markets[] = $row;
-    }
 
-    return $markets;
+
+
+// ดึงรายละเอียดสินค้าในตลาดของผู้ใช้
+function get_market_details($mk_id, $u_id)
+{
+    global $conn;
+
+    $sql = "SELECT pl.pd_id, 
+    pl.sp_id, 
+    sup.sp_name, 
+    p.pd_n, 
+    SUM(pl.quantity) AS quantity, 
+    pu.pu_id, 
+    AVG(pl.sp_price) AS sp_price,
+    SUM(pl.quantity) * AVG(pl.sp_price) AS total_price 
+    FROM sp_list AS pl 
+    INNER JOIN product AS p ON pl.pd_id = p.pd_id 
+    INNER JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id 
+    JOIN p_unit AS pu ON pl.pu_id = pu.pu_id 
+    WHERE pl.mk_id= ? AND pl.u_id=?
+    GROUP BY pl.pd_id, pl.sp_id, sup.sp_name, p.pd_n, pu.pu_id";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $mk_id, $u_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $result;
 }
