@@ -67,10 +67,11 @@ function fetch_total_shopping()
     global $conn;
 
     $sql = "SELECT 
-    COUNT(DISTINCT pl.mk_id) AS total_markets,     -- นับจำนวนตลาดไม่ซ้ำ
-    COUNT(DISTINCT pl.sp_id) AS total_suppliers,   -- นับจำนวนร้านค้าไม่ซ้ำ
-    COUNT(DISTINCT pl.u_id) AS total_users         -- นับจำนวนผู้รับผิดชอบไม่ซ้ำ
-    FROM sp_list AS pl;";
+    COUNT(DISTINCT ms.mk_id) AS total_markets,    -- นับจำนวนตลาดไม่ซ้ำ
+    COUNT(DISTINCT pl.sp_id) AS total_suppliers, -- นับจำนวนร้านค้าไม่ซ้ำ
+    COUNT(DISTINCT pl.u_id) AS total_users       -- นับจำนวนผู้รับผิดชอบไม่ซ้ำ
+FROM sp_list AS pl
+JOIN mk_sup AS ms ON pl.sp_id = ms.sp_id ";
 
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_execute($stmt);

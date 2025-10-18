@@ -398,17 +398,17 @@ function  fetch_prod()
 }
 
 //***************************************** */
-//บันทึกข้อมูล product   แก้ไข
-function prod_add_save($prod_n, $prod_q, $prod_f, $prod_i)
+//บันทึกข้อมูล product  จากการเพิ่มข้อมูล
+function prod_add_save($pd_n)
 {
     global $conn;
 
-    $sql = "INSERT INTO product(prod_n,prod_q,prod_f,prod_i)
-                    VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO product(pd_n)
+                    VALUES (?)";
     $stmt = mysqli_prepare($conn, $sql);
 
     //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "ssss", $prod_n, $prod_q, $prod_f, $prod_i);
+    mysqli_stmt_bind_param($stmt, "s", $pd_n);
 
     //เงื่อนไขการทำงาน
 
@@ -419,11 +419,104 @@ function prod_add_save($prod_n, $prod_q, $prod_f, $prod_i)
     }
 }
 
+//***************************************** */
+//แก้ไขข้อมูล product
+function prod_update($pd_n, $pd_id)
+{
+    global $conn;
+
+    $sql = "UPDATE product 
+               SET 
+                pd_n = ?
+                where 
+                pd_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+
+    //ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "si", $pd_n, $pd_id);
+
+    // ดำเนินการคำสั่ง
+    if (mysqli_stmt_execute($stmt)) {
+        //echo "บันทึกการแก้ไขเรียบร้อย";
+        header("Location:prod.php");
+    } else {
+        echo "Error : " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+//***************************************** */
+//ลบข้อมูล product
+function prod_delete($pd_id)
+{
+    global $conn;
+
+    // 1️⃣ ตรวจสอบก่อนว่าสินค้านี้ถูกใช้อยู่ใน orders_detail หรือไม่
+    $check_sql = "SELECT COUNT(*) FROM orders_detail WHERE pd_id = ?";
+    $check_stmt = mysqli_prepare($conn, $check_sql);
+    mysqli_stmt_bind_param($check_stmt, "i", $pd_id);
+    mysqli_stmt_execute($check_stmt);
+    mysqli_stmt_bind_result($check_stmt, $count);
+    mysqli_stmt_fetch($check_stmt);
+    mysqli_stmt_close($check_stmt);
+
+    // ถ้ามีการอ้างอิงอยู่ → แจ้งเตือนและหยุด
+    if ($count > 0) {
+        echo "<script>
+                alert('ไม่สามารถลบสินค้าได้ เนื่องจากสินค้านี้ถูกใช้งานในรายการคำสั่งซื้อ ($count รายการ)');
+                window.location.href = 'prod.php';
+              </script>";
+        return;
+    }
+
+    // 2️⃣ ถ้าไม่มีการอ้างอิง → ลบสินค้าได้
+    $sql = "DELETE FROM product WHERE pd_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        echo "<script>
+                alert('ลบสินค้าสำเร็จ');
+                window.location.href = 'prod.php';
+              </script>";
+    } else {
+        echo "<script>
+                alert('เกิดข้อผิดพลาดในการลบข้อมูล: " . mysqli_stmt_error($stmt) . "');
+                window.location.href = 'prod.php';
+              </script>";
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+//***************************************** */
+// ดึงข้อมูลจาก TB-product โดยใช้ pd_id
+
+function fetch_prod_by_pdid($pd_id)
+{
+    global $conn;
+    $sql = "SELECT * 
+            FROM product 
+            WHERE pd_id = ? ";
+
+    // เตรียมคำสั่ง SQL
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+    return $result;
+}
+
+
 //************************************************** */
 //บันทึกข้อมูล ราคาสินค้า price
-
-
-
 function price_save($c_id, $pd_id, $pu_id, $pri_sell)
 {
     global $conn;
@@ -653,7 +746,7 @@ function fetch_supp()
     global $conn;
     $sql = "SELECT * 
             FROM mk_sup
-            join p_type on mk_sup.pt_id = p_type.pt_id";
+            join market on mk_sup.mk_id = market.mk_id";
     // แปลง $sql เป็น $stmt
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -795,11 +888,11 @@ function mark_delete($mk_id)
 
 //###############################################
 //เพิ่มข้อมูลร้านค้าจาก TB-supp
-function supp_add_save($sp_name, $pt_id, $sp_tel)
+function supp_add_save($mk_id, $sp_name, $sp_tel)
 {
     global $conn;
 
-    $sql = "INSERT INTO mk_sup(sp_name, pt_id, sp_tel) 
+    $sql = "INSERT INTO mk_sup(mk_id,sp_name,sp_tel) 
             VALUES (?, ?, ?)";
     // แปลง $sql เป็น $stmt            
     $stmt = mysqli_prepare($conn, $sql);
@@ -810,7 +903,7 @@ function supp_add_save($sp_name, $pt_id, $sp_tel)
     }
 
     // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "sis", $sp_name, $pt_id, $sp_tel);
+    mysqli_stmt_bind_param($stmt, "iss", $mk_id, $sp_name, $sp_tel);
 
     // ดำเนินการคำสั่ง SQL
     if (mysqli_stmt_execute($stmt)) {
@@ -831,7 +924,7 @@ function fetch_supp_by_spid($sp_id)
     global $conn;
     $sql = "SELECT *
             FROM mk_sup
-            JOIN p_type ON mk_sup.pt_id = p_type.pt_id
+            JOIN market ON mk_sup.mk_id = market.mk_id
             WHERE sp_id = ? ";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -852,21 +945,22 @@ function fetch_supp_by_spid($sp_id)
 //######################################################################
 // แก้ไขข้อมูล ร้านค้า TB-supp
 
-function supp_edit($sp_id, $sp_name, $pt_id, $sp_tel)
+function supp_edit($sp_id, $mk_id, $sp_name, $sp_tel)
 {
     global $conn;
 
     $sql = "UPDATE mk_sup 
                SET 
+                mk_id = ?,
                 sp_name = ?,
-                pt_id = ?,
+               
                 sp_tel = ?
                 where 
                 sp_id = ?";
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "sisi", $sp_name, $pt_id, $sp_tel, $sp_id);
+    mysqli_stmt_bind_param($stmt, "issi",  $mk_id, $sp_name, $sp_tel, $sp_id);
 
     if (mysqli_stmt_execute($stmt)) {
         //echo "บันทึกการแก้ไขเรียบร้อย";
@@ -915,8 +1009,8 @@ function fetch_plan()
 
     $sql = "SELECT * 
             FROM plan
-            JOIN market ON plan.mk_id = market.mk_id
             JOIN mk_sup ON plan.sp_id = mk_sup.sp_id
+            JOIN market ON mk_sup.mk_id = market.mk_id
             JOIN product ON plan.pd_id = product.pd_id
             JOIN js_user ON plan.u_id = js_user.u_id
             ORDER BY plan_id DESC";
@@ -940,15 +1034,22 @@ function fetch_plan_by_planid($plan_id)
 {
     global $conn;
 
-    $sql = "SELECT  market.mk_name,mk_sup.sp_name,product.pd_n,js_user.u_name,
-                    plan.plan_id,plan.mk_id,plan.sp_id,plan.pd_id,plan.u_id
-
-            FROM plan 
-             JOIN market ON plan.mk_id = market.mk_id
-            JOIN mk_sup ON plan.sp_id = mk_sup.sp_id
-            JOIN product ON plan.pd_id = product.pd_id
-            JOIN js_user ON plan.u_id = js_user.u_id
-            WHERE plan_id = ? ";
+    $sql = "SELECT  
+    market.mk_name,
+    mk_sup.sp_name,
+    product.pd_n,
+    js_user.u_name,
+    plan.plan_id,
+    market.mk_id,
+    plan.sp_id,
+    plan.pd_id,
+    plan.u_id
+FROM plan 
+JOIN mk_sup ON plan.sp_id = mk_sup.sp_id
+JOIN market ON mk_sup.mk_id = market.mk_id
+JOIN product ON plan.pd_id = product.pd_id
+JOIN js_user ON plan.u_id = js_user.u_id
+WHERE plan.plan_id = ? ";
 
     // เตรียมคำสั่ง SQL
     $stmt = mysqli_prepare($conn, $sql);
@@ -968,12 +1069,12 @@ function fetch_plan_by_planid($plan_id)
 //*************************************************************** */
 // บันทึกข้อมูล แผนจากการเพิ่มข้อมูล
 
-function plan_add_save($mk_id, $sp_id, $pd_id, $u_id)
+function plan_add_save($sp_id, $pd_id, $u_id)
 {
     global $conn;
 
-    $sql = "INSERT INTO plan(mk_id, sp_id, pd_id, u_id) 
-            VALUES (?, ?, ?, ?)";
+    $sql = "INSERT INTO plan(sp_id, pd_id, u_id) 
+            VALUES ( ?, ?, ?)";
     // แปลง $sql เป็น $stmt            
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -983,7 +1084,7 @@ function plan_add_save($mk_id, $sp_id, $pd_id, $u_id)
     }
 
     // ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "iiii", $mk_id, $sp_id, $pd_id, $u_id);
+    mysqli_stmt_bind_param($stmt, "iii",  $sp_id, $pd_id, $u_id);
 
     // ดำเนินการคำสั่ง SQL
     if (mysqli_stmt_execute($stmt)) {
@@ -999,13 +1100,12 @@ function plan_add_save($mk_id, $sp_id, $pd_id, $u_id)
 //*************************************************************** */
 // แก้ไขข้อมูล แผนจาก TB-plan
 
-function plan_edit($plan_id, $mk_id, $sp_id, $pd_id, $u_id)
+function plan_edit($plan_id,  $sp_id, $pd_id, $u_id)
 {
     global $conn;
 
     $sql = "UPDATE plan 
                SET 
-                mk_id = ?,
                 sp_id = ?,
                 pd_id = ?,
                 u_id = ?
@@ -1014,7 +1114,7 @@ function plan_edit($plan_id, $mk_id, $sp_id, $pd_id, $u_id)
     $stmt = mysqli_prepare($conn, $sql);
 
     //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "iiiii", $mk_id, $sp_id, $pd_id, $u_id, $plan_id);
+    mysqli_stmt_bind_param($stmt, "iiii",  $sp_id, $pd_id, $u_id, $plan_id);
 
     // ดำเนินการคำสั่ง
     if (mysqli_stmt_execute($stmt)) {
@@ -1089,8 +1189,8 @@ function save_shopping($dv_day_new)
 {
     global $conn;
 
-    $sql = "INSERT INTO sp_list (mk_id, sp_id, u_id, od_id, pd_id, quantity, pu_id, sp_price, sp_status)
-            SELECT p.mk_id, p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'กำลังซื้อสินค้า'
+    $sql = "INSERT INTO sp_list (sp_id, u_id, od_id, pd_id, quantity, pu_id, sp_price, sp_status)
+            SELECT p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'กำลังซื้อสินค้า'
             FROM orders_detail AS ord
             JOIN orders AS od ON ord.od_id = od.od_id
             JOIN plan AS p ON ord.pd_id = p.pd_id
@@ -1126,7 +1226,7 @@ function save_shopping($dv_day_new)
 
 //ดึงข้อมูล shopping list
 
-//ตต้องสร้างตารางต้นทุน เพื่อนำราคาท
+//
 function get_sp_list()
 {
     global $conn;
@@ -1143,15 +1243,15 @@ function get_sp_list()
                 pl.sp_status
                 
             FROM sp_list AS pl
-            JOIN market AS m ON pl.mk_id = m.mk_id
             JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
+            inner join market AS m ON sup.mk_id = m.mk_id
             JOIN js_user AS u ON pl.u_id = u.u_id
             JOIN product AS pro ON pl.pd_id = pro.pd_id
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
             join orders AS od ON pl.od_id = od.od_id
             join cust AS c ON od.c_id = c.c_id
-            GROUP BY pl.pd_id, pl.mk_id, pl.sp_id, pl.u_id, pl.pu_id, pl.sp_status
-            ORDER BY pl.mk_id DESC";
+            GROUP BY pl.pd_id, sup.mk_id, pl.sp_id, pl.u_id, pl.pu_id, pl.sp_status
+            ORDER BY sup.mk_id DESC";
 
     $stmt = mysqli_prepare($conn, $sql);
     if (!$stmt) {
@@ -1170,34 +1270,34 @@ function get_sp_list()
 
 
 //spspspspspspspspspspspspspspspsspspspspsps
-//ดึงข้อมูล shopping list โดยใช้ pl_id
-function fetch_sp_list_by_plid($pl_id)
+//ดึงข้อมูล shopping list โดยใช้ pd_id
+function fetch_sp_list_by_plid($pd_id)
 
 {
     global $conn;
 
-    $sql = "SELECT m.mk_name, 
-                sup.sp_name, 
-                u.u_name, 
-                pro.pd_n,            
-                pl.quantity, 
-                pu.pu_name, 
-                pl.sp_price, 
-                pl.sp_status,
-                pl.pl_id,
-                pl.mk_id,
-                pl.sp_id,
-                pl.pd_id,
-                pl.u_id
-                
-            FROM sp_list AS pl
-            JOIN market AS m ON pl.mk_id = m.mk_id
-            JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
-            JOIN js_user AS u ON pl.u_id = u.u_id
-            JOIN product AS pro ON pl.pd_id = pro.pd_id
-            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
-            
-            WHERE pl.pl_id = ?";
+    $sql = "SELECT 
+    m.mk_name, 
+    sup.sp_name, 
+    u.u_name, 
+    pro.pd_n,            
+    pl.quantity, 
+    pu.pu_name, 
+    pl.sp_price, 
+    pl.sp_status,
+    pl.pl_id,
+    sup.mk_id,         -- เอา mk_id จาก mk_sup
+    pl.sp_id,
+    pl.pd_id,
+    pl.u_id
+FROM sp_list AS pl
+JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id       -- JOIN mk_sup ก่อนเพื่อเอา mk_id
+JOIN market AS m ON sup.mk_id = m.mk_id         -- JOIN market ผ่าน mk_sup
+JOIN js_user AS u ON pl.u_id = u.u_id
+JOIN product AS pro ON pl.pd_id = pro.pd_id
+JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
+WHERE pl.pd_id = ?";
+
 
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "i", $pl_id);
@@ -1235,13 +1335,12 @@ function count_failed_delivery()
 //แก้ไขข้อมูล shopping list
 
 
-function sp_list_edit($pl_id, $mk_id, $sp_id, $u_id, $quantity, $sp_price, $sp_status)
+function sp_list_edit($pl_id, $sp_id, $u_id, $quantity, $sp_price, $sp_status)
 {
     global $conn;
 
     $sql = "UPDATE sp_list 
                SET 
-                mk_id = ?,
                 sp_id = ?,
                 u_id = ?,
                 quantity = ?,
@@ -1251,7 +1350,7 @@ function sp_list_edit($pl_id, $mk_id, $sp_id, $u_id, $quantity, $sp_price, $sp_s
 
     $stmt = mysqli_prepare($conn, $sql);
 
-    mysqli_stmt_bind_param($stmt, "iiiiddi", $mk_id, $sp_id,  $u_id, $quantity,  $sp_price, $sp_status, $pl_id);
+    mysqli_stmt_bind_param($stmt, "iiiddi", $mk_id, $sp_id,  $u_id, $quantity,  $sp_price, $sp_status, $pl_id);
 
     if (mysqli_stmt_execute($stmt)) {
         //echo "บันทึกการแก้ไขเรียบร้อย";
