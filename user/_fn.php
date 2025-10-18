@@ -256,12 +256,17 @@ function fetch_market_byuid($u_id)
 {
     global $conn;
 
-    $sql = "SELECT js.u_id, js.u_name, sp.mk_id, m.mk_name
-            FROM sp_list AS sp
-            JOIN js_user AS js ON sp.u_id = js.u_id
-            JOIN market AS m ON sp.mk_id = m.mk_id
-            WHERE js.u_id = ?
-            GROUP BY js.u_id, js.u_name,sp.mk_id, m.mk_name";
+    $sql = "SELECT 
+    js.u_id, 
+    js.u_name, 
+    sup.mk_id, 
+    m.mk_name
+FROM sp_list AS sp
+JOIN js_user AS js ON sp.u_id = js.u_id
+JOIN mk_sup AS sup ON sp.sp_id = sup.sp_id
+JOIN market AS m ON sup.mk_id = m.mk_id
+WHERE js.u_id = ?
+GROUP BY js.u_id, js.u_name, sup.mk_id, m.mk_name";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -286,26 +291,105 @@ function get_market_details($mk_id, $u_id)
 {
     global $conn;
 
-    $sql = "SELECT pl.pd_id, 
-    pl.sp_id, 
-    sup.sp_name, 
-    p.pd_n, 
-    SUM(pl.quantity) AS quantity, 
-    pu.pu_id, 
-    AVG(pl.sp_price) AS sp_price,
-    SUM(pl.quantity) * AVG(pl.sp_price) AS total_price 
-    FROM sp_list AS pl 
-    INNER JOIN product AS p ON pl.pd_id = p.pd_id 
-    INNER JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id 
-    JOIN p_unit AS pu ON pl.pu_id = pu.pu_id 
-    WHERE pl.mk_id= ? AND pl.u_id=?
-    GROUP BY pl.pd_id, pl.sp_id, sup.sp_name, p.pd_n, pu.pu_id";
+    $sql = "SELECT 
+                pl.sp_status,
+                pl.pd_id, 
+                pl.sp_id, 
+                sup.sp_name, 
+                p.pd_n, 
+                SUM(pl.quantity) AS quantity, 
+                pu.pu_id,
+                pu.pu_name, 
+                ROUND(AVG(pl.sp_price), 2) AS sp_price,
+                ROUND(SUM(pl.quantity) * AVG(pl.sp_price), 2) AS total_price
+            FROM sp_list AS pl
+            INNER JOIN product AS p ON pl.pd_id = p.pd_id
+            INNER JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
+            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
+            WHERE sup.mk_id = ? AND pl.u_id = ?
+            GROUP BY pl.pd_id, pl.sp_id, sup.sp_name, p.pd_n, pu.pu_id, pl.sp_status";
 
     $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        die("SQL Prepare Failed: " . mysqli_error($conn));
+    }
+
     mysqli_stmt_bind_param($stmt, "ii", $mk_id, $u_id);
     mysqli_stmt_execute($stmt);
+
     $result = mysqli_stmt_get_result($stmt);
     mysqli_stmt_close($stmt);
 
     return $result;
+}
+
+
+// ===============================================
+// เมื่อซื้อสำเร็จ → ย้ายข้อมูลเข้า prod_stock และเคลียร์ pd_id
+// ===============================================
+
+//บันทึกข้อมูลเข้า prod_stock
+function save_to_prod_stock($pd_id, $sp_id, $quantity, $unit_price, $unit_id, $status)
+{
+    global $conn;
+
+    $sql = "INSERT INTO prod_stock (pd_id, sp_id, quantity, unit_price, unit_id, status) 
+            VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "iiddis", $pd_id, $sp_id, $quantity, $unit_price, $unit_id, $status);
+    mysqli_stmt_execute($stmt);
+    $success = mysqli_stmt_affected_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+
+    return $success;
+}
+
+// เคลียร์ pd_id ในตาราง sp_list  clear_pd_id_in_sp_list
+function update_syn_status($pd_id)
+{
+    global $conn;
+
+    $sql = "UPDATE sp_list 
+            SET syn_stock = 1 ,sp_status = 'ซื้อสำเร็จ' 
+            WHERE pd_id = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+    mysqli_stmt_execute($stmt);
+    $success = mysqli_stmt_affected_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+
+    return $success;
+}
+
+// ยืนยันการซื้อสินค้า: บันทึกข้อมูลเข้า prod_stock และเคลียร์ pd_id ใน sp_list
+function complete_purchase($pd_id, $sp_id, $quantity, $unit_price, $unit_id)
+{
+    global $conn;
+    mysqli_begin_transaction($conn);
+    $status = "ซื้อสำเร็จ";
+
+    try {
+        $save = save_to_prod_stock($pd_id, $sp_id, $quantity, $unit_price, $unit_id, $status);
+        $clear = update_syn_status($pd_id);
+
+        if ($save && $clear) {
+            mysqli_commit($conn);
+            return true;
+        } else {
+            mysqli_rollback($conn);
+            return false;
+        }
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return false;
+    }
 }

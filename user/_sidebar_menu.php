@@ -1,5 +1,14 @@
 <?php
+//session_start();
+include('../admin/_fn.php');
 
+
+
+
+$u_id = $_SESSION["u_id"];
+$user = fetch_user_by_uid($u_id);
+$row = mysqli_fetch_assoc($user);
+$u_name = $row['u_name'];
 
 ?>
 
@@ -19,7 +28,7 @@
         <img src="dist/img/avatar2.png" class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a class="d-block">ลูกค้า</a>
+        <a class="d-block"><?= $u_name ?></a>
       </div>
     </div>
 
