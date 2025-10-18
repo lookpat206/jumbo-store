@@ -4,7 +4,7 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
-$result1 = fetch_type();
+$result1 = fetch_mark();
 
 
 //รับ id-supplied by supplier.php
@@ -14,8 +14,8 @@ $sp_id = $_GET['sp_id'];
 $result3 = fetch_supp_by_spid($sp_id);
 $row = mysqli_fetch_assoc($result3);
 $sp_name = $row['sp_name'];
-$pt_id = $row['pt_id'];
-$pt_name = $row['pt_name'];
+$mk_id = $row['mk_id'];
+$mk_name = $row['mk_name'];
 $sp_tel = $row['sp_tel'];
 
 ?>
@@ -50,24 +50,26 @@ $sp_tel = $row['sp_tel'];
             <form action="supp_edit_save.php" method="post">
               <input type="hidden" name="sp_id" value="<?= $sp_id ?>">
               <div class="card-body">
+
+                <!-- สถานที่ซื้อสินค้า -->
+                <div class="form-group">
+                  <label for="type">สถานที่ซื้อสินค้า:</label>
+                  <select class="form-control select2" name="mk_id" style="width: 100%;">
+                    <option selected="selected" value="<?= $mk_id ?>"><?= $mk_name ?></option>
+                    <?php foreach ($result1 as $row) { ?>
+                      <option value="<?= $row['mk_id'] ?>"> <?= $row['mk_name'] ?> </option>
+                    <?php } ?>
+
+                  </select>
+
+                </div>
+
                 <!--name cust -->
                 <div class="form-group">
                   <label for="name">ชื่อร้านค้า:</label>
                   <input value="<?= $sp_name ?>" type="text" name="sp_name" class="form-control" id="name" placeholder="ชื่อร้านค้า">
                 </div>
 
-                <!-- ประเภทสินค้า -->
-                <div class="form-group">
-                  <label for="type">ประเภทสินค้า:</label>
-                  <select class="form-control select2" name="pt_id" style="width: 100%;">
-                    <option selected="selected" value="<?= $pt_id ?>"><?= $pt_name ?></option>
-                    <?php foreach ($result1 as $row) { ?>
-                      <option value="<?= $row['pt_id'] ?>"> <?= $row['pt_name'] ?> </option>
-                    <?php } ?>
-
-                  </select>
-
-                </div>
 
 
                 <!-- phone mask -->

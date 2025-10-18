@@ -142,7 +142,6 @@ $totals_cust = fetch_total_customers();
                                         <th width="5%">ลำดับ</th>
                                         <th width="10%">ตลาด</th>
                                         <th width="10%">ร้านค้า</th>
-
                                         <th width="10%">ผู้รับผิดชอบ</th>
                                         <th width="25%">สินค้า</th>
                                         <th width="5%">จำนวน</th>

@@ -4,7 +4,7 @@ include('_header.php');
 //include('_sidebar_menu.php');
 include('_fn.php');
 
-$result1 = fetch_type();
+$result1 = fetch_mark();
 ?>
 
 <div class="content">
@@ -37,24 +37,26 @@ $result1 = fetch_type();
             <form action="supp_add_save.php" method="post">
               <div class="card-body">
 
+                <!-- สถานที่ซื้อสินค้า -->
+                <div class="form-group">
+                  <label for="type">สถานที่ซื้อสินค้า:</label>
+                  <select class="form-control select2" name="mk_id" style="width: 100%;">
+                    <option selected="selected" value="">-- เลือกข้อมูล --</option>
+                    <?php foreach ($result1 as $row) { ?>
+                      <option value="<?= $row['mk_id'] ?>"> <?= $row['mk_name'] ?> </option>
+                    <?php } ?>
+
+                  </select>
+
+                </div>
+
                 <!--name ร้านค้า -->
                 <div class="form-group">
                   <label for="name">ชื่อร้านค้า:</label>
                   <input type="text" name="sp_name" class="form-control" id="name" placeholder="ชื่อร้านค้า">
                 </div>
 
-                <!-- ประเภทสินค้า -->
-                <div class="form-group">
-                  <label for="type">ประเภทสินค้า:</label>
-                  <select class="form-control select2" name="pt_id" style="width: 100%;">
-                    <option selected="selected" value="">-- เลือกข้อมูล --</option>
-                    <?php foreach ($result1 as $row) { ?>
-                      <option value="<?= $row['pt_id'] ?>"> <?= $row['pt_name'] ?> </option>
-                    <?php } ?>
 
-                  </select>
-
-                </div>
 
                 <!-- phone mask -->
                 <div class="form-group">

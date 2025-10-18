@@ -5,7 +5,7 @@ include('_header.php');
 include('_fn.php');
 
 //ดึงข้อมูล สถานที่ซื้อสินค้า , ร้านค้า , สินค้า , ผู้รับผิดชอบ เพื่อใช้ในการเลือกข้อมูล
-$result1 = fetch_mark();
+
 $result2 = fetch_supp();
 $result3 = fetch_prod();
 $result4 = fetch_user();
@@ -24,7 +24,6 @@ $m_name = $row['mk_name'];
 $s_name = $row['sp_name'];
 $p_name = $row['pd_n'];
 $u_n = $row['u_name'];
-$mk_id = $row['mk_id'];
 $sp_id = $row['sp_id'];
 $pd_id = $row['pd_id'];
 $u_id = $row['u_id'];
@@ -61,7 +60,7 @@ $plan_id = $row['plan_id'];
                 <div class="col-6 mx-auto">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">เพิ่มข้อมูลแผนซื้อสินค้า</h3>
+                            <h3 class="card-title">แก้ไขข้อมูลแผนซื้อสินค้า</h3>
                         </div>
                         <form action="plan_edit_save.php" method="post">
                             <div class="card-body">
@@ -70,14 +69,7 @@ $plan_id = $row['plan_id'];
                                 <!-- สถานที่ซื้อสินค้า -->
                                 <div class="form-group">
                                     <label for="type">สถานที่ซื้อสินค้า:</label>
-                                    <select class="form-control select2" name="mk_id" style="width: 100%;">
-                                        <option selected="selected" value="<?= $mk_id ?>"><?= $m_name ?></option>
-                                        <?php foreach ($result1 as $row) { ?>
-                                            <option value="<?= $row['mk_id'] ?>"> <?= $row['mk_name'] ?> </option>
-                                        <?php } ?>
-
-                                    </select>
-
+                                    <input type="text" class="form-control" value="<?= $m_name ?>" disabled>
                                 </div>
 
                                 <!-- ร้านค้า -->

@@ -4,6 +4,10 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
 
+
+$result = fetch_mark();
+
+
 ?>
 
 
@@ -46,8 +50,8 @@ include('_fn.php');
                                 <thead>
                                     <tr class="table-info">
                                         <th width="5%">ลำดับ</th>
-                                        <th width="30%">ชื่อร้านค้า</th>
-                                        <th width="20%">ประเภทสินค้า</th>
+                                        <th width="30%">ตลาด</th>
+                                        <th width="20%">ชื่อร้านค้า</th>
                                         <th width="25%">เบอร์โทรศัพท์</th>
                                         <th width="10%">แก้ไข</th>
                                         <th width="10%">ลบ</th>
@@ -64,8 +68,8 @@ include('_fn.php');
                                     ?>
                                             <tr>
                                                 <td><?= $i ?></td>
+                                                <td><?= $row['mk_name'] ?></td>
                                                 <td><?= $row['sp_name'] ?></td>
-                                                <td><?= $row['pt_name'] ?></td>
                                                 <td><?= $row['sp_tel'] ?></td>
 
                                                 <td>

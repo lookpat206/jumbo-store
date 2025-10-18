@@ -4,7 +4,7 @@ include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
 
-$result1 = fetch_mark();
+
 $result2 = fetch_supp();
 $result3 = fetch_prod();
 $result4 = fetch_user();
@@ -48,18 +48,7 @@ $result4 = fetch_user();
                         <form action="plan_add_save.php" method="post">
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <label for="type">สถานที่ซื้อสินค้า:</label>
-                                            <select class="form-control select2" name="mk_id" style="width: 100%;">
-                                                <option selected="selected" value="">-- เลือกข้อมูล --</option>
-                                                <?php foreach ($result1 as $row) { ?>
-                                                    <option value="<?= $row['mk_id'] ?>"> <?= $row['mk_name'] ?> </option>
-                                                <?php } ?>
 
-                                            </select>
-                                        </div>
-                                    </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="type">ร้านค้า:</label>
@@ -73,6 +62,7 @@ $result4 = fetch_user();
                                         </div>
 
                                     </div>
+
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="type">ชื่อสินค้า:</label>
@@ -85,8 +75,6 @@ $result4 = fetch_user();
                                             </select>
 
                                         </div>
-
-
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="form-group">
@@ -102,6 +90,7 @@ $result4 = fetch_user();
                                         </div>
 
                                     </div>
+
                                 </div> <!-- /.row -->
                             </div> <!-- /.card-body -->
 

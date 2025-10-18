@@ -16,12 +16,7 @@ $pd_id = $_GET['pd_id'];
 //exit($pl_id);
 $result = fetch_sp_list_by_pdid($pd_id);
 $row = mysqli_fetch_assoc($result);
-$c_id = $row['c_id'];
-$c_abb = $row['c_abb']; //=ชื่อย่อ
 $pd_n = $row['pd_n'];
-$pu_name = $row['pu_name'];
-$sp_status = $row['sp_status'];
-$quantity = $row['quantity'];
 
 
 ?>

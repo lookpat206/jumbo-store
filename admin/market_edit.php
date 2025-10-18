@@ -38,7 +38,7 @@ $mk_name = $row['mk_name'];
                 <div class="col-6 mx-auto">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">เพิ่มข้อมูลร้านค้า</h3>
+                            <h3 class="card-title">แก้ไขข้อมูลร้านค้า</h3>
                         </div>
                         <form action="market_edit_save.php" method="post">
                             <div class="card-body">

@@ -181,6 +181,58 @@
 
   })
 </script>
+
+<script>
+  function confirmDelete(pd_id, pd_name) {
+    Swal.fire({
+      title: 'ยืนยันการลบ?',
+      text: "คุณต้องการลบสินค้า: " + pd_n + " หรือไม่?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'ใช่, ลบเลย!',
+      cancelButtonText: 'ยกเลิก',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: 'prod_delete.php',
+          type: 'POST',
+          data: {
+            pd_id: pd_id
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.status === 'success') {
+              Swal.fire({
+                icon: 'success',
+                title: 'ลบสำเร็จ',
+                text: response.message,
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => {
+                location.reload(); // โหลดหน้าใหม่หลังลบ
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'ลบไม่สำเร็จ',
+                text: response.message
+              });
+            }
+          },
+          error: function() {
+            Swal.fire({
+              icon: 'error',
+              title: 'เกิดข้อผิดพลาด!',
+              text: 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้'
+            });
+          }
+        });
+      }
+    });
+  }
+</script>
 </body>
 
 </html>
