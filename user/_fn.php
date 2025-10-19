@@ -297,11 +297,11 @@ function get_market_details($mk_id, $u_id)
                 pl.sp_id, 
                 sup.sp_name, 
                 p.pd_n, 
-                SUM(pl.quantity) AS quantity, 
+                SUM(pl.shop_qty) AS quantity, 
                 pu.pu_id,
                 pu.pu_name, 
-                ROUND(AVG(pl.sp_price), 2) AS sp_price,
-                ROUND(SUM(pl.quantity) * AVG(pl.sp_price), 2) AS total_price
+                ROUND(AVG(pl.shop_price), 2) AS sp_price,
+                ROUND(SUM(pl.shop_qty) * AVG(pl.shop_price), 2) AS total_price
             FROM sp_list AS pl
             INNER JOIN product AS p ON pl.pd_id = p.pd_id
             INNER JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
@@ -323,6 +323,135 @@ function get_market_details($mk_id, $u_id)
 
     return $result;
 }
+
+function update_purchase_and_stock($shop_id, $shop_qty, $shop_price, $sp_status, $stock_date)
+{
+    global $conn;
+
+    // เริ่ม transaction เพื่อให้ update / insert สำเร็จพร้อมกัน
+    mysqli_begin_transaction($conn);
+
+    try {
+        // 1️⃣ อัปเดตตาราง sp_list
+        $sql_update = "UPDATE sp_list 
+                       SET shop_qty = ?, 
+                           shop_price = ?, 
+                           sp_status = ?, 
+                           syn_stock = 1,
+                           update_at = NOW() 
+                       WHERE shop_id = ?";
+        $stmt1 = mysqli_prepare($conn, $sql_update);
+        if (!$stmt1) throw new Exception(mysqli_error($conn));
+
+        mysqli_stmt_bind_param($stmt1, "dssi", $shop_qty, $shop_price, $sp_status, $shop_id);
+        mysqli_stmt_execute($stmt1);
+
+        // ตรวจสอบว่ามีการอัปเดตจริงหรือไม่
+        if (mysqli_stmt_affected_rows($stmt1) <= 0) {
+            throw new Exception("ไม่พบข้อมูลที่ต้องการอัปเดต");
+        }
+
+        // ดึงข้อมูล pd_id, pu_id จาก sp_list สำหรับบันทึก stock
+        $sql_select = "SELECT pd_id, pu_id FROM sp_list WHERE shop_id = ?";
+        $stmt2 = mysqli_prepare($conn, $sql_select);
+        mysqli_stmt_bind_param($stmt2, "i", $shop_id);
+        mysqli_stmt_execute($stmt2);
+        $result = mysqli_stmt_get_result($stmt2);
+        $row = mysqli_fetch_assoc($result);
+
+        if (!$row) {
+            throw new Exception("ไม่พบสินค้าที่ต้องการบันทึกสต็อก");
+        }
+
+        $pd_id = $row['pd_id'];
+        $pu_id = $row['pu_id'];
+
+        // 2️⃣ เพิ่มข้อมูลเข้า stock
+        $qty_in = $shop_qty;
+        $qty_out = 0;
+        $balance = $shop_qty;
+        $source_type = 'in';
+
+        $sql_insert = "INSERT INTO stock 
+            (pd_id, pu_id, qty_in, qty_out, balance, source_type, ref_id, stock_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt3 = mysqli_prepare($conn, $sql_insert);
+        if (!$stmt3) throw new Exception(mysqli_error($conn));
+
+        mysqli_stmt_bind_param(
+            $stmt3,
+            "iiiddsis",
+            $pd_id,
+            $pu_id,
+            $qty_in,
+            $qty_out,
+            $balance,
+            $source_type,
+            $shop_id,
+            $stock_date
+        );
+        mysqli_stmt_execute($stmt3);
+
+        // ✅ ถ้าทุกอย่างสำเร็จ
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        // ❌ ถ้ามี error ให้ rollback
+        mysqli_rollback($conn);
+        error_log("Update failed: " . $e->getMessage());
+        return false;
+    }
+}
+
+//ทดสอบฟังก์ชัน update_purchase_and_stock ใหม่
+function update_shop_and_stock($shop_id, $pd_id, $pu_id, $shop_qty, $shop_price, $sp_status)
+{
+    global $conn;
+
+    // เริ่ม transaction
+    mysqli_begin_transaction($conn);
+
+    try {
+        // 1️⃣ อัปเดตข้อมูลในตาราง sp_list
+        $sql_update = "UPDATE sp_list 
+                       SET shop_qty = ?, shop_price = ?, sp_status = ?, syn_stock = 1 
+                       WHERE shop_id = ?";
+        $stmt_update = mysqli_prepare($conn, $sql_update);
+        if (!$stmt_update) {
+            throw new Exception("Prepare failed (UPDATE): " . mysqli_error($conn) . "<br>SQL: " . $sql_update);
+        }
+
+        mysqli_stmt_bind_param($stmt_update, "ddsi", $shop_qty, $shop_price, $sp_status, $shop_id);
+        if (!mysqli_stmt_execute($stmt_update)) {
+            throw new Exception("Execute failed (UPDATE): " . mysqli_stmt_error($stmt_update) . "<br>SQL: " . $sql_update);
+        }
+
+        // 2️⃣ เพิ่มข้อมูลลงตาราง stock
+        $sql_insert = "INSERT INTO stock (pd_id, pu_id, qty_in, qty_out, balance, source_type, ref_id, stock_date)
+                       VALUES (?, ?, ?, 0, ?, 'in', ?, NOW())";
+        $stmt_insert = mysqli_prepare($conn, $sql_insert);
+        if (!$stmt_insert) {
+            throw new Exception("Prepare failed (INSERT): " . mysqli_error($conn) . "<br>SQL: " . $sql_insert);
+        }
+
+        mysqli_stmt_bind_param($stmt_insert, "iidii", $pd_id, $pu_id, $shop_qty, $shop_qty, $shop_id);
+        if (!mysqli_stmt_execute($stmt_insert)) {
+            throw new Exception("Execute failed (INSERT): " . mysqli_stmt_error($stmt_insert) . "<br>SQL: " . $sql_insert);
+        }
+
+        // ✅ ถ้าไม่มีข้อผิดพลาด ให้ commit
+        mysqli_commit($conn);
+        echo "<div style='color: green;'>บันทึกข้อมูลสำเร็จ</div>";
+    } catch (Exception $e) {
+        // ❌ ถ้ามีข้อผิดพลาด ให้ rollback และแสดงรายละเอียด
+        mysqli_rollback($conn);
+        echo "<div style='color: red;'>
+                <strong>เกิดข้อผิดพลาด:</strong><br>" . $e->getMessage() . "
+              </div>";
+    }
+}
+
+
 
 
 // ===============================================

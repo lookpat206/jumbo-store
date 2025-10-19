@@ -23,6 +23,9 @@
 <script>
   $.widget.bridge('uibutton', $.ui.button)
 </script>
+
+<!-- Bootstrap Bundle (มี Popper.js) -->
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- DataTables  & Plugins ห้ามตัดทิ้ง-->
@@ -68,6 +71,20 @@
         }
 </script> -->
 
+<script>
+  $(document).ready(function() {
+    $('.data-table').each(function() {
+      $(this).DataTable({
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "responsive": true,
+        "autoWidth": false
+      });
+    });
+  });
+</script>
 
 <!-- Page specific script -->
 <script>
@@ -182,6 +199,9 @@
 
   })
 </script>
+
+
+
 </body>
 
 </html>

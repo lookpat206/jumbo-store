@@ -1,7 +1,9 @@
 <?php
-
+//เปลี่ยนข้อมูลแผนการซื้อ : ร้านค้า ผู้รับผิดชอบ ตลาด
+//แก้ไขสถานะการซื้อสินค้าและหมายเหตุ
 session_start();
-
+?>
+<?php
 include('_header.php');
 //include('_navbar.php');
 //include('_sidebar_menu.php');
@@ -9,17 +11,27 @@ include('_fn.php');
 include('../admin/_fn.php');
 
 //ดึงข้อมูล สถานที่ซื้อสินค้า , ร้านค้า , สินค้า , ผู้รับผิดชอบ เพื่อใช้ในการเลือกข้อมูล
-$result1 = fetch_prod();
-$result2 = fetch_cust();
+
+$result2 = fetch_supp();
+$result3 = fetch_prod();
+$result4 = fetch_user();
+$result5 = fetch_mark();
 
 
 //รับค่า id จาก plan.php
 $pd_id = $_GET['pd_id'];
+//$plan_id = $_GET['plan_id'];
 
-//exit($pl_id);
-$result = fetch_sp_list_by_pdid($pd_id);
+$result = fetch_pl_plan_by_pdid($pd_id);
 $row = mysqli_fetch_assoc($result);
-$pd_n = $row['pd_n'];
+$pd_name = $row['pd_n'];
+
+// $result6 = fetch_sp_list_by_pdid($pd_id);
+// $row1 = mysqli_fetch_assoc($result6);
+
+//echo $pd_id . $sp_id;  //debug
+
+
 
 
 ?>
@@ -30,7 +42,7 @@ $pd_n = $row['pd_n'];
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-9 mx-auto text-center">
-                    <h1>แก้ไขรายการซื้อสินค้า</h1>
+                    <h1>แก้ไขแผนการซื้อสินค้า</h1>
                 </div>
                 <div class="col-3 mx-auto">
                     <a href="pl.php" class="btn btn-secondary">กลับ</a>
@@ -51,7 +63,7 @@ $pd_n = $row['pd_n'];
                             <div class="card card-info">
                                 <div class="card-header">
                                     <h3 class="card-title">
-                                        แก้ไขรายการซื้อสินค้า : <?php echo htmlspecialchars($row['c_abb']); ?>
+                                        แก้ไขแผนการซื้อ <?php echo $pd_name ?> ของ <?php echo htmlspecialchars($row['c_abb']); ?>
                                     </h3>
                                     <div class="card-tools">
                                         <!-- collapse ปุ่ม -->
@@ -64,43 +76,43 @@ $pd_n = $row['pd_n'];
                                 <!-- เพิ่ม class collapse show เพื่อให้เปิดตอนโหลด -->
                                 <div class="card-body collapse show">
                                     <form action="pl_editPO_save.php" method="post">
-                                        <input type="text" name="shop_id" value="<?php echo htmlspecialchars($row['shop_id']); ?>">
+                                        <input type="hidden" name="shop_id" value="<?php echo htmlspecialchars($row['shop_id']); ?>">
 
                                         <div class="row">
                                             <!-- ซ้าย -->
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label>ชื่อสินค้า</label>
-                                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($row['pd_n']); ?>" readonly>
+                                                    <label>ตลาด</label>
+                                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($row['mk_name']); ?>" readonly>
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label>หน่วยนับ</label>
-                                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($row['pu_name']); ?>" readonly>
+                                                    <label>ร้านค้า</label>
+                                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($row['sp_name']); ?>" readonly>
                                                 </div>
                                             </div>
 
                                             <!-- ขวา -->
                                             <div class="col-sm-6">
                                                 <div class="form-group">
-                                                    <label>จำนวน</label>
-                                                    <input type="number" class="form-control qty" name="shop_qty"
-                                                        value="<?php echo htmlspecialchars($row['shop_qty']); ?>" required>
-                                                </div>
+                                                    <label for="type">ผู้รับผิดชอบ :</label>
+                                                    <select class="form-control select2" name="u_id" style="width: 100%;">
+                                                        <option selected="selected" value="<?= $row['u_id'] ?>">--<?= $row['u_name'] ?>--</option>
+                                                        <?php foreach ($result4 as $row) { ?>
+                                                            <option value="<?= $row['u_id'] ?>"> <?= $row['u_name'] ?> </option>
+                                                        <?php } ?>
 
-                                                <div class="form-group">
-                                                    <label>ราคา/หน่วย</label>
-                                                    <input type="number" class="form-control price" name="shop_price"
-                                                        value="<?php echo htmlspecialchars($row['shop_price']); ?>" required>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label>สถานะ</label>
-                                                    <select class="form-control" name="sp_status" required>
-                                                        <option value="รอสินค้า" <?php echo ($row['sp_status'] == 'รอสินค้า') ? 'selected' : ''; ?>>รอสินค้า</option>
-                                                        <option value="ซื้อสำเร็จ" <?php echo ($row['sp_status'] == 'ซื้อสำเร็จ') ? 'selected' : ''; ?>>ซื้อสำเร็จ</option>
                                                     </select>
+
                                                 </div>
+
+                                                <div class="form-group">
+                                                    <label>หมายเหตุ</label>
+                                                    <textarea class="form-control " name="note" placeholder="เปลี่ยนสถานที่ซื้อ / ร้านค้า..."></textarea>
+
+                                                </div>
+
+
                                             </div>
                                         </div>
 
