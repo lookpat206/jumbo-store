@@ -1189,11 +1189,13 @@ function save_shopping($dv_day_new)
 {
     global $conn;
 
-    $sql = "INSERT INTO sp_list (sp_id, u_id, od_id, pd_id, quantity, pu_id, sp_price, sp_status)
-            SELECT p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'กำลังซื้อสินค้า'
+    $sql = "INSERT INTO sp_list (plan_id,mk_id,sp_id, u_id, od_id, pd_id, shop_qty, pu_id, shop_price, sp_status,syn_stock,syn_plan)
+            SELECT p.plan_id,ms.mk_id,p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'กำลังซื้อสินค้า', 0, 0
             FROM orders_detail AS ord
             JOIN orders AS od ON ord.od_id = od.od_id
             JOIN plan AS p ON ord.pd_id = p.pd_id
+            join mk_sup AS ms ON p.sp_id = ms.sp_id
+            join market AS m ON ms.mk_id = m.mk_id
             WHERE od.dv_day = ?";
 
     // เตรียมคำสั่ง SQL
@@ -1236,10 +1238,10 @@ function get_sp_list()
                 u.u_name,
                 pl.pd_id, 
                 pro.pd_n,            
-                SUM(pl.quantity) AS quantity, 
+                SUM(pl.shop_qty) AS quantity, 
                 pu.pu_name, 
-                AVG(pl.sp_price) AS avg_price,  
-                SUM(pl.quantity) * AVG(pl.sp_price) AS total_price,
+                AVG(pl.shop_price) AS avg_price,  
+                SUM(pl.shop_qty) * AVG(pl.shop_price) AS total_price,
                 pl.sp_status
                 
             FROM sp_list AS pl
@@ -1335,7 +1337,7 @@ function count_failed_delivery()
 //แก้ไขข้อมูล shopping list
 
 
-function sp_list_edit($pl_id, $sp_id, $u_id, $quantity, $sp_price, $sp_status)
+function sp_list_edit($shop_id, $sp_id, $u_id, $shop_qty, $shop_price, $sp_status)
 {
     global $conn;
 
@@ -1369,7 +1371,19 @@ function fetch_sp_list_by_pdid($pd_id)
 {
     global $conn;
 
-    $sql = " SELECT sp.pd_id ,pro.pd_n,c.c_id,c.c_abb,sp.quantity,pu.pu_name,od.dv_day,sp.sp_status 
+    $sql = " SELECT sp.pd_id ,
+                    pro.pd_n,
+                    c.c_id,
+                    c.c_abb,
+                    sp.shop_qty,
+                    pu.pu_id,
+                    pu.pu_name,
+                    od.dv_day,
+                    sp.sp_status,
+                    od.od_id,
+                    sp.shop_price, 
+                    sp.shop_id,
+                    ROUND((sp.shop_qty) * (sp.shop_price), 2) AS total_price
     FROM sp_list AS sp 
     JOIN product as pro on sp.pd_id = pro.pd_id 
     JOIN p_unit as pu on sp.pu_id = pu.pu_id 
@@ -1383,6 +1397,44 @@ function fetch_sp_list_by_pdid($pd_id)
     $result = mysqli_stmt_get_result($stmt);
     return $result;
 }
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ดึงข้อมูล plan : ตลาด ร้านค้า ผู้ใช้ สินค้า
+function fetch_pl_plan_by_pdid($pd_id)
+{
+    global $conn;
+
+    $sql = "SELECT sp.plan_id,
+                   sp.shop_id,
+                   sp.mk_id,
+                   m.mk_name,
+                   sp.sp_id,
+                   ms.sp_name,
+                   sp.u_id,
+                   u.u_name,
+                   sp.pd_id,
+                   pr.pd_n,
+                   c.c_abb
+            FROM sp_list AS sp
+            JOIN market AS m ON sp.mk_id = m.mk_id
+            JOIN mk_sup AS ms ON sp.sp_id = ms.sp_id
+            JOIN js_user AS u ON sp.u_id = u.u_id
+            JOIN product AS pr ON sp.pd_id = pr.pd_id
+            JOIN orders AS od ON sp.od_id = od.od_id
+            JOIN cust AS c ON od.c_id = c.c_id
+            WHERE sp.pd_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $pd_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return $result;
+}
+
+
+
+
 function get_status_text_and_class($status_code)
 {
     switch ($status_code) {

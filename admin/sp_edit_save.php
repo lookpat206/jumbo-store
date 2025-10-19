@@ -3,10 +3,10 @@
 include('_fn.php');
 
 // Validate ว่ามีค่า POST ส่งมาไหม
-if (isset($_POST['pl_id'], $_POST['sp_id'], $_POST['u_id'], $_POST['quantity'], $_POST['sp_price'], $_POST['sp_status'])) {
+if (isset($_POST['shpo_id'], $_POST['sp_id'], $_POST['u_id'], $_POST['quantity'], $_POST['sp_price'], $_POST['sp_status'])) {
 
     // แปลงค่าเป็นประเภทที่เหมาะสม
-    $pl_id = $_POST['pl_id'];
+    $pl_id = $_POST['shpo_id'];
     $sp_id = $_POST['sp_id'];
     $u_id = $_POST['u_id'];
     $quantity = $_POST['quantity'];

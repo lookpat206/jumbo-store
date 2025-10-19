@@ -79,7 +79,7 @@ $pd_n = $row['pd_n'];
                                                     <!-- หน่วยนับ -->
                                                     <td><?= $row['pu_name'] ?></td>
                                                     <!-- จำนวน -->
-                                                    <td><?= $row['quantity'] ?></td>
+                                                    <td><?= $row['shop_qty'] ?></td>
                                                     <!-- สถานะ -->
                                                     <td><?= $row['sp_status'] ?></td>
 

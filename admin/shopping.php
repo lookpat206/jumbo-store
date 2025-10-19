@@ -160,6 +160,7 @@ $totals_cust = fetch_total_customers();
                                     ?>
                                         <tr>
                                             <td><?php echo $i; ?></td>
+
                                             <td><?php echo htmlspecialchars($row['mk_name']); ?></td>
                                             <td><?php echo htmlspecialchars($row['sp_name']); ?></td>
                                             <td><?php echo htmlspecialchars($row['u_name']); ?></td>
@@ -199,8 +200,8 @@ $totals_cust = fetch_total_customers();
                                 <?php if ($i > 0): ?>
                                     <tfoot>
                                         <tr>
-                                            <td colspan="10" align="right"><strong>รวมทั้งสิ้น</strong></td>
-                                            <td><strong><?= number_format($grand_total, 2) ?></strong></td>
+                                            <td colspan="8" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                                            <td colspan="3"><strong><?= number_format($grand_total, 2) ?></strong></td>
                                         </tr>
                                     </tfoot>
                                 <?php endif; ?>
