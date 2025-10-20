@@ -25,6 +25,7 @@ $pd_id = $_GET['pd_id'];
 $result = fetch_pl_plan_by_pdid($pd_id);
 $row = mysqli_fetch_assoc($result);
 $pd_name = $row['pd_n'];
+$shop_id = $row['shop_id'];
 
 // $result6 = fetch_sp_list_by_pdid($pd_id);
 // $row1 = mysqli_fetch_assoc($result6);
@@ -75,20 +76,35 @@ $pd_name = $row['pd_n'];
 
                                 <!-- เพิ่ม class collapse show เพื่อให้เปิดตอนโหลด -->
                                 <div class="card-body collapse show">
-                                    <form action="pl_editPO_save.php" method="post">
-                                        <input type="hidden" name="shop_id" value="<?php echo htmlspecialchars($row['shop_id']); ?>">
+                                    <form action="pl_editP_save.php" method="post">
+
+                                        <input type="hidden" name="shop_id" value="<?php echo htmlspecialchars($shop_id); ?>">
+
+
 
                                         <div class="row">
                                             <!-- ซ้าย -->
                                             <div class="col-sm-6">
                                                 <div class="form-group">
                                                     <label>ตลาด</label>
-                                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($row['mk_name']); ?>" readonly>
+                                                    <select class="form-control select2" name="mk_id" style="width: 100%;">
+                                                        <option selected="selected" value="<?= $row['mk_id'] ?>">--<?= $row['mk_name'] ?>--</option>
+                                                        <?php foreach ($result5 as $mk) { ?>
+                                                            <option value="<?= $mk['mk_id'] ?>"> <?= $mk['mk_name'] ?> </option>
+                                                        <?php } ?>
+
+                                                    </select>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label>ร้านค้า</label>
-                                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($row['sp_name']); ?>" readonly>
+                                                    <select class="form-control select2" name="sp_id" style="width: 100%;">
+                                                        <option selected="selected" value="<?= $row['sp_id'] ?>">--<?= $row['sp_name'] ?> --</option>
+                                                        <?php foreach ($result2 as $sp) { ?>
+                                                            <option value="<?= $sp['sp_id'] ?>"> <?= $sp['sp_name'] ?> </option>
+                                                        <?php } ?>
+
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -105,12 +121,16 @@ $pd_name = $row['pd_n'];
                                                     </select>
 
                                                 </div>
+                                                <input type="hidden" name="pd_id" value="<?php echo htmlspecialchars($pd_id); ?>">
+
 
                                                 <div class="form-group">
                                                     <label>หมายเหตุ</label>
                                                     <textarea class="form-control " name="note" placeholder="เปลี่ยนสถานที่ซื้อ / ร้านค้า..."></textarea>
 
+
                                                 </div>
+
 
 
                                             </div>

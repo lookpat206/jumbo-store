@@ -132,5 +132,7 @@ $result = fetch_market_byuid($u_id);
 
 
 <?php
+
+
 include('_footer.php');
 ?>

@@ -453,72 +453,84 @@ function update_shop_and_stock($shop_id, $pd_id, $pu_id, $shop_qty, $shop_price,
 
 
 
-
-// ===============================================
-// เมื่อซื้อสำเร็จ → ย้ายข้อมูลเข้า prod_stock และเคลียร์ pd_id
-// ===============================================
-
-//บันทึกข้อมูลเข้า prod_stock
-function save_to_prod_stock($pd_id, $sp_id, $quantity, $unit_price, $unit_id, $status)
+// ดึง plan_id จาก shop_id
+function get_plan_id_by_shop($shop_id)
 {
     global $conn;
-
-    $sql = "INSERT INTO prod_stock (pd_id, sp_id, quantity, unit_price, unit_id, status) 
-            VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "SELECT plan_id FROM sp_list WHERE shop_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
-    if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn));
-    }
-
-    mysqli_stmt_bind_param($stmt, "iiddis", $pd_id, $sp_id, $quantity, $unit_price, $unit_id, $status);
+    mysqli_stmt_bind_param($stmt, "i", $shop_id);
     mysqli_stmt_execute($stmt);
-    $success = mysqli_stmt_affected_rows($stmt) > 0;
-    mysqli_stmt_close($stmt);
-
-    return $success;
+    $res = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($res);
+    return $row['plan_id'] ?? 0;
 }
 
-// เคลียร์ pd_id ในตาราง sp_list  clear_pd_id_in_sp_list
-function update_syn_status($pd_id)
+// ฟังก์ชันอัปเดต sp_list และ plan
+function update_plan_syn($shop_id, $mk_id, $sp_id, $u_id, $pd_id, $note)
 {
     global $conn;
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $sql = "UPDATE sp_list 
-            SET syn_stock = 1 ,sp_status = 'ซื้อสำเร็จ' 
-            WHERE pd_id = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-    if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn));
-    }
-
-    mysqli_stmt_bind_param($stmt, "i", $pd_id);
-    mysqli_stmt_execute($stmt);
-    $success = mysqli_stmt_affected_rows($stmt) > 0;
-    mysqli_stmt_close($stmt);
-
-    return $success;
-}
-
-// ยืนยันการซื้อสินค้า: บันทึกข้อมูลเข้า prod_stock และเคลียร์ pd_id ใน sp_list
-function complete_purchase($pd_id, $sp_id, $quantity, $unit_price, $unit_id)
-{
-    global $conn;
     mysqli_begin_transaction($conn);
-    $status = "ซื้อสำเร็จ";
 
     try {
-        $save = save_to_prod_stock($pd_id, $sp_id, $quantity, $unit_price, $unit_id, $status);
-        $clear = update_syn_status($pd_id);
+        // 1. อัปเดต sp_list โดยใช้ shop_id (PK)
+        $sql1 = "UPDATE sp_list 
+                 SET mk_id = ?, sp_id = ?, u_id = ?, pd_id = ?, note = ?
+                 WHERE shop_id = ?";
+        $stmt1 = mysqli_prepare($conn, $sql1);
+        mysqli_stmt_bind_param($stmt1, "iiiisi", $mk_id, $sp_id, $u_id, $pd_id, $note, $shop_id);
+        mysqli_stmt_execute($stmt1);
 
-        if ($save && $clear) {
-            mysqli_commit($conn);
-            return true;
-        } else {
-            mysqli_rollback($conn);
-            return false;
+        if (mysqli_stmt_affected_rows($stmt1) === 0) {
+            throw new Exception("ไม่พบข้อมูลแผนที่ต้องการอัปเดตใน sp_list");
         }
+
+        // 2. ดึง plan_id ของ shop_id นี้
+        $plan_id = get_plan_id_by_shop($shop_id);
+        if ($plan_id == 0) {
+            throw new Exception("ไม่พบ plan_id ของ shop_id นี้");
+        }
+
+        // 3. อัปเดต syn_shopping = 2 ใน plan
+        $sql2 = "UPDATE plan SET syn_shop = 2 WHERE plan_id = ?";
+        $stmt2 = mysqli_prepare($conn, $sql2);
+        mysqli_stmt_bind_param($stmt2, "i", $plan_id);
+        mysqli_stmt_execute($stmt2);
+
+        mysqli_commit($conn);
+        return true;
     } catch (Exception $e) {
         mysqli_rollback($conn);
+        echo "<h3>เกิดข้อผิดพลาด:</h3>";
+        echo "<p>" . $e->getMessage() . "</p>";
+        echo "<p><a href='javascript:history.back()'>กลับไปหน้าเดิม</a></p>";
         return false;
+    }
+}
+
+
+
+// ฟังก์ชัน: ดึงชื่อผู้รับผิดชอบใหม่จาก sp_list ตาม plan_id
+function fetch_responsible_name_by_plan($plan_id)
+{
+    global $conn;
+
+    $sql = "SELECT u.u_name 
+            FROM sp_list AS sp
+            JOIN js_user AS u ON sp.u_id = u.u_id
+            WHERE sp.plan_id = ?
+            LIMIT 1";  // ป้องกันดึงหลายแถว
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $plan_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['u_name'];
+    } else {
+        return null;
     }
 }
