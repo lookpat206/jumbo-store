@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 <div class="form-group">
                                                     <label>สินค้า</label>
                                                     <select id="pd_id" name="pd_id" class="form-control select2">
-                                                        <option value="">-- เลือกสินค้า --</option>
+                                                        <!-- <option value="">-- เลือกสินค้า --</option> -->
                                                         <?php
                                                         $products = get_products_by_customer($c_id);
                                                         foreach ($products as $prod) {

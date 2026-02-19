@@ -64,7 +64,8 @@ $pd_n = $row['pd_n'];
                                 <!-- เพิ่ม class collapse show เพื่อให้เปิดตอนโหลด -->
                                 <div class="card-body collapse show">
                                     <form action="pl_editPO_save.php" method="post">
-                                        <input type="text" name="shop_id" value="<?php echo htmlspecialchars($row['shop_id']); ?>">
+                                        <input type="hidden" name="shop_id" value="<?php echo htmlspecialchars($row['shop_id']); ?>">
+                                        <input type="hidden" name="pd_id" value="<?php echo htmlspecialchars($row['pd_id']); ?>">
 
                                         <div class="row">
                                             <!-- ซ้าย -->

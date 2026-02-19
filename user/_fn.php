@@ -6,12 +6,12 @@ include('../_conf/conn.inc.php');
 
 
 // ฟังก์ชันสร้างใบสั่งซื้อ
-function create_od($c_id, $od_day, $dv_day, $dv_time, $od_note, $status_id = 'กำลังดำเนินการ')
+function create_od($c_id, $od_day, $dv_day, $dv_time, $od_note, $od_status = 'ร่างใบสั่งซื้อ')
 {
     global $conn;
 
     // คำสั่ง SQL เตรียมเพิ่มข้อมูลใบสั่งซื้อ
-    $sql = "INSERT INTO orders (c_id, od_day, dv_day, dv_time, od_note, status_id) 
+    $sql = "INSERT INTO orders (c_id, od_day, dv_day, dv_time, od_note, od_status) 
             VALUES (?, ?, ?, ?, ?, ?)";
 
     // เตรียม statement
@@ -23,7 +23,7 @@ function create_od($c_id, $od_day, $dv_day, $dv_time, $od_note, $status_id = '�
     }
 
     // ผูกค่าตัวแปรกับ parameter ใน SQL โดยใช้รูปแบบ: int, string, string, string, string, string
-    mysqli_stmt_bind_param($stmt, "isssss", $c_id, $od_day, $dv_day, $dv_time, $od_note, $status_id);
+    mysqli_stmt_bind_param($stmt, "isssss", $c_id, $od_day, $dv_day, $dv_time, $od_note, $od_status);
 
     // พยายาม execute คำสั่ง
     if (mysqli_stmt_execute($stmt)) {
@@ -135,7 +135,7 @@ function get_units_by_customer_and_product($c_id, $pd_id)
 function get_orders_detail($od_id)
 {
     global $conn;
-    $sql = "SELECT pd.pd_n, pu.pu_name, d.qty, d.price_s, d.total,d.ord_id
+    $sql = "SELECT pd.pd_n, pu.pu_name, d.qty, d.price_s, d.total,d.ord_id,d.pd_id,d.pu_id
             FROM orders_detail AS d
             JOIN product AS pd ON d.pd_id = pd.pd_id
             JOIN p_unit AS pu ON d.pu_id = pu.pu_id
@@ -175,7 +175,7 @@ function get_order_by_id($od_id)
 function get_orders()
 {
     global $conn;
-    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id, o.status_id
+    $sql = "SELECT o.od_id, c.c_name ,o.od_day ,o.dv_day,c.c_id, o.od_status
             FROM orders AS o
             INNER JOIN cust AS c ON o.c_id = c.c_id";
     return mysqli_query($conn, $sql);
@@ -184,7 +184,7 @@ function get_orders()
 function confirm_od($od_id)
 {
     global $conn;
-    $sql = "UPDATE orders SET status_id = 'สั่งซื้อสำเร็จ' WHERE od_id = ?";
+    $sql = "UPDATE orders SET od_status = 'รอดำเนินการจัดซื้อ' WHERE od_id = ?";
     $stmt = mysqli_prepare($conn, $sql);
     // ตรวจสอบว่า prepare ผ่านหรือไม่
     if (!$stmt) {
@@ -195,20 +195,7 @@ function confirm_od($od_id)
     mysqli_stmt_close($stmt);
 }
 
-// ฟังก์ชันยืนยันใบสั่งซื้อ เปลี่ยนสถานะเป็น "จัดส่งสำเร็จ"
-function confirm_po($od_id)
-{
-    global $conn;
-    $sql = "UPDATE orders SET status_id = 'จัดส่งสำเร็จ' WHERE od_id = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-    // ตรวจสอบว่า prepare ผ่านหรือไม่
-    if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn)); // แจ้ง error แบบละเอียด
-    }
-    mysqli_stmt_bind_param($stmt, "i", $od_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-}
+
 
 
 // ฟังก์ชันดึงข้อมูลแผนก/ครัวตามรหัสลูกค้า
@@ -328,11 +315,10 @@ function update_purchase_and_stock($shop_id, $shop_qty, $shop_price, $sp_status,
 {
     global $conn;
 
-    // เริ่ม transaction เพื่อให้ update / insert สำเร็จพร้อมกัน
     mysqli_begin_transaction($conn);
 
     try {
-        // 1️⃣ อัปเดตตาราง sp_list
+        // 1️⃣ อัปเดต sp_list
         $sql_update = "UPDATE sp_list 
                        SET shop_qty = ?, 
                            shop_price = ?, 
@@ -342,66 +328,55 @@ function update_purchase_and_stock($shop_id, $shop_qty, $shop_price, $sp_status,
                        WHERE shop_id = ?";
         $stmt1 = mysqli_prepare($conn, $sql_update);
         if (!$stmt1) throw new Exception(mysqli_error($conn));
-
         mysqli_stmt_bind_param($stmt1, "dssi", $shop_qty, $shop_price, $sp_status, $shop_id);
         mysqli_stmt_execute($stmt1);
 
-        // ตรวจสอบว่ามีการอัปเดตจริงหรือไม่
-        if (mysqli_stmt_affected_rows($stmt1) <= 0) {
-            throw new Exception("ไม่พบข้อมูลที่ต้องการอัปเดต");
-        }
-
-        // ดึงข้อมูล pd_id, pu_id จาก sp_list สำหรับบันทึก stock
+        // 2️⃣ ดึง pd_id, pu_id
         $sql_select = "SELECT pd_id, pu_id FROM sp_list WHERE shop_id = ?";
         $stmt2 = mysqli_prepare($conn, $sql_select);
         mysqli_stmt_bind_param($stmt2, "i", $shop_id);
         mysqli_stmt_execute($stmt2);
         $result = mysqli_stmt_get_result($stmt2);
         $row = mysqli_fetch_assoc($result);
-
-        if (!$row) {
-            throw new Exception("ไม่พบสินค้าที่ต้องการบันทึกสต็อก");
-        }
+        if (!$row) throw new Exception("ไม่พบสินค้าที่ต้องการบันทึกสต็อก");
 
         $pd_id = $row['pd_id'];
         $pu_id = $row['pu_id'];
 
-        // 2️⃣ เพิ่มข้อมูลเข้า stock
+        // 3️⃣ เพิ่มเข้า stock
         $qty_in = $shop_qty;
         $qty_out = 0;
-        $balance = $shop_qty;
         $source_type = 'in';
+        $balance = 0; // ชั่วคราว
 
-        $sql_insert = "INSERT INTO stock 
-            (pd_id, pu_id, qty_in, qty_out, balance, source_type, ref_id, stock_date)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql_insert = "INSERT INTO stock (pd_id, pu_id, qty_in, qty_out, balance, source_type, ref_id, stock_date)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt3 = mysqli_prepare($conn, $sql_insert);
-        if (!$stmt3) throw new Exception(mysqli_error($conn));
-
-        mysqli_stmt_bind_param(
-            $stmt3,
-            "iiiddsis",
-            $pd_id,
-            $pu_id,
-            $qty_in,
-            $qty_out,
-            $balance,
-            $source_type,
-            $shop_id,
-            $stock_date
-        );
+        mysqli_stmt_bind_param($stmt3, "iiiddsis", $pd_id, $pu_id, $qty_in, $qty_out, $balance, $source_type, $shop_id, $stock_date);
         mysqli_stmt_execute($stmt3);
 
-        // ✅ ถ้าทุกอย่างสำเร็จ
+        // 4️⃣ ปรับ balance อัตโนมัติ
+        $sql_update_balance = "UPDATE stock s
+                               JOIN (SELECT pd_id, SUM(qty_in)-SUM(qty_out) AS new_balance
+                                     FROM stock
+                                     WHERE pd_id = ?
+                                     GROUP BY pd_id) t
+                               ON s.pd_id = t.pd_id
+                               SET s.balance = t.new_balance";
+        $stmt4 = mysqli_prepare($conn, $sql_update_balance);
+        mysqli_stmt_bind_param($stmt4, "i", $pd_id);
+        mysqli_stmt_execute($stmt4);
+
         mysqli_commit($conn);
         return true;
     } catch (Exception $e) {
-        // ❌ ถ้ามี error ให้ rollback
         mysqli_rollback($conn);
         error_log("Update failed: " . $e->getMessage());
         return false;
     }
 }
+
+
 
 //ทดสอบฟังก์ชัน update_purchase_and_stock ใหม่
 function update_shop_and_stock($shop_id, $pd_id, $pu_id, $shop_qty, $shop_price, $sp_status)

@@ -200,14 +200,16 @@
   })
 </script>
 
-<!-- ✅ เรียก SweetAlert2 CDN -->
+<!-- ✅ เรียก SweetAlert2 CDN
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<?php if (isset($_SESSION['notification'])): ?>
+<? //php if (isset($_SESSION['notification'])): 
+?>
   <script>
     Swal.fire({
       title: '📢 แจ้งเตือนผู้รับผิดชอบใหม่',
-      text: '<?php echo $_SESSION['notification']; ?>',
+      text: '<? //php echo $_SESSION['notification']; 
+              ?>',
       icon: 'info',
       confirmButtonText: 'รับทราบ',
       confirmButtonColor: '#3085d6',
@@ -217,8 +219,10 @@
       }
     });
   </script>
-  <?php unset($_SESSION['notification']); ?>
-<?php endif; ?>
+  <? //php unset($_SESSION['notification']); 
+  ?>
+<? //php endif; 
+?> -->
 
 
 </body>
