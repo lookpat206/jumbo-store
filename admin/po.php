@@ -10,7 +10,7 @@ include('_fn_db.php');
 
 // ดึงข้อมูลจำนวนใบสั่งซื้อทั้งหมด
 $total_od = fetch_totalod();
-$total_failed = count_failed_delivery();
+$unsynced_count = fetch_unsynced_count();
 
 
 
@@ -69,7 +69,7 @@ $total_failed = count_failed_delivery();
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-warning">
                         <div class="inner">
-                            <h3><?php echo $total_failed; ?></h3>
+                            <h3><?php echo $unsynced_count; ?></h3>
                             <p>ยอดค้างส่ง</p>
                         </div>
 
@@ -107,7 +107,7 @@ $total_failed = count_failed_delivery();
                                         <th width="10%">วันที่สั่ง</th>
                                         <th width="10%">วันที่ส่ง</th>
                                         <th width="20%">สถานะ</th>
-                                        <th width="10">รายละเอียด</th>
+                                        <th width="10%">รายละเอียด</th>
                                         <th width="10%">ยกเลิก</th>
                                     </tr>
                                 </thead>
@@ -115,36 +115,59 @@ $total_failed = count_failed_delivery();
                                     <?php
                                     $result = get_orders();
                                     $i = 0;
+
                                     if (mysqli_num_rows($result) > 0) {
                                         while ($row = mysqli_fetch_assoc($result)) {
                                             $i++;
-                                            $c_id = $row['c_id'];
                                             $od_id = $row['od_id'];
+                                            $status = $row['od_status'];
+
+                                            // ✅ ตั้งค่าสีตามสถานะ
+                                            switch ($status) {
+                                                case 'รอดำเนินการจัดซื้อ':
+                                                    $badge_class = 'badge bg-orange '; // สีส้ม
+                                                    break;
+                                                case 'อยู่ระหว่างจัดส่ง':
+                                                    $badge_class = 'badge bg-primary'; // สีน้ำเงิน
+                                                    break;
+                                                case 'รอชำระเงิน':
+                                                    $badge_class = 'badge bg-warning'; // สีเหลือง
+                                                    break;
+                                                case 'ชำระเงินแล้ว':
+                                                    $badge_class = 'badge bg-success'; // สีเขียว
+                                                    break;
+                                                case 'ยกเลิก':
+                                                    $badge_class = 'badge bg-danger'; // สีแดง
+                                                default:
+                                                    $badge_class = 'badge bg-secondary'; // สีเทา
+                                            }
                                     ?>
                                             <tr>
                                                 <td><?= $i ?></td>
-                                                <td><?= $row['od_id'] ?></td>
-                                                <td><?= $row['c_name'] ?></td>
-                                                <td><?= $row['od_day'] ?></td>
-                                                <td><?= $row['dv_day'] ?></td>
-                                                <td><?= $row['status_id'] ?>
+                                                <td><?= htmlspecialchars($row['od_id']) ?></td>
+                                                <td><?= htmlspecialchars($row['c_name']) ?></td>
+                                                <td><?= htmlspecialchars($row['od_day']) ?></td>
+                                                <td><?= htmlspecialchars($row['dv_day']) ?></td>
+                                                <td>
+                                                    <span class="<?= $badge_class ?>"><?= htmlspecialchars($status) ?></span>
                                                 </td>
                                                 <td>
-                                                    <a type="button" class="btn btn-block btn-primary" href="po_detail.php?od_id=<?= $row['od_id'] ?>">รายละเอียด</a>
+                                                    <a type="button" class="btn btn-block btn-primary" href="po_detail.php?od_id=<?= $od_id ?>">รายละเอียด</a>
                                                 </td>
                                                 <td>
-                                                    <a onclick="return confirm('คุณต้องการลบใบสั่งซื้อหรือไม่?')" type="button" class="btn btn-block btn-danger" href="po_delete.php?od_id=<?= $row['od_id'] ?>">ยกเลิกใบสั่ง</a>
+                                                    <a onclick="return confirm('คุณต้องการลบใบสั่งซื้อหรือไม่?')" type="button" class="btn btn-block btn-danger" href="po_delete.php?od_id=<?= $od_id ?>">ยกเลิกใบสั่ง</a>
                                                 </td>
                                             </tr>
                                     <?php
                                         }
                                     } else {
-                                        echo '<tr><td colspan="7" class="text-center">ไม่พบข้อมูล</td></tr>';
+                                        echo '<tr><td colspan="8" class="text-center">ไม่พบข้อมูล</td></tr>';
                                     }
                                     ?>
                                 </tbody>
                             </table>
                         </div>
+
 
 
                         <!-- /.card-body -->

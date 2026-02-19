@@ -233,6 +233,16 @@
     });
   }
 </script>
+
+<script>
+  document.getElementById('btn_summary').addEventListener('click', function(e) {
+    const now = new Date();
+    if (now.getHours() < 20) {
+      e.preventDefault();
+      alert('สามารถสรุปยอดบิลได้หลังเวลา 20:00 น.');
+    }
+  });
+</script>
 </body>
 
 </html>

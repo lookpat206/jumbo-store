@@ -119,7 +119,7 @@
             <li class="nav-item">
               <a href="inv.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>สินค้าคงเหลือ</p>
+                <p>รายการซื้อสำเร็จ</p>
               </a>
             </li>
           </ul>

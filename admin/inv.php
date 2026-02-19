@@ -1,114 +1,147 @@
 <?php
-
-//สินค้าคงเหลือ Inventory
+// inv.php
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
+include('../user/_fn.php');
 include('_fn.php');
+include('_fn_db.php');
 
+// รับค่าวันที่จาก GET หรือใช้วันที่ปัจจุบัน
+// $dv_day = $_GET['dv_day'] ?? date('d/m/Y');
+
+// // แปลงวันที่จาก mm/dd/yyyy → yyyy-mm-dd
+// $date_parts = explode('/', $dv_day);
+// if (count($date_parts) === 3) {
+//     $formatted_date = $date_parts[2] . '-' . $date_parts[0] . '-' . $date_parts[1];
+// } else {
+//     $formatted_date = date('Y-m-d', strtotime($dv_day));
+// }
+
+// เรียกข้อมูลเฉพาะวันที่เลือก
+$sp_list_result = fetch_sp_list();
+
+
+// สรุปยอด
+$totals = fetch_total_shopping();
+$totals_cust = fetch_total_customers();
 ?>
-
 <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
+    <!-- Content Header -->
     <section class="content-header">
         <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>ข้อมูลสินค้าคงเหลือ</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <!-- <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">DataTables</li> -->
-                    </ol>
+            <h4 class="text display-4">รายการซื้อสำเร็จ</h4>
+
+            <div class="row">
+
+
+
+                <!-- แสดงวันที่และสรุป -->
+                <div class="col-6 mx-auto">
+                    <div class="card card-widget">
+                        <div class="widget-user-header bg-green text-center">
+                            <div class="inner">
+                                <h5>วันที่ส่งสินค้า</h5>
+                                <h1><?php echo date('d-m-Y'); ?></h1>
+                            </div>
+                        </div>
+                        <div class="card-footer p-0">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    <a class="nav-link">ลูกค้า <span class="float-right badge bg-secondary"><?= $totals_cust['total_cust'] ?></span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link">ตลาด <span class="float-right badge bg-secondary"><?= $totals['total_markets'] ?></span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link">ร้านค้า <span class="float-right badge bg-secondary"><?= $totals['total_suppliers'] ?></span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link">ผู้รับผิดชอบ <span class="float-right badge bg-secondary"><?= $totals['total_users'] ?></span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div><!-- /.container-fluid -->
+        </div>
     </section>
 
-    <!-- Main content -->
+    <!-- Main content: ตารางรายการ -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">ตารางข้อมูลสินค้าคงเหลือ</h3>
-                            <div class="card-tools">
-                                <a href="inv_add.php" class="btn btn-primary">เพิ่มข้อมูลสินค้า</a>
-                            </div>
+                            <h1 class="card-title">รายการซื้อสำเร็จ</h1>
                         </div>
-                        <!-- /.card-header -->
                         <div class="card-body">
                             <table id="example1" class="table table-bordered table-striped">
-
                                 <thead>
-                                    <tr>
-                                        <th style="width: 10%;">ลำดับ</th>
-                                        <th style="width: 50%;">ชื่อสินค้า</th>
-                                        <th style="width: 20%">จำนวน</th>
-                                        <th style="width: 10%;">แก้ไข</th>
-                                        <th style="width: 10%;">ลบ</th>
+                                    <tr class="table-info" style=" text-align: center">
+                                        <th>ลำดับ</th>
+                                        <th>ตลาด</th>
+                                        <th>ร้านค้า</th>
+                                        <th>ผู้รับผิดชอบ</th>
+                                        <th>สินค้า</th>
+                                        <th>จำนวนสั่ง</th>
+
+                                        <th>จำนวนซื้อ</th>
+                                        <th>หน่วยนับ</th>
+                                        <th>ราคา</th>
+                                        <th>รวม</th>
+                                        <th>วันที่ซื้อ</th>
+                                        <th>รายละเอียด</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-
-                                    $result = fetch_prod();
-                                    if (mysqli_num_rows($result) > 0) {
-                                        $i = 0;
-                                        foreach ($result as $row) {
-                                            $i++;
+                                    $i = 0;
+                                    $grand_total = 0;
+                                    while ($row = mysqli_fetch_assoc($sp_list_result)):
+                                        $i++;
+                                        $grand_total += $row['total_price'];
                                     ?>
-                                            <tr>
-                                                <td><?= $i ?></td>
-                                                <td><?= $row['pd_n'] ?></td>
-                                                <td>
-                                                    <a class="btn btn-block btn-secondary" href="supp.php?pd_id=<?= $row['pd_id'] ?>">เพิ่มร้านค้า</a>
-                                                </td>
-                                                <td>
-                                                    <a class="btn btn-warning btn-sm" href="prod_edit.php?pd_id=<?= $row['pd_id'] ?>">
-                                                        <i class="far fa-edit"></i>
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    <a onClick="return confirm('Are you sure you want to delete?')" class="btn btn-danger btn-sm" href="prod_delete.php?pd_id=<?= $row['pd_id'] ?>">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                    <?php
-                                        }
-                                    } else {
-                                        echo '<tr><td colspan="5">ไม่พบข้อมูล</td></tr>';
-                                    }
-
-
-
-
-
-                                    ?>
+                                        <tr>
+                                            <td><?= $i  ?></td>
+                                            <td><?= htmlspecialchars($row['mk_name']) ?></td>
+                                            <td><?= htmlspecialchars($row['sp_name']) ?></td>
+                                            <td><?= htmlspecialchars($row['u_name']) ?></td>
+                                            <td><?= htmlspecialchars($row['pd_n']) ?></td>
+                                            <td><?= number_format($row['qty'], 2) ?></td>
+                                            <td><?= number_format($row['shop_qty'], 2) ?></td>
+                                            <td><?= htmlspecialchars($row['pu_name']) ?></td>
+                                            <td><?= number_format($row['shop_price'], 2) ?></td>
+                                            <td><?= number_format($row['total_price'], 2) ?></td>
+                                            <td><?= htmlspecialchars($row['update_at']) ?></td>
+                                            <td>
+                                                <a class="btn btn-warning btn-sm" href="inv_edit.php?pd_id=<?= $row['pd_id'] ?>&od_id=<?= $row['od_id'] ?>">
+                                                    <i class="far fa-edit"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                    <?php if ($i == 0): ?>
+                                        <tr>
+                                            <td colspan="12" class="text-center">ยังไม่มีรายการสินค้า</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
-
+                                <?php if ($i > 0): ?>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="9" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                                            <td colspan="3"><strong><?= number_format($grand_total, 2) ?></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                <?php endif; ?>
                             </table>
                         </div>
-                        <!-- /.card-body -->
                     </div>
-                    <!-- /.card -->
                 </div>
-                <!-- /.col -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
     </section>
-    <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
-
-
-
-
-<?php
-include('_footer.php');
-?>
+<?php include('_footer.php'); ?>

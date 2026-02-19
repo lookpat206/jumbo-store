@@ -18,8 +18,12 @@ $sp_list_result = get_sp_list();
 $totals = fetch_total_shopping();
 $totals_cust = fetch_total_customers();
 
+function getDeliveryDate()
+{
+    return date('Y-m-d', strtotime('+1 day'));
+}
 
-
+$delivery_date = getDeliveryDate();
 ?>
 
 
@@ -45,13 +49,14 @@ $totals_cust = fetch_total_customers();
 
                                 <div class="form-group">
 
-                                    <p style="color: red; font-size: smaller;">เลือกวันที่ส่งสินค้าจากปฏิทิน</p>
-                                    <div class="input-group date" id="reservationdate" data-target-input="nearest">
-                                        <input type="text" name="dv_day" class="form-control datetimepicker-input" placeholder="mm/dd/yyy (เดือน/วัน/ปี) : 06/03/2025" data-target="#reservationdate" />
+                                    <p style="color: red; font-size: smaller;"></p>
+                                    <div>
+                                        <input type="date" name="dv_day" class="form-control" value="<?= $delivery_date ?>" readonly required>
 
-                                        <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+
+                                        <!-- <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-                                        </div>
+                                        </div> -->
 
                                     </div>
 
@@ -60,8 +65,9 @@ $totals_cust = fetch_total_customers();
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-danger">สรุปยอดสั่งซื้อสินค้า</button>
-
+                                <button type="submit" id="btn_summary" class="btn btn-danger">
+                                    สรุปยอดบิล
+                                </button>
 
                             </div>
                         </form>
@@ -228,5 +234,7 @@ $totals_cust = fetch_total_customers();
 
 
 <?php
+
+
 include('_footer.php');
 ?>

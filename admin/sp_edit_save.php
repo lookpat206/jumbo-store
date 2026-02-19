@@ -1,6 +1,6 @@
 
 <?php
-include('_fn.php');
+include('_fn.php');  //ยังไม่ได้ใช้
 
 // Validate ว่ามีค่า POST ส่งมาไหม
 if (isset($_POST['shpo_id'], $_POST['sp_id'], $_POST['u_id'], $_POST['quantity'], $_POST['sp_price'], $_POST['sp_status'])) {

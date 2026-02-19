@@ -125,3 +125,15 @@ function fetch_totalod()
     $row = mysqli_fetch_assoc($result);
     return $row['totalod'];
 }
+
+// ดึงจำนวนสินค้าที่ยังไม่ได้ซิงค์สต็อก ยอดค้างส่ง
+function fetch_unsynced_count()
+{
+    global $conn;
+    $sql = "SELECT COUNT(*) AS total_unsynced FROM sp_list WHERE syn_stock = 0";
+    $result = mysqli_query($conn, $sql);
+    if ($row = mysqli_fetch_assoc($result)) {
+        return $row['total_unsynced'];
+    }
+    return 0;
+}

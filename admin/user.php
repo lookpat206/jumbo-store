@@ -48,65 +48,41 @@ include('_sidebar_menu.php');
               <div class="card-header">
                 <h3 class="card-title">ข้อมูลผู้ใช้ระบบ</h3>
                 <div class="card-tools">
-                  <a href="prod_add.php" class="btn btn-primary">เพิ่มข้อมูล</a>
+                  <a href="user_add.php" class="btn btn-primary">เพิ่มข้อมูล</a>
                 </div>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
-
-
                   <thead>
                     <tr>
                       <th style="width: 10%;">ลำดับ</th>
                       <th style="width: 50%;">ชื่อผู้ใช้</th>
-                      <th style="width: 20%">หน้าที่</th>
+                      <th style="width: 20%;">หน้าที่</th>
                       <th style="width: 10%;">แก้ไข</th>
                       <th style="width: 10%;">ลบ</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-
-                      <?php
-
-                      $i = 0;
-                      $result = fetch_user();
-                      if (mysqli_num_rows($result) > 0) {
-                        while ($row = mysqli_fetch_assoc($result)) {
-                          $i++;
-
-                          echo "<tr>";
-                          echo "<td>" . $i . "</td>";
-                          echo "<td>" . $row['u_name'] . "</td>";
-                          echo "<td>" . $row['u_status'] . "</td>";
-                          echo "<td>";
-                          echo '<a  class="btn btn-default btn-sm" href="user_edit.php?u_id=' . $row['u_id'] . '">';
-                          echo '<i class="far fa-edit"></i>';
-                          echo '</a>';
-                          echo "</td>";
-                          echo "<td>";
-                          echo '<a onClick="return confirm(\'Are you sure you want to delete?\')" class="btn btn-default btn-sm" href="user_delete.php?u_id=' . $row['u_id'] . '">';
-                          echo '<i class="far fa-trash-alt"></i>';
-                          echo '</a>';
-                          echo "</td>";
-
-
-                          echo "</tr>";
-                        }
+                    <?php
+                    $i = 0;
+                    $result = fetch_user();
+                    if (mysqli_num_rows($result) > 0) {
+                      while ($row = mysqli_fetch_assoc($result)) {
+                        $i++;
+                        echo "<tr>";
+                        echo "<td>{$i}</td>";
+                        echo "<td>{$row['u_name']}</td>";
+                        echo "<td>{$row['u_status']}</td>";
+                        echo "<td><a class='btn btn-default btn-sm' href='user_edit.php?u_id={$row['u_id']}'><i class='far fa-edit'></i></a></td>";
+                        echo "<td><a onclick=\"return confirm('Are you sure you want to delete?')\" class='btn btn-default btn-sm' href='user_delete.php?u_id={$row['u_id']}'><i class='far fa-trash-alt'></i></a></td>";
+                        echo "</tr>";
                       }
-                      ?>
-                      <td>
-
-                      </td>
-
-
-
-
-                    </tr>
-
+                    } else {
+                      echo "<tr><td colspan='5' class='text-center'>ไม่มีข้อมูลผู้ใช้</td></tr>";
+                    }
+                    ?>
                   </tbody>
-
                 </table>
               </div>
               <!-- /.card-body -->
@@ -119,6 +95,7 @@ include('_sidebar_menu.php');
       </div>
       <!-- /.container-fluid -->
     </section>
+
     <!-- /.content -->
 
 </section>

@@ -76,7 +76,7 @@ $c_name = $row['c_name'];
                                                 <!-- เลือกหน่วยนับ -->
                                                 <div class="mb-3">
                                                     <select class=" form-control select2" name="pu_id">
-                                                        <option selected="selected" value=""> -- เลือกหน่วยนับ --</option>
+                                                        <option selected="selected" value="1"> -- กิโลกรัม --</option>
                                                         <?php foreach ($result2 as $unit) { ?>
                                                             <option value="<?= $unit['pu_id'] ?>"><?= $unit['pu_name'] ?></option>
                                                         <?php } ?>

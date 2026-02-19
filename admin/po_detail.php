@@ -61,6 +61,7 @@ $od_note = $row1['od_note'];
 
         <section class="content">
             <div class="container-fluid">
+
                 <div class="row">
                     <div class="col-10 mx-auto">
                         <div class="callout callout-info">
@@ -68,43 +69,32 @@ $od_note = $row1['od_note'];
                             กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยันการจัดส่ง หากมีข้อผิดพลาดสามารถติดต่อเจ้าหน้าที่ได้ที่เบอร์โทรศัพท์ที่ระบุในใบสั่งซื้อ
                         </div>
 
-
                         <!-- Main content -->
                         <div class="invoice p-3 mb-3">
-                            <!-- title row -->
                             <div class="row">
                                 <div class="col-12">
-                                    <h3>
-                                        ร้านจัมโบ้อาหารสด
-                                        <!-- <?php date_default_timezone_set("Asia/Bangkok"); ?>
-                                        <small class="float-right">Date: <?= date("d/m/Y") ?></small> -->
-                                    </h3>
+                                    <h3>ร้านจัมโบ้อาหารสด</h3>
                                 </div>
-                                <!-- /.col -->
                             </div>
-                            <!-- info row -->
+
                             <div class="row invoice-info">
                                 <div class="col-sm-4 invoice-col">
                                     จาก
-
                                     <address>
                                         ร้านจัมโบ้อาหารสด<br>
                                         Phone: 081-530-4703 ,089-700-0922<br>
-
-
                                     </address>
                                 </div>
-                                <!-- /.col -->
+
                                 <div class="col-sm-4 invoice-col">
                                     ถึง
                                     <address>
                                         <strong><?= htmlspecialchars($c_name) ?></strong><br>
                                         <?= nl2br(htmlspecialchars($c_add)) ?><br>
                                         Phone: <?= htmlspecialchars($c_tel) ?><br>
-                                        <!-- Email:  -->
                                     </address>
                                 </div>
-                                <!-- /.col -->
+
                                 <div class="col-sm-4 invoice-col">
                                     <b>Order ID:</b> <?= htmlspecialchars($od_id) ?><br>
                                     <b>Orders date:</b> <?= htmlspecialchars($od_day) ?><br>
@@ -112,40 +102,36 @@ $od_note = $row1['od_note'];
                                     <b>Delivery time:</b> <?= htmlspecialchars($dv_time) ?><br>
                                     <b>Note:</b> <?= htmlspecialchars($od_note) ?><br>
                                 </div>
-                                <!-- /.col -->
                             </div>
-                            <!-- /.row -->
 
-                            <!-- Table row -->
-                            <div class="row">
-                                <div class="col-12 table-responsive">
-                                    <table id="example2" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr class="table-info">
-                                                <th width="10%">ลำดับ</th>
-                                                <th width="40%">สินค้า</th>
-                                                <th width="20%">หน่วยนับ</th>
-                                                <th width="20%">จำนวน</th>
-                                                <th width="20%">ราคาต่อหน่วย</th>
-                                                <th width="20%">รวม</th>
+                            <form action="po_stock.php" method="post">
+                                <input type="hidden" name="order_id" value="<?= htmlspecialchars($od_id) ?>">
+                                <div class="row">
+                                    <div class="col-12 table-responsive">
+                                        <table id="example2" class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr class="table-info">
+                                                    <th width="10%">ลำดับ</th>
+                                                    <th width="40%">สินค้า</th>
+                                                    <th width="20%">หน่วยนับ</th>
+                                                    <th width="20%">จำนวน</th>
+                                                    <th width="20%">ราคาต่อหน่วย</th>
+                                                    <th width="20%">รวม</th>
 
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php
+                                                $details = get_orders_detail($od_id);
+                                                $i = 0;
+                                                $grand_total = 0;
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            $details = get_orders_detail($od_id);
-                                            $i = 0;
-                                            $grand_total = 0;
-                                            //$ord_id = $row['ord_id']; // สมมติชื่อ PK ในตารางคือ odr_id
+                                                while ($row = mysqli_fetch_assoc($details)) {
+                                                    $i++;
+                                                    $grand_total += $row['total'];
+                                                    $ord_id = $row['ord_id'];
 
-
-                                            while ($row = mysqli_fetch_assoc($details)) {
-                                                $i++;
-                                                $grand_total += $row['total'];
-                                                $ord_id = $row['ord_id']; // สมมติชื่อ PK ในตารางคือ ord_id
-
-                                                echo "<tr>
+                                                    echo "<tr>
                                                 <td>{$i}</td>
                                                 <td>{$row['pd_n']}</td>
                                                 <td>{$row['pu_name']}</td>
@@ -154,49 +140,39 @@ $od_note = $row1['od_note'];
                                                 <td>" . number_format($row['total'], 2) . "</td>
                                                 
                                             </tr>";
-                                            }
+                                                }
 
-                                            if ($i == 0) {
-                                                echo "<tr><td colspan='7'>ยังไม่มีรายการสินค้า</td></tr>";
-                                            }
-                                            ?>
-                                        </tbody>
-                                        <?php if ($i > 0): ?>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="5" align="right"><strong>รวมทั้งสิ้น</strong></td>
-                                                    <td><strong><?= number_format($grand_total, 2) ?></strong></td>
-                                                </tr>
-                                            </tfoot>
-                                        <?php endif; ?>
-                                    </table>
+                                                if ($i == 0) {
+                                                    echo "<tr><td colspan='5'>ยังไม่มีรายการสินค้า</td></tr>";
+                                                }
+                                                ?>
+                                            </tbody>
+                                            <?php if ($i > 0): ?>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td colspan="5" align="right"><strong>รวมทั้งสิ้น</strong></td>
+                                                        <td><strong><?= number_format($grand_total, 2) ?></strong></td>
+
+                                                    </tr>
+                                                </tfoot>
+                                            <?php endif; ?>
+                                        </table>
+                                    </div>
                                 </div>
-                                <!-- /.col -->
-                            </div>
-                            <!-- /.row -->
 
-
-
-                            <!-- this row will not appear when printing -->
-                            <div class="row no-print">
-                                <div class="col-12 text-right">
-
-                                    <a href="po_confirm.php?od_id=<?= $od_id ?>"
-                                        class="btn btn-warning"
-                                        onclick="return confirm('ยืนยันการจัดส่งหรือไม่?')">
-                                        จัดส่งสำเร็จ
-                                    </a>
-
-                                    <a href="po.php" class="btn btn-secondary">Back</a>
+                                <div class="row no-print">
+                                    <div class="col-12 text-right">
+                                        <input type="submit" class="btn btn-success" value="บันทึกและตัดสต็อก">
+                                        <a href="po.php" class="btn btn-secondary">Back</a>
+                                    </div>
                                 </div>
-                            </div>
-
+                            </form>
                         </div>
-                        <!-- /.invoice -->
-                    </div><!-- /.col -->
-                </div><!-- /.row -->
-            </div><!-- /.container-fluid -->
+                    </div>
+                </div>
+            </div>
         </section>
+
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->

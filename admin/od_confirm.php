@@ -9,7 +9,7 @@ include('../user/_fn.php');
 
 if (isset($_SESSION['od_id'])) {
     $od_id = $_SESSION['od_id'];
-    print_r($od_id);
+    //print_r($od_id);
     // ตรวจสอบว่าใบสั่งซื้อมีอยู่ในฐานข้อมูลหรือไม่ 
 
     // เรียกฟังก์ชันยืนยันการสั่งซื้อ

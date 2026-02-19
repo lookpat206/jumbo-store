@@ -1073,8 +1073,8 @@ function plan_add_save($sp_id, $pd_id, $u_id)
 {
     global $conn;
 
-    $sql = "INSERT INTO plan(sp_id, pd_id, u_id) 
-            VALUES ( ?, ?, ?)";
+    $sql = "INSERT INTO plan(sp_id, pd_id, u_id,syn_shop) 
+            VALUES ( ?, ?, ? , 0)";
     // แปลง $sql เป็น $stmt            
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -1189,8 +1189,8 @@ function save_shopping($dv_day_new)
 {
     global $conn;
 
-    $sql = "INSERT INTO sp_list (plan_id,mk_id,sp_id, u_id, od_id, pd_id, shop_qty, pu_id, shop_price, sp_status,syn_stock,syn_plan)
-            SELECT p.plan_id,ms.mk_id,p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'กำลังซื้อสินค้า', 0, 0
+    $sql = "INSERT INTO sp_list (plan_id,mk_id,sp_id, u_id, od_id, pd_id, shop_qty, pu_id, shop_price, sp_status,syn_stock,note)
+            SELECT p.plan_id,ms.mk_id,p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'อยู่ระหว่างจัดซื้อ', 0, ''
             FROM orders_detail AS ord
             JOIN orders AS od ON ord.od_id = od.od_id
             JOIN plan AS p ON ord.pd_id = p.pd_id
@@ -1223,12 +1223,34 @@ function save_shopping($dv_day_new)
     // ปิด statement
     mysqli_stmt_close($stmt);
 }
+function fetch_order_detail_by_odid($od_id)
+{
+    global $conn;
+
+    $sql = "SELECT *
+            FROM orders_detail
+            WHERE od_id = ? ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // ผูกพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "i", $od_id);
+
+    // ดำเนินการคำสั่ง
+    mysqli_stmt_execute($stmt);
+
+    // รับผลลัพธ์
+    $result = mysqli_stmt_get_result($stmt);
+}
+
+
+
 
 //spspspspsppspspsppspspsppspspsppspspsppspspspspsppspspspspsp
 
 //ดึงข้อมูล shopping list
 
-//
+//แสดงรายการสั่งซื้อที่ยังไม่ sync stock
 function get_sp_list()
 {
     global $conn;
@@ -1252,6 +1274,7 @@ function get_sp_list()
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
             join orders AS od ON pl.od_id = od.od_id
             join cust AS c ON od.c_id = c.c_id
+            WHERE pl.syn_stock = 0     -- ✅ เงื่อนไขแสดงเฉพาะที่ยังไม่ sync stock
             GROUP BY pl.pd_id, sup.mk_id, pl.sp_id, pl.u_id, pl.pu_id, pl.sp_status
             ORDER BY sup.mk_id DESC";
 
@@ -1269,6 +1292,51 @@ function get_sp_list()
     }
     return $result; // คืนผลลัพธ์ไปให้หน้า main ใช้
 }
+
+//แสดงรายการสั่งซื้อที่ sync stock แล้ว
+function fetch_sp_list()
+{
+    global $conn;
+
+    $sql = "SELECT od.od_id,
+                m.mk_name, 
+                sup.sp_name, 
+                u.u_name,
+                pl.pd_id, 
+                pro.pd_n,            
+                pl.shop_qty,
+                odt.qty, 
+                pu.pu_name, 
+                pl.shop_price,  
+                (pl.shop_qty) *(pl.shop_price) AS total_price,
+                pl.update_at
+            FROM sp_list AS pl
+            JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
+            INNER JOIN market AS m ON sup.mk_id = m.mk_id
+            JOIN js_user AS u ON pl.u_id = u.u_id
+            JOIN product AS pro ON pl.pd_id = pro.pd_id
+            JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
+            JOIN orders AS od ON pl.od_id = od.od_id
+            JOIN cust AS c ON od.c_id = c.c_id
+            join orders_detail AS odt ON pl.pd_id = odt.pd_id and pl.od_id = odt.od_id
+            WHERE pl.syn_stock = 1  
+            ORDER BY pro.pd_id DESC";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (!$result) {
+        die("Get result failed: " . mysqli_error($conn));
+    }
+    return $result; // คืนผลลัพธ์ไปให้หน้า main ใช้
+}
+
 
 
 //spspspspspspspspspspspspspspspsspspspspsps
@@ -1313,30 +1381,12 @@ WHERE pl.pd_id = ?";
     return $result; // คืนผลลัพธ์ไปให้หน้า main ใช้
 }
 
-//นับจำนวนรายการใน shopping list 
 
-function count_failed_delivery()
-{
-    global $conn;
 
-    $sql = "SELECT COUNT(*) AS total_failed 
-            FROM sp_list 
-            WHERE sp_status = 'จัดส่งไม่สำเร็จ'";
 
-    $result = mysqli_query($conn, $sql);
-
-    if (!$result) {
-        die("Query failed (count_failed_delivery): " . mysqli_error($conn));
-    }
-
-    $row = mysqli_fetch_assoc($result);
-    return $row['total_failed']; // คืนค่าเป็นจำนวน
-}
 
 //spspspspspspsppspspspspspspspspspspspspspspspspspsps
 //แก้ไขข้อมูล shopping list
-
-
 function sp_list_edit($shop_id, $sp_id, $u_id, $shop_qty, $shop_price, $sp_status)
 {
     global $conn;
@@ -1400,6 +1450,67 @@ function fetch_sp_list_by_pdid($pd_id)
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//ดึงข้อมูลสินค้าและจำนวน ของลูกค้าแต่ละราย โดยใช้ pd_id และ od_id
+function fetch_pl_by_pdid_and_odid($pd_id, $od_id)
+{
+    global $conn;
+
+    $sql = "SELECT 
+                sp.pd_id,
+                pro.pd_n,
+                c.c_id,
+                c.c_abb,
+                sp.shop_qty,
+                pu.pu_id,
+                pu.pu_name,
+                od.dv_day,
+                odt.qty,
+                odt.ord_id,
+                od.od_id,
+                sp.shop_id
+            FROM sp_list AS sp
+            JOIN product AS pro ON sp.pd_id = pro.pd_id
+            JOIN p_unit AS pu ON sp.pu_id = pu.pu_id
+            JOIN orders AS od ON sp.od_id = od.od_id
+            JOIN cust AS c ON od.c_id = c.c_id
+            JOIN orders_detail AS odt ON sp.pd_id = odt.pd_id AND sp.od_id = odt.od_id
+            WHERE sp.pd_id = ? AND sp.od_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        die("Prepare failed: " . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, "ii", $pd_id, $od_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    return $result;
+}
+
+//แก้ไขจำนวนสินค้าที่สั่งซื้อ
+function update_order_quantity($odt_id, $qty)
+{
+    global $conn;
+
+    // อัปเดตเฉพาะแถวเดียว
+    $sql = "UPDATE orders_detail SET qty = ? WHERE ord_id = ?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "di", $qty, $odt_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        echo "อัปเดตสำเร็จ";
+        // ส่งกลับไปหน้าก่อนหน้า หรือหน้า list
+        header("Location: inv.php");
+        exit;
+    } else {
+        echo "เกิดข้อผิดพลาด: " . mysqli_error($conn);
+    }
+}
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ดึงข้อมูล plan : ตลาด ร้านค้า ผู้ใช้ สินค้า
 function fetch_pl_plan_by_pdid($pd_id)
 {
@@ -1432,21 +1543,63 @@ function fetch_pl_plan_by_pdid($pd_id)
     return $result;
 }
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ตัดสต็อกสินค้า qty_out ใน tb-stock และเปลี่ยนสถานะ ใน tb-orders เป็น รอจัดส่ง
 
-
-
-function get_status_text_and_class($status_code)
+function update_stock_after_order($order_id)
 {
-    switch ($status_code) {
-        case 0:
-            return ['สั่งซื้อสำเร็จ', 'status-orange'];
-        case 1:
-            return ['กำลังดำเนินการ', 'status-yellow'];
-        case 2:
-            return ['การจัดส่งสำเร็จ', 'status-green'];
-        case 3:
-            return ['จัดส่งไม่สำเร็จ', 'status-red'];
-        default:
-            return ['ไม่ทราบสถานะ', 'status-default'];
+    global $conn; // ประกาศให้ $conn ใช้ในฟังก์ชัน
+
+    // ดึงรายการสินค้าใน order
+    $details = mysqli_query($conn, "SELECT * FROM orders_detail WHERE od_id = $order_id");
+    if (!$details) return "เกิดข้อผิดพลาดในการดึงรายละเอียดคำสั่งซื้อ";
+
+    mysqli_begin_transaction($conn);
+
+    try {
+        while ($row = mysqli_fetch_assoc($details)) {
+            $pd_id = $row['pd_id'];
+            $pu_id = $row['pu_id'];
+            $qty_out = $row['qty'];
+            $ref_id = $row['od_id'];
+
+            // ดึง balance ปัจจุบันของสินค้านั้น
+            $stmt_balance = mysqli_prepare($conn, "
+                SELECT COALESCE(SUM(qty_in) - SUM(qty_out), 0) AS current_balance
+                FROM stock
+                WHERE pd_id = ?
+            ");
+            mysqli_stmt_bind_param($stmt_balance, "i", $pd_id);
+            mysqli_stmt_execute($stmt_balance);
+            mysqli_stmt_bind_result($stmt_balance, $current_balance);
+            mysqli_stmt_fetch($stmt_balance);
+            mysqli_stmt_close($stmt_balance);
+
+            // คำนวณ balance ใหม่
+            $new_balance = $current_balance - $qty_out;
+
+            // insert ลง stock
+            $stmt_insert = mysqli_prepare($conn, "
+                INSERT INTO stock (pd_id, pu_id, qty_in, qty_out, balance, source_type, ref_id, stock_date)
+                VALUES (?, ?, 0, ?, ?, 'out', ?, NOW())
+            ");
+            mysqli_stmt_bind_param($stmt_insert, "iiidi", $pd_id, $pu_id, $qty_out, $new_balance, $ref_id);
+            if (!mysqli_stmt_execute($stmt_insert)) {
+                throw new Exception("เพิ่ม stock ล้มเหลว: " . mysqli_error($conn));
+            }
+            mysqli_stmt_close($stmt_insert);
+        }
+
+        // เปลี่ยนสถานะ order เป็น "รอการจัดส่ง"
+        $sql_update_status = "UPDATE orders SET od_status = 'รอการจัดส่ง' WHERE od_id = $order_id";
+        if (!mysqli_query($conn, $sql_update_status)) {
+            throw new Exception("อัปเดตสถานะคำสั่งซื้อล้มเหลว: " . mysqli_error($conn));
+        }
+
+        mysqli_commit($conn);
+        return true;
+    } catch (Exception $e) {
+        mysqli_rollback($conn);
+        return $e->getMessage();
     }
 }

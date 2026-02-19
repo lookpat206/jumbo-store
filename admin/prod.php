@@ -87,7 +87,7 @@ include('_fn.php');
           <div class="card-header">
             <h3 class="card-title">ตารางข้อมูลสินค้า</h3>
             <div class="card-tools">
-              <a href="prod_add.php" class="btn btn-primary">เพิ่มข้อมูลสินค้า</a>
+
             </div>
           </div>
           <!-- /.card-header -->
