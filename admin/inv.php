@@ -1,5 +1,5 @@
 <?php
-// inv.php
+// inv.php ใช้เมื่อ ซื้อสินค้าเสร็จแล้ว รอจัดส่ง 
 include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
@@ -30,40 +30,83 @@ $totals_cust = fetch_total_customers();
     <!-- Content Header -->
     <section class="content-header">
         <div class="container-fluid">
-            <h4 class="text display-4">รายการซื้อสำเร็จ</h4>
-
+            <h4 class="text display-4">รายการสินค้าเตรียมจัดส่ง</h4>
             <div class="row">
-
-
-
-                <!-- แสดงวันที่และสรุป -->
+                <!-- สรุปยอดสั่งซื้อสินค้า -->
                 <div class="col-6 mx-auto">
-                    <div class="card card-widget">
-                        <div class="widget-user-header bg-green text-center">
-                            <div class="inner">
-                                <h5>วันที่ส่งสินค้า</h5>
-                                <h1><?php echo date('d-m-Y'); ?></h1>
+                    <div class="card card-danger">
+                        <div class="card-header">
+                            <h3 class="card-title">สรุปรายการซื้อสินค้า</h3>
+
+                        </div>
+                        <!-- /.card-header -->
+                        <form action="sp_add.php" method="post">
+                            <div class="card-body">
+
+                                <div class="form-group">
+                                    <div>
+                                        <label for="type">เลือกชื่อลูกค้า</label>
+                                        <select class="form-control select2" name="sp_id" style="width: 100%;">
+                                            <option selected="selected" value="">-- เลือกชื่อลูกค้า --</option>
+                                            <?php foreach ($result2 as $row) { ?>
+                                                <option value="<?= $row['sp_id'] ?>"> <?= $row['sp_name'] ?> </option>
+                                            <?php } ?>
+
+                                        </select>
+
+
+                                    </div>
+
+                                </div>
+
                             </div>
-                        </div>
-                        <div class="card-footer p-0">
-                            <ul class="nav flex-column">
-                                <li class="nav-item">
-                                    <a class="nav-link">ลูกค้า <span class="float-right badge bg-secondary"><?= $totals_cust['total_cust'] ?></span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link">ตลาด <span class="float-right badge bg-secondary"><?= $totals['total_markets'] ?></span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link">ร้านค้า <span class="float-right badge bg-secondary"><?= $totals['total_suppliers'] ?></span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link">ผู้รับผิดชอบ <span class="float-right badge bg-secondary"><?= $totals['total_users'] ?></span></a>
-                                </li>
-                            </ul>
-                        </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <button type="submit" id="btn_summary" class="btn btn-danger">
+                                    ดึงข้อมูล
+                                </button>
+
+                            </div>
+                        </form>
+
+
+
+
                     </div>
+                    <!-- /.card -->
                 </div>
+                <!-- สินค้าค้างส่ง -->
+                <div class="col-6 mx-auto">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">ราการสินค้าค้างส่ง</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <ul class="nav flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link">
+                                            ลูกค้า <span class="float-right badge bg-secondary"><?= $totals_cust['total_cust'] ?></span>
+                                        </a>
+
+
+                                    </li>
+                                </ul>
+
+                            </div>
+
+                        </div>
+                        <div class="card-footer">
+
+                        </div>
+
+
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
             </div>
+
         </div>
     </section>
 
@@ -71,74 +114,100 @@ $totals_cust = fetch_total_customers();
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-12">
-                    <div class="card">
+                <div class="col-md-12">
+                    <div class="card card-primary card-outline">
+                        <!-- หัวตาราง รายการสินค้าเตรียมจัดส่ง -->
                         <div class="card-header">
-                            <h1 class="card-title">รายการซื้อสำเร็จ</h1>
-                        </div>
-                        <div class="card-body">
-                            <table id="example1" class="table table-bordered table-striped">
-                                <thead>
-                                    <tr class="table-info" style=" text-align: center">
-                                        <th>ลำดับ</th>
-                                        <th>ตลาด</th>
-                                        <th>ร้านค้า</th>
-                                        <th>ผู้รับผิดชอบ</th>
-                                        <th>สินค้า</th>
-                                        <th>จำนวนสั่ง</th>
+                            <h3 class="card-title">รายการสินค้าของ </h3>
 
-                                        <th>จำนวนซื้อ</th>
-                                        <th>หน่วยนับ</th>
-                                        <th>ราคา</th>
-                                        <th>รวม</th>
-                                        <th>วันที่ซื้อ</th>
-                                        <th>รายละเอียด</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    $i = 0;
-                                    $grand_total = 0;
-                                    while ($row = mysqli_fetch_assoc($sp_list_result)):
-                                        $i++;
-                                        $grand_total += $row['total_price'];
-                                    ?>
+                            <div class="card-tools">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" placeholder="ค้นหาสินค้า">
+                                    <div class="input-group-append">
+                                        <div class="btn btn-primary">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.card-tools -->
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body p-0">
+                            <div class="mailbox-controls">
+                                <!-- Check all button -->
+                                <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="far fa-square"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-default btn-sm">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                                <div class="float-right">
+                                    1-50/200
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-sm">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <!-- /.btn-group -->
+                                </div>
+                                <!-- /.float-right -->
+                            </div>
+                            <div class="table-responsive mailbox-messages">
+                                <table class="table table-hover table-striped">
+                                    <tbody>
                                         <tr>
-                                            <td><?= $i  ?></td>
-                                            <td><?= htmlspecialchars($row['mk_name']) ?></td>
-                                            <td><?= htmlspecialchars($row['sp_name']) ?></td>
-                                            <td><?= htmlspecialchars($row['u_name']) ?></td>
-                                            <td><?= htmlspecialchars($row['pd_n']) ?></td>
-                                            <td><?= number_format($row['qty'], 2) ?></td>
-                                            <td><?= number_format($row['shop_qty'], 2) ?></td>
-                                            <td><?= htmlspecialchars($row['pu_name']) ?></td>
-                                            <td><?= number_format($row['shop_price'], 2) ?></td>
-                                            <td><?= number_format($row['total_price'], 2) ?></td>
-                                            <td><?= htmlspecialchars($row['update_at']) ?></td>
                                             <td>
-                                                <a class="btn btn-warning btn-sm" href="inv_edit.php?pd_id=<?= $row['pd_id'] ?>&od_id=<?= $row['od_id'] ?>">
-                                                    <i class="far fa-edit"></i>
-                                                </a>
+                                                <div class="icheck-primary">
+                                                    <input type="checkbox" value="" id="check1">
+                                                    <label for="check1"></label>
+                                                </div>
                                             </td>
+                                            <td class="mailbox-star"><a href="#"><i class="fas fa-star text-warning"></i></a></td>
+                                            <td class="mailbox-name"><a href="read-mail.html">Alexander Pierce</a></td>
+                                            <td class="mailbox-subject"><b>AdminLTE 3.0 Issue</b> - Trying to find a solution to this problem...
+                                            </td>
+                                            <td class="mailbox-attachment"></td>
+                                            <td class="mailbox-date">5 mins ago</td>
                                         </tr>
-                                    <?php endwhile; ?>
-                                    <?php if ($i == 0): ?>
-                                        <tr>
-                                            <td colspan="12" class="text-center">ยังไม่มีรายการสินค้า</td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                                <?php if ($i > 0): ?>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="9" align="right"><strong>รวมทั้งสิ้น</strong></td>
-                                            <td colspan="3"><strong><?= number_format($grand_total, 2) ?></strong></td>
-                                        </tr>
-                                    </tfoot>
-                                <?php endif; ?>
-                            </table>
+
+                                    </tbody>
+                                </table>
+                                <!-- /.table -->
+                            </div>
+                            <!-- /.mail-box-messages -->
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer p-0">
+                            <div class="mailbox-controls">
+                                <!-- Check all button -->
+                                <button type="button" class="btn btn-default btn-sm checkbox-toggle">
+                                    <i class="far fa-square"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-default btn-sm">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
+                                <div class="float-right">
+                                    1-50/200
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default btn-sm">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-sm">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <!-- /.btn-group -->
+                                </div>
+                                <!-- /.float-right -->
+                            </div>
                         </div>
                     </div>
+                    <!-- /.card -->
                 </div>
             </div>
         </div>

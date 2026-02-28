@@ -44,17 +44,17 @@ $u_name = $row['u_name'];
           <a href="orders.php" class="nav-link">
             <i class="nav-icon fas fa-cart-plus"></i>
             <p>
-              สั่งซื้อสินค้า
+              สร้างใบสั่งซื้อสินค้า
               <!-- <span class="right badge badge-danger">New</span> -->
             </p>
           </a>
         </li>
         <li class="nav-item">
-          <!-- รายการซื้อสินค้า -->
+          <!-- ใบสั่งซื้อสินค้า -->
           <a href="po.php" class="nav-link">
             <i class="nav-icon fas fa-dolly-flatbed"></i>
             <p>
-              ใบสั่งสินค้า
+              ใบสั่งซื้อ
             </p>
           </a>
         </li>
@@ -64,6 +64,15 @@ $u_name = $row['u_name'];
             <i class="nav-icon fas fa-clipboard-list"></i>
             <p>
               รายการซื้อสินค้า
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <!-- รายการซื้อสินค้า -->
+          <a href="out_dv.php" class="nav-link">
+            <i class="nav-icon fas fa-shuttle-van"></i>
+            <p>
+              สินค้าเตรียมจัดส่ง
             </p>
           </a>
         </li>
