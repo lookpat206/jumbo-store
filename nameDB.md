@@ -47,7 +47,7 @@
     	pd_n	ชื่อสินค้า
     	pt_id	รหัสประเภท
     	pu_id	รหัสหน่วยนับ
-    9. prod_stock
+    9. stock
     	stock_id รหัสคงคลัง
     	pd_id	 รหัสสินค้า
     	stock_q	 ปริมานสินค้า

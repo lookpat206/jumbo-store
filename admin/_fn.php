@@ -1189,39 +1189,77 @@ function save_shopping($dv_day_new)
 {
     global $conn;
 
-    $sql = "INSERT INTO sp_list (plan_id,mk_id,sp_id, u_id, od_id, pd_id, shop_qty, pu_id, shop_price, sp_status,syn_stock,note)
-            SELECT p.plan_id,ms.mk_id,p.sp_id, p.u_id, od.od_id, ord.pd_id, ord.qty, ord.pu_id,ord.price_s, 'อยู่ระหว่างจัดซื้อ', 0, ''
-            FROM orders_detail AS ord
-            JOIN orders AS od ON ord.od_id = od.od_id
-            JOIN plan AS p ON ord.pd_id = p.pd_id
-            join mk_sup AS ms ON p.sp_id = ms.sp_id
-            join market AS m ON ms.mk_id = m.mk_id
-            WHERE od.dv_day = ?";
+    $sql = "INSERT INTO sp_list
+    (
+        plan_id,
+        mk_id,
+        sp_id,
+        u_id,
+        od_id,
+        pd_id,
+        shop_qty,
+        pu_id,
+        shop_price,
+        sp_status,
+        syn_stock,
+        note,
+        created_at,
+        update_at,
+        is_closed
+    )
 
-    // เตรียมคำสั่ง SQL
+    SELECT
+        p.plan_id,
+        ms.mk_id,
+        p.sp_id,
+        p.u_id,
+        od.od_id,
+        ord.pd_id,
+        COALESCE(ord.qty,0),
+        ord.pu_id,
+        COALESCE(ord.price_s,0),
+
+        'รอดำเนินการจัดซื้อ',
+        0,
+        '',
+        NOW(),
+        NOW(),
+        0
+
+    FROM orders_detail AS ord
+
+    INNER JOIN orders AS od
+        ON ord.od_id = od.od_id
+
+    INNER JOIN plan AS p
+        ON ord.pd_id = p.pd_id
+
+    INNER JOIN mk_sup AS ms
+        ON p.sp_id = ms.sp_id
+
+    INNER JOIN market AS m
+        ON ms.mk_id = m.mk_id
+
+    WHERE od.dv_day = ?";
+
     $stmt = mysqli_prepare($conn, $sql);
 
     if (!$stmt) {
-        die("Prepare failed: " . mysqli_error($conn));
+        die("Prepare failed : " . mysqli_error($conn));
     }
 
-    // ผูกพารามิเตอร์
     mysqli_stmt_bind_param($stmt, "s", $dv_day_new);
 
-    // ดำเนินการคำสั่ง
-    if (mysqli_stmt_execute($stmt)) {
-        // ดูจำนวน row ที่ insert ได้จริง
-        $rows_inserted = mysqli_stmt_affected_rows($stmt);
-
-        // Redirect ไปหน้า .php
-        header("Location: shopping.php?success=1&rows=$rows_inserted&dv_day=$dv_day_new");
-        exit();
-    } else {
-        echo "เกิดข้อผิดพลาดในการบันทึกรายการซื้อสินค้า: " . mysqli_stmt_error($stmt) . "<br>" . $sql;
+    if (!mysqli_stmt_execute($stmt)) {
+        die("Execute failed : " . mysqli_stmt_error($stmt));
     }
 
-    // ปิด statement
+    $rows_inserted = mysqli_stmt_affected_rows($stmt);
+
     mysqli_stmt_close($stmt);
+
+    header("Location: shopping.php?success=1&rows=" . $rows_inserted . "&dv_day=" . $dv_day_new);
+    exit();
 }
 function fetch_order_detail_by_odid($od_id)
 {

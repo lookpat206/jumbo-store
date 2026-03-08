@@ -66,57 +66,132 @@ $result = fetch_market_byuid($u_id);
                                 <table id="table_<?php echo $row['mk_id']; ?>" class="table table-bordered table-striped data-table">
                                     <thead>
                                         <tr class="table-info">
-                                            <th width="5%">ซื้อสำเร็จ</th>
+                                            <th width="5%" class="text-center">
+                                                <input type="checkbox" id="checkAll">
+                                            </th>
                                             <th width="20%">ร้านค้า</th>
                                             <th width="20%">สินค้า</th>
                                             <th width="10%">หน่วย</th>
                                             <th width="10%">จำนวน</th>
                                             <th width="10%">ราคา</th>
                                             <th width="10%">รวมเงิน</th>
-                                            <th width="15%">แก้ไขบิล</th>
+
                                             <th width="5%">หมายเหตุ</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+
                                         <?php
+
                                         $result2 = get_market_details($row['mk_id'], $u_id);
                                         $sum_total = 0;
+
                                         while ($item = mysqli_fetch_assoc($result2)):
+
                                             $sum_total += $item['total_price'];
+
                                         ?>
-                                            <tr>
+
+                                            <tr
+                                                data-plan="<?= $item['plan_id'] ?>"
+                                                data-mk="<?= $row['mk_id'] ?>"
+                                                data-sp="<?= $item['sp_id'] ?>"
+                                                data-pd="<?= $item['pd_id'] ?>"
+                                                data-pu="<?= $item['pu_id'] ?>">
+
                                                 <td class="text-center">
-                                                    <?php if ($item['sp_status'] == 'ซื้อสำเร็จ'): ?>
-                                                        <button class="btn btn-success btn-sm" disabled>ซื้อแล้ว</button>
-                                                    <?php else: ?>
-                                                        <button class="btn btn-secondary btn-sm" disabled>ยังไม่ได้ซื้อ</button>
-                                                    <?php endif; ?>
+
+                                                    <input type="checkbox"
+                                                        class="chk-buy"
+
+                                                        data-plan="<?= $item['plan_id'] ?>"
+                                                        data-mk="<?= $row['mk_id'] ?>"
+                                                        data-sp="<?= $item['sp_id'] ?>"
+                                                        data-pd="<?= $item['pd_id'] ?>"
+                                                        data-pu="<?= $item['pu_id'] ?>"
+
+                                                        <?= ($item['syn_stock'] == 1) ? 'checked disabled' : '' ?>>
+
+
                                                 </td>
-                                                <td><?php echo htmlspecialchars($item['sp_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($item['pd_n']); ?></td>
-                                                <td><?php echo htmlspecialchars($item['pu_name']); ?></td>
-                                                <td><?php echo number_format($item['quantity'], 2); ?></td>
-                                                <td><?php echo number_format($item['sp_price'], 2); ?></td>
-                                                <td><?php echo number_format($item['total_price'], 2); ?></td>
+
+
+                                                <td><?= htmlspecialchars($item['sp_name']) ?></td>
+
+                                                <td><?= htmlspecialchars($item['pd_n']) ?></td>
+
+                                                <td><?= htmlspecialchars($item['pu_name']) ?></td>
+
                                                 <td>
-                                                    <a class="btn btn-danger btn-sm" href="pl_edit_po.php?pd_id=<?php echo $item['pd_id']; ?>">
-                                                        <i class="far fa-edit"></i>
-                                                    </a>
+
+                                                    <input
+                                                        type="number"
+                                                        class="form-control qty-input"
+                                                        step="0.01"
+                                                        value="<?= $item['quantity'] ?>">
+
                                                 </td>
+
                                                 <td>
-                                                    <a class="btn btn-warning btn-sm" href="pl_edit_plan.php?pd_id=<?php echo $item['pd_id']; ?>">
-                                                        <i class="far fa-edit"></i>
-                                                    </a>
+
+                                                    <input
+                                                        type="number"
+                                                        class="form-control price-input"
+                                                        step="0.01"
+                                                        value="<?= $item['sp_price'] ?>">
+
                                                 </td>
+
+                                                <td class="total-cell">
+
+                                                    <?= number_format($item['total_price'], 2) ?>
+
+                                                </td>
+
+
+
+                                                <td>
+
+                                                    <a class="btn btn-warning btn-sm"
+                                                        href="pl_edit_plan.php?pd_id=<?= $item['pd_id'] ?>&sp_id=<?= $item['sp_id'] ?>">
+
+                                                        <i class="far fa-edit"></i>
+
+                                                    </a>
+
+                                                </td>
+
                                             </tr>
-                                        <?php endwhile; ?>
+
+                                        <?php endwhile ?>
+
                                     </tbody>
+
                                     <tfoot>
+
                                         <tr class="table-secondary">
-                                            <td colspan="6" class="text-center"><strong>รวมเงิน</strong></td>
-                                            <td colspan="3"><?php echo number_format($sum_total, 2); ?> บาท</td>
+
+                                            <td colspan="6" class="text-center">
+
+                                                <strong>รวมเงิน</strong>
+
+                                            </td>
+
+                                            <td colspan="3">
+
+                                                <span class="sum-footer">
+
+                                                    <?= number_format($sum_total, 2) ?>
+
+                                                </span> บาท
+
+                                            </td>
+
                                         </tr>
+
                                     </tfoot>
+
+
                                 </table>
                             </div>
                         </div>
@@ -130,7 +205,126 @@ $result = fetch_market_byuid($u_id);
     <!-- /.content -->
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
 
+        function calcRow(row) {
+
+            let qty = parseFloat(row.querySelector(".qty-input").value) || 0
+            let price = parseFloat(row.querySelector(".price-input").value) || 0
+
+            let total = qty * price
+
+            row.querySelector(".total-cell").innerText =
+                total.toLocaleString(undefined, {
+                    minimumFractionDigits: 2
+                })
+
+        }
+
+        document.querySelectorAll(".qty-input,.price-input")
+            .forEach(el => {
+
+                el.addEventListener("input", function() {
+
+                    let row = this.closest("tr")
+
+                    calcRow(row)
+
+                })
+
+            })
+
+        /* BUY */
+
+        document.querySelectorAll(".chk-buy")
+            .forEach(chk => {
+
+                chk.addEventListener("change", function() {
+
+                    if (!this.checked) return
+
+                    let row = this.closest("tr")
+
+                    let data = {
+                        plan_id: this.dataset.plan,
+                        mk_id: this.dataset.mk,
+                        sp_id: this.dataset.sp,
+                        pd_id: this.dataset.pd,
+                        pu_id: this.dataset.pu,
+
+                        qty: row.querySelector(".qty-input").value,
+                        price: row.querySelector(".price-input").value
+
+                    }
+
+                    if (data.qty <= 0 || data.price <= 0) {
+
+                        alert("กรุณากรอกจำนวนและราคา")
+                        this.checked = false
+                        return
+
+                    }
+
+                    fetch("pl_ajax_save_purchase.php", {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify(data)
+
+                        })
+
+                        .then(async response => {
+
+                            let text = await response.text()
+
+                            console.log("RAW RESPONSE:", text)
+
+                            try {
+                                return JSON.parse(text)
+                            } catch (e) {
+                                throw new Error("JSON PARSE ERROR")
+                            }
+
+                        })
+
+                        .then(res => {
+
+                            console.log(res)
+
+                            if (res.status === "success") {
+
+                                row.style.background = "#d4edda"
+                                this.disabled = true
+
+                            } else {
+
+                                alert(res.message || "บันทึกไม่สำเร็จ")
+                                this.checked = false
+
+                            }
+
+                        })
+
+                        .catch(err => {
+
+                            console.error(err)
+
+                            alert("AJAX ERROR : " + err)
+
+                            this.checked = false
+
+                        })
+                })
+
+            })
+
+    })
+</script>
 <?php
 
 

@@ -44,74 +44,107 @@ $pd_n = $row['pd_n'];
         <div class="container-fluid">
             <div class="row">
                 <div class="col-6 mx-auto">
+
                     <div class="card card-primary">
+
                         <div class="card-header">
                             <h3 class="card-title">ชื่อสินค้า : <?= $pd_n ?></h3>
                         </div>
+
                         <form action="sp_edit_save.php" method="post">
+
                             <div class="card-body">
+
                                 <input type="hidden" name="pd_id" value="<?= $pd_id ?>">
-                                <table id="example1" class="table table-bordered table-striped">
+
+                                <table class="table table-bordered table-striped">
+
                                     <thead>
-                                        <tr class="table-info" style="text-align: center;">
+                                        <tr class="table-info text-center">
                                             <th width="10%">ลำดับ</th>
                                             <th width="40%">ลูกค้า</th>
                                             <th width="15%">หน่วยนับ</th>
                                             <th width="15%">จำนวน</th>
                                             <th width="20%">สถานะ</th>
-
                                         </tr>
                                     </thead>
+
                                     <tbody>
+
                                         <?php
-                                        // ดึงข้อมูล ปริมาณการสั่งซื้อสินค้า
                                         $result1 = fetch_sp_list_by_pdid($pd_id);
+
                                         if (mysqli_num_rows($result1) > 0) {
+
                                             $i = 0;
+
                                             foreach ($result1 as $row) {
+
                                                 $i++;
                                         ?>
+
                                                 <tr>
-                                                    <td><?= $i ?></td>
-                                                    <!-- ลูกค้า -->
-                                                    <td><?= $row['c_abb'] ?></td>
-                                                    <input type="hidden" name="c_id" value="<?= $row['c_id'] ?>">
-                                                    <!-- หน่วยนับ -->
-                                                    <td><?= $row['pu_name'] ?></td>
-                                                    <!-- จำนวน -->
-                                                    <td><?= $row['shop_qty'] ?></td>
-                                                    <!-- สถานะ -->
-                                                    <td><?= $row['sp_status'] ?></td>
+
+                                                    <td class="text-center"><?= $i ?></td>
+
+                                                    <td>
+                                                        <?= $row['c_abb'] ?>
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <?= $row['pu_name'] ?>
+                                                    </td>
+
+                                                    <td>
+
+                                                        <input
+                                                            type="number"
+                                                            class="form-control text-end"
+                                                            name="qty[<?= $row['shop_id'] ?>]"
+                                                            value="<?= number_format($row['shop_qty'], 2, '.', '') ?>"
+                                                            step="0.01"
+                                                            min="0">
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <?= $row['sp_status'] ?>
+                                                    </td>
 
                                                 </tr>
+
                                         <?php
                                             }
                                         } else {
-                                            echo '<tr><td colspan="6">ไม่พบข้อมูล</td></tr>';
+
+                                            echo '<tr><td colspan="5" class="text-center">ไม่พบข้อมูล</td></tr>';
                                         }
                                         ?>
+
                                     </tbody>
+
                                 </table>
 
-                            </div> <!-- /.card-body -->
+                            </div>
 
-                            <!-- บันทึก -->
                             <div class="card-footer">
 
-                                <a href="shopping.php" class="btn btn-secondary">กลับ</a>
+                                <button type="submit" class="btn btn-success">
+                                    บันทึกการแก้ไข
+                                </button>
+
+                                <a href="shopping.php" class="btn btn-secondary">
+                                    กลับ
+                                </a>
+
                             </div>
+
                         </form>
+
                     </div>
-                    <!-- /.card -->
-                    <!-- /.card -->
+
                 </div>
-                <!-- /.col -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
-
-
     </section>
     <!-- /.content -->
 </div>

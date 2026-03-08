@@ -278,9 +278,10 @@ function get_market_details($mk_id, $u_id)
 {
     global $conn;
 
-    $sql = "SELECT 
+    $sql = "SELECT MAX(pl.syn_stock) AS syn_stock,
                 pl.sp_status,
-                pl.pd_id, 
+                pl.pd_id,
+                pl.plan_id, 
                 pl.sp_id, 
                 sup.sp_name, 
                 p.pd_n, 
@@ -289,12 +290,13 @@ function get_market_details($mk_id, $u_id)
                 pu.pu_name, 
                 ROUND(AVG(pl.shop_price), 2) AS sp_price,
                 ROUND(SUM(pl.shop_qty) * AVG(pl.shop_price), 2) AS total_price
+                
             FROM sp_list AS pl
             INNER JOIN product AS p ON pl.pd_id = p.pd_id
             INNER JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
             WHERE sup.mk_id = ? AND pl.u_id = ?
-            GROUP BY pl.pd_id, pl.sp_id, sup.sp_name, p.pd_n, pu.pu_id, pl.sp_status";
+            GROUP BY pl.pd_id, pl.sp_id, sup.sp_name, p.pd_n, pu.pu_id, pl.sp_status,pl.plan_id";
 
     $stmt = mysqli_prepare($conn, $sql);
 
@@ -508,4 +510,53 @@ function fetch_responsible_name_by_plan($plan_id)
     } else {
         return null;
     }
+}
+
+
+
+// รับข้อมูลสินค้าเข้า stock Tb-stock
+
+
+function stock_in($pd_id, $pu_id, $qty, $ref_id, $date)
+{
+    global $conn;
+
+    // 1. หา balance ล่าสุด
+    $sql = "SELECT balance
+            FROM stock
+            WHERE pd_id=? AND pu_id=?
+            ORDER BY stock_id DESC
+            LIMIT 1";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $pd_id, $pu_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row) {
+        $balance = $row['balance'] + $qty;
+    } else {
+        $balance = $qty;
+    }
+
+    // 2. insert stock movement
+    $sql2 = "INSERT INTO stock
+            (pd_id,pu_id,qty_in,qty_out,balance,source_type,ref_id,stock_date)
+            VALUES (?,?,?,0,?,'in',?,?)";
+
+    $stmt2 = mysqli_prepare($conn, $sql2);
+    mysqli_stmt_bind_param(
+        $stmt2,
+        "iiddis",
+        $pd_id,
+        $pu_id,
+        $qty,
+        $balance,
+        $ref_id,
+        $date
+    );
+
+    mysqli_stmt_execute($stmt2);
 }
