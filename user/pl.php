@@ -8,7 +8,9 @@ include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
-include('../admin/_fn_db.php');
+include('../admin/_fn_board.php');
+
+
 
 // ตรวจสอบว่ามีการ login แล้วหรือไม่ และ u_id ถูกเก็บไว้ใน session หรือไม่
 if (!isset($_SESSION['u_id'])) {
@@ -66,17 +68,15 @@ $result = fetch_market_byuid($u_id);
                                 <table id="table_<?php echo $row['mk_id']; ?>" class="table table-bordered table-striped data-table">
                                     <thead>
                                         <tr class="table-info">
-                                            <th width="5%" class="text-center">
-                                                <input type="checkbox" id="checkAll">
-                                            </th>
+                                            <th width="7%" class="text-center">ซื้อได้</th>
                                             <th width="20%">ร้านค้า</th>
                                             <th width="20%">สินค้า</th>
-                                            <th width="10%">หน่วย</th>
+                                            <th width="5%">หน่วย</th>
                                             <th width="10%">จำนวน</th>
                                             <th width="10%">ราคา</th>
                                             <th width="10%">รวมเงิน</th>
 
-                                            <th width="5%">หมายเหตุ</th>
+                                            <th width="8%">ซื้อไม่ได้</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -153,7 +153,7 @@ $result = fetch_market_byuid($u_id);
                                                 <td>
 
                                                     <a class="btn btn-warning btn-sm"
-                                                        href="pl_edit_plan.php?pd_id=<?= $item['pd_id'] ?>&sp_id=<?= $item['sp_id'] ?>">
+                                                        href="pl_edit_status.php?pd_id=<?= $item['pd_id'] ?>&sp_id=<?= $item['sp_id'] ?>">
 
                                                         <i class="far fa-edit"></i>
 

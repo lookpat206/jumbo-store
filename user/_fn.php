@@ -273,7 +273,7 @@ GROUP BY js.u_id, js.u_name, sup.mk_id, m.mk_name";
 
 
 
-// ดึงรายละเอียดสินค้าในตลาดของผู้ใช้
+// ดึงรายละเอียดสินค้าในแต่ละตลาดของผู้ใช้
 function get_market_details($mk_id, $u_id)
 {
     global $conn;
@@ -295,7 +295,7 @@ function get_market_details($mk_id, $u_id)
             INNER JOIN product AS p ON pl.pd_id = p.pd_id
             INNER JOIN mk_sup AS sup ON pl.sp_id = sup.sp_id
             JOIN p_unit AS pu ON pl.pu_id = pu.pu_id
-            WHERE sup.mk_id = ? AND pl.u_id = ?
+            WHERE sup.mk_id = ? AND pl.u_id = ? AND syn_stock = 0 AND is_closed = 0
             GROUP BY pl.pd_id, pl.sp_id, sup.sp_name, p.pd_n, pu.pu_id, pl.sp_status,pl.plan_id";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -559,4 +559,124 @@ function stock_in($pd_id, $pu_id, $qty, $ref_id, $date)
     );
 
     mysqli_stmt_execute($stmt2);
+}
+
+
+function check_plan_open($u_id)
+{
+    global $conn;
+
+    $sql = "SELECT COUNT(*) AS total
+            FROM sp_list
+            WHERE u_id = ?
+            AND syn_stock = 0
+            AND is_close = 0";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $plan_id);
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+    $row = mysqli_fetch_assoc($result);
+
+    return $row['total'];
+}
+
+
+//-----------------------------status------------
+
+//--update sp_status
+function update_sp_status($pd_id, $sp_id, $status)
+{
+
+    global $conn;
+
+    $sql = "UPDATE sp_list 
+        SET sp_status=? 
+        WHERE pd_id=? and sp_id=? ";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "sii", $status, $pd_id, $sp_id);
+
+    return mysqli_stmt_execute($stmt);
+}
+
+//---เปลี่ยนผู้ซื้อ
+function update_sp_buyer($pd_id, $sp_id, $u_id, $status)
+{
+
+    global $conn;
+
+    $sql = "UPDATE sp_list
+        SET u_id=?,
+            sp_status=?
+        WHERE pd_id=? and sp_id =?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "isii", $u_id, $status, $pd_id, $sp_id);
+
+    return mysqli_stmt_execute($stmt);
+}
+
+function supp_save($mk_id, $sp_name, $sp_tel)
+{
+    global $conn;
+
+    $sql = "INSERT INTO mk_sup(mk_id,sp_name,sp_tel) 
+            VALUES (?, ?, ?)";
+    // แปลง $sql เป็น $stmt            
+    $stmt = mysqli_prepare($conn, $sql);
+
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    // ผูกค่าพารามิเตอร์
+    mysqli_stmt_bind_param($stmt, "iss", $mk_id, $sp_name, $sp_tel);
+
+    // ดำเนินการคำสั่ง SQL
+    return mysqli_stmt_execute($stmt);
+}
+
+function check_sp_editable($pd_id, $sp_id)
+{
+
+    global $conn;
+
+    $sql = "SELECT is_closed, syn_stock
+        FROM sp_list
+        WHERE pd_id=? AND sp_id=?";
+
+    $stmt = mysqli_prepare($conn, $sql);
+    if (!$stmt) {
+        echo "เกิดข้อผิดพลาดในการเตรียมคำสั่ง SQL: " . mysqli_error($conn);
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "ii", $pd_id, $sp_id);
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row['is_closed'] == 1 || $row['syn_stock'] == 1) {
+        return false;
+    }
+
+    return true;
 }

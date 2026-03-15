@@ -2,7 +2,7 @@
 
 session_start();
 
-include('../admin/_fn_db.php');
+
 include('_fn.php'); // ต้องมี stock_in()
 
 header('Content-Type: application/json');
@@ -50,7 +50,7 @@ try {
     UPDATE sp_list pl
     JOIN mk_sup sup ON pl.sp_id = sup.sp_id
     SET
-        pl.shop_qty = ?,
+       
         pl.shop_price = ?,
         pl.syn_stock = 1,
         pl.sp_status = 'ซื้อสำเร็จ',
@@ -67,8 +67,8 @@ try {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ddiiii",
-        $qty,
+        "diiii",
+
         $price,
         $mk_id,
         $sp_id,

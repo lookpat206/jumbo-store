@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../admin/_fn.php';
-require_once '../admin/_fn_db.php';
+require_once '../admin/_fn_board.php';
 
 
 // Check login
