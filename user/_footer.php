@@ -57,6 +57,9 @@
 <!-- overlayScrollbars -->
 <script src="plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
 
+<script src="plugins/moment/moment.min.js"></script>
+<script src="plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
 <!-- <script>
     document.getElementById('inputImage').addEventListener('change', function(event) {
         const file = event.target.files[0];

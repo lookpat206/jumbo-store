@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $pd_id = $_POST['pd_id'];
     $pu_id = $_POST['pu_id'];
     $qty = $_POST['qty'];
+    $od_detail = $_POST['od_detail'];
     $c_id = $_POST['c_id'];
 
 
@@ -31,10 +32,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $alert = "ไม่สามารถเพิ่มสินค้าได้: ไม่พบราคาสำหรับสินค้านี้ หน่วยนับ หรือรหัสลูกค้า";
     } else {
         $total = $price_s * $qty;
-        if (add_po_detail($od_id, $pd_id, $pu_id, $qty, $price_s, $total)) {
+        if (add_po_detail($od_id, $pd_id, $pu_id, $qty, $price_s, $total, $od_detail)) {
             $alert = "เพิ่มสินค้าเรียบร้อยแล้ว";
         } else {
-            $alert = "เกิดข้อผิดพลาดในการเพิ่มสินค้า";
+            $alert = "ERROR: " . mysqli_error($conn);
         }
     }
 }
@@ -104,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                 <div class="form-group">
                                                     <label>สินค้า</label>
                                                     <select id="pd_id" name="pd_id" class="form-control select2">
-                                                        <!-- <option value="">-- เลือกสินค้า --</option> -->
+                                                        <option value="">-- เลือกสินค้า --</option>
                                                         <?php
                                                         $products = get_products_by_customer($c_id);
                                                         foreach ($products as $prod) {
@@ -132,6 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                                         <input type=" number" class="form-control" name="qty" step="0.01" min="0" required>
                                                         <small class="form-text text-danger">ใส่ทศนิยม 2 ตำแหน่ง</small>
                                                     </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="">รายละเอียดสินค้า</label>
+
+                                                    <input type="text" class="form-control" name="od_detail" placeholder="รายละเอียดเพิ่มเติม">
+
                                                 </div>
                                             </div>
                                         </div><!--  /.row -->

@@ -10,7 +10,7 @@ $c_id    = $_POST["c_id"];     // รหัสลูกค้า
 $od_day  = $_POST["od_day"];   // วันที่สั่ง (dd/mm/yyyy)
 $dv_day  = $_POST["dv_day"];   // วันที่ส่ง (dd/mm/yyyy)
 $dv_time = $_POST["dv_time"];  // เวลาส่ง
-$od_note = $_POST["od_note"];  // รหัสแผนก/ครัว
+$dp_id = $_POST["dp_id"];  // รหัสแผนก/ครัว
 
 // --- ตรวจสอบรูปแบบวันที่ และแปลงเป็น Y-m-d ---
 function convert_date($date_str)
@@ -26,7 +26,7 @@ $od_day_converted = convert_date($od_day);
 $dv_day_converted = convert_date($dv_day);
 
 // --- ตรวจสอบว่ากรอกข้อมูลครบหรือไม่ ---
-if (empty($c_id) || empty($od_day_converted) || empty($dv_day_converted) || empty($dv_time) || empty($od_note)) {
+if (empty($c_id) || empty($od_day_converted) || empty($dv_day_converted) || empty($dv_time) || empty($dp_id)) {
     exit("⚠️ กรุณากรอกข้อมูลให้ครบถ้วน");
 }
 
@@ -36,4 +36,4 @@ if (strtotime($od_day_converted) > strtotime($dv_day_converted)) {
 }
 
 // --- เรียกฟังก์ชันเพิ่มข้อมูล ---
-order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note);
+order_add_save($c_id, $od_day, $dv_day, $dv_time, $dp_id);

@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $od_day = $_POST['od_day'];
   $dv_day = $_POST['dv_day'];
   $dv_time = $_POST['dv_time'];
-  $od_note = $_POST['od_note'];
+  $dp_id = $_POST['dp_id'];
 
 
-  $od_id = create_od($c_id, $od_day, $dv_day, $dv_time, $od_note);
+  $od_id = create_od($c_id, $od_day, $dv_day, $dv_time, $dp_id);
 
 
   if ($od_id && $c_id) {
@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <div class="form-group">
                     <label for="">แผนก/ครัว:</label>
 
-                    <select class="form-control" name="od_note" id="dp_id" style="width: 100%;">
+                    <select class="form-control" name="dp_id" id="note" style="width: 100%;">
                       <option value="">-- เลือกแผนก/ครัว --</option>
                     </select>
                   </div>
@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $.post('order_update.php', {
         c_id: c_id
       }, function(data) {
-        $('#dp_id').html(data);
+        $('#note').html(data);
       });
     });
   </script>

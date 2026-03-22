@@ -2,7 +2,7 @@
 
 session_start();
 
-
+//[บันทึกการซื้อสินค้าสำเร็จ]
 include('_fn.php'); // ต้องมี stock_in()
 
 header('Content-Type: application/json');

@@ -20,7 +20,7 @@ if (isset($_SESSION['od_id'])) {
 
     // ย้ายไปหน้ารายการใบสั่งซื้อ
     echo "ยืนยันการสั่งซื้อเรียบร้อยแล้ว";
-    header("Location: po.php?success=confirmed");
+    header("Location: index.php?success=confirmed");
     //exit();
 } else {
     echo "ไม่พบรหัสใบสั่งซื้อ";

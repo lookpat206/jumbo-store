@@ -49,15 +49,7 @@ $u_name = $row['u_name'];
             </p>
           </a>
         </li>
-        <li class="nav-item">
-          <!-- ใบสั่งซื้อสินค้า -->
-          <a href="po.php" class="nav-link">
-            <i class="nav-icon fas fa-dolly-flatbed"></i>
-            <p>
-              ใบสั่งซื้อ
-            </p>
-          </a>
-        </li>
+
         <li class="nav-item">
           <!-- รายการซื้อสินค้า -->
           <a href="pl.php" class="nav-link">
@@ -68,8 +60,17 @@ $u_name = $row['u_name'];
           </a>
         </li>
         <li class="nav-item">
+          <!-- รายการซื้อสินค้าที่ซื้อเสร็จแล้ว -->
+          <a href="ph_c.php" class="nav-link">
+            <i class="nav-icon far fa-calendar-check"></i>
+            <p>
+              ซื้อสำเร็จ
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
           <!-- รายการซื้อสินค้า -->
-          <a href="out_dv.php" class="nav-link">
+          <a href="p_checklist.php" class="nav-link">
             <i class="nav-icon fas fa-shuttle-van"></i>
             <p>
               สินค้าเตรียมจัดส่ง

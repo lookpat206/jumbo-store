@@ -8,7 +8,7 @@ include('_header.php');
 include('_navbar.php');
 include('_sidebar_menu.php');
 include('_fn.php');
-include('../admin/_fn_board.php');
+include('../admin/_fn_db.php');
 
 
 
@@ -21,6 +21,10 @@ if (!isset($_SESSION['u_id'])) {
 $u_id = isset($_SESSION['u_id']) ? intval($_SESSION['u_id']) : 0;
 //print_r($u_id); // แสดงค่า u_id สำหรับดีบัก
 
+// if (isset($_SESSION['msg'])) {
+//     echo '<div class="alert alert-info">' . $_SESSION['msg'] . '</div>';
+//     unset($_SESSION['msg']);
+// }
 
 
 // ดึงข้อมูลตลาดที่ซื้อสินค้า

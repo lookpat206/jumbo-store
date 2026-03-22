@@ -1,4 +1,6 @@
 <?php
+
+//บันทึกสถานะ
 session_start();
 include('_fn.php');   // ต้องมี $conn และ function ต่างๆ
 

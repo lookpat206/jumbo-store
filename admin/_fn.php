@@ -1159,16 +1159,16 @@ function plan_delete($plan_id)
 // 333333333333333333333333333333333333333333333333333333333333333
 //TB-orders
 //บันทึกข้อมูล orders
-function order_add_save($c_id, $od_day, $dv_day, $dv_time, $od_note)
+function order_add_save($c_id, $od_day, $dv_day, $dv_time, $dp_id)
 {
     global $conn;
 
-    $sql = "INSERT INTO orders(c_id,od_day,dv_day, dv_time,od_note)
+    $sql = "INSERT INTO orders(c_id,od_day,dv_day, dv_time,dp_id)
                     VALUES (?, ?, ?, ?,?)";
     $stmt = mysqli_prepare($conn, $sql);
 
     //ผูกค่าพารามิเตอร์
-    mysqli_stmt_bind_param($stmt, "issss", $c_id, $od_day, $dv_day, $dv_time, $od_note);
+    mysqli_stmt_bind_param($stmt, "isssi", $c_id, $od_day, $dv_day, $dv_time, $dp_id);
 
     //เงื่อนไขการทำงาน
 
@@ -1463,6 +1463,8 @@ function fetch_sp_list_by_pdid($pd_id)
                     pro.pd_n,
                     c.c_id,
                     c.c_abb,
+                    p.sp_id,
+                    p.sp_name,
                     sp.shop_qty,
                     pu.pu_id,
                     pu.pu_name,
@@ -1477,6 +1479,7 @@ function fetch_sp_list_by_pdid($pd_id)
     JOIN p_unit as pu on sp.pu_id = pu.pu_id 
     JOIN orders AS od ON sp.od_id = od.od_id 
     JOIN cust AS c ON od.c_id = c.c_id
+    join mk_sup as p on sp.sp_id = p.sp_id
      WHERE sp.pd_id = ?";
 
     $stmt = mysqli_prepare($conn, $sql);
